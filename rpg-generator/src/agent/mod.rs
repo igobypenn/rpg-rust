@@ -34,9 +34,9 @@
 //! ```
 
 mod capabilities;
-mod prompt;
 mod context;
 mod optimizer;
+mod prompt;
 
 #[cfg(feature = "opencode")]
 mod opencode;
@@ -48,11 +48,11 @@ mod trae;
 mod claude;
 
 pub use capabilities::{AgentCapabilities, AgentOutput, Patch};
+pub use context::{CodeGenContext, ImplementationContext, PromptContext, PropertyContext};
 pub use prompt::{Feedback, Prompt, PromptFormat, PromptMetadata, RenderedPrompt, TestFailure};
-pub use context::{PromptContext, PropertyContext, ImplementationContext, CodeGenContext};
 
-use async_trait::async_trait;
 use crate::error::Result;
+use async_trait::async_trait;
 use std::collections::HashMap;
 
 /// Core trait for coding agent CLIs.
@@ -63,12 +63,12 @@ use std::collections::HashMap;
 pub trait Agent: Send + Sync {
     /// Unique identifier for this agent type.
     fn name(&self) -> &str;
-    
+
     /// Capabilities this agent supports.
     ///
     /// Used by the prompt system to optimize prompts for each agent's strengths.
     fn capabilities(&self) -> AgentCapabilities;
-    
+
     /// Execute a rendered prompt and return structured output.
     ///
     /// # Arguments
@@ -79,12 +79,12 @@ pub trait Agent: Send + Sync {
     ///
     /// Agent output as text, JSON, or patches.
     async fn execute(&self, prompt: &RenderedPrompt) -> Result<AgentOutput>;
-    
+
     /// Check if the agent CLI is available in PATH.
     fn is_available(&self) -> bool {
         which::which(self.cli_binary()).is_ok()
     }
-    
+
     /// Get the CLI binary name.
     fn cli_binary(&self) -> &str;
 }
@@ -102,29 +102,29 @@ impl AgentRegistry {
         let mut registry = Self {
             agents: HashMap::new(),
         };
-        
+
         #[cfg(feature = "opencode")]
         registry.register("opencode", Box::new(opencode::OpenCodeAgent::new()));
-        
+
         #[cfg(feature = "trae")]
         registry.register("trae", Box::new(trae::TraeAgent::new()));
-        
+
         #[cfg(feature = "claude")]
         registry.register("claude", Box::new(claude::ClaudeAgent::new()));
-        
+
         registry
     }
-    
+
     /// Register an agent.
     pub fn register(&mut self, name: &str, agent: Box<dyn Agent>) {
         self.agents.insert(name.to_string(), agent);
     }
-    
+
     /// Get an agent by name.
     pub fn get(&self, name: &str) -> Option<&dyn Agent> {
         self.agents.get(name).map(|b| b.as_ref())
     }
-    
+
     /// Get the default agent (opencode if available).
     ///
     /// # Panics
@@ -135,7 +135,7 @@ impl AgentRegistry {
             .or_else(|| self.agents.values().next().map(|b| b.as_ref()))
             .expect("At least one agent feature must be enabled")
     }
-    
+
     /// Take ownership of the default agent.
     ///
     /// # Panics
@@ -145,13 +145,15 @@ impl AgentRegistry {
         let key = if self.agents.contains_key("opencode") {
             "opencode".to_string()
         } else {
-            self.agents.keys().next()
+            self.agents
+                .keys()
+                .next()
                 .expect("At least one agent feature must be enabled")
                 .clone()
         };
         self.agents.remove(&key).expect("agent should exist")
     }
-    
+
     pub fn available_agents(&self) -> Vec<&str> {
         self.agents.keys().map(|s| s.as_str()).collect()
     }

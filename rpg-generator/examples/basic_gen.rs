@@ -37,7 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // With opencode feature enabled, no LLM config is needed
     // The agent handles all phases (feature extraction, architecture, code generation)
     let output_dir = PathBuf::from("./generated-output");
-    
+
     let generator = RpgGenerator::new()
         .with_output_dir(&output_dir)
         .with_max_test_iterations(5); // TDD loop iterations
@@ -59,7 +59,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("  Phase 1: Feature extraction");
     println!("  Phase 2: Architecture design");
     println!("  Phase 3: Code generation with TDD loop\n");
-    
+
     match generator.generate(request).await {
         Ok(output) => {
             println!("\n=== Generation Complete ===");
@@ -99,9 +99,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 for test_result in &output.result.test_results {
                     println!(
                         "  Task {}: {} passed, {} failed",
-                        test_result.task_id,
-                        test_result.passed,
-                        test_result.failed
+                        test_result.task_id, test_result.passed, test_result.failed
                     );
                 }
             }
@@ -109,7 +107,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Err(e) => {
             eprintln!("\n=== Generation Failed ===");
             eprintln!("Error: {}", e);
-            
+
             // Provide helpful hints
             if e.to_string().contains("not found") || e.to_string().contains("not available") {
                 eprintln!("\nHint: Make sure the opencode CLI is installed and in your PATH.");

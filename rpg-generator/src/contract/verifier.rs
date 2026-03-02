@@ -239,7 +239,7 @@ impl Default for ContractVerifier {
 mod tests {
     use super::*;
     use crate::types::{GenerationRequest, TargetLanguage};
-    use rpg_encoder::{Component, FeatureTree, ComponentPlan};
+    use rpg_encoder::{Component, ComponentPlan, FeatureTree};
 
     fn create_test_plan() -> GenerationPlan {
         let mut tree = FeatureTree::new("test");

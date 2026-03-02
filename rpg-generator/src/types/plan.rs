@@ -9,10 +9,7 @@ use uuid::Uuid;
 use super::{GenerationRequest, PhaseStatus};
 
 // Re-export planning types from rpg-encoder
-pub use rpg_encoder::{
-    ComponentPlan, FeatureTree,
-    RepoSkeleton, TaskPlan, TaskStatus, UnitKind,
-};
+pub use rpg_encoder::{ComponentPlan, FeatureTree, RepoSkeleton, TaskPlan, TaskStatus, UnitKind};
 
 /// The output of Phase 1: Feature Planning.
 ///

@@ -1,7 +1,7 @@
 //! Contract verification between pipeline phases.
 
-mod verifier;
 mod registry;
+mod verifier;
 
-pub use verifier::ContractVerifier;
 pub use registry::TypeRegistry;
+pub use verifier::ContractVerifier;

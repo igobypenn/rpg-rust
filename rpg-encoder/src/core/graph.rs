@@ -196,21 +196,19 @@ impl RpgGraph {
     }
 
     /// Returns an iterator over low-level (V^L) nodes.
-    /// 
+    ///
     /// V^L nodes are implementation-level entities (functions, types, etc.)
     /// as opposed to high-level functional centroids (V^H).
     pub fn low_level_nodes(&self) -> impl Iterator<Item = &Node> {
-        self.nodes()
-            .filter(|n| n.node_level == NodeLevel::Low)
+        self.nodes().filter(|n| n.node_level == NodeLevel::Low)
     }
 
     /// Returns an iterator over functional centroid (V^H) nodes.
-    /// 
+    ///
     /// V^H nodes are high-level functional abstractions created
     /// during the functional abstraction phase.
     pub fn functional_centroids(&self) -> impl Iterator<Item = &Node> {
-        self.nodes()
-            .filter(|n| n.node_level == NodeLevel::High)
+        self.nodes().filter(|n| n.node_level == NodeLevel::High)
     }
 
     /// Ground a functional centroid by aggregating metadata from its V^L children.
@@ -221,12 +219,15 @@ impl RpgGraph {
     /// Returns the grounded centroid node if successful.
     pub fn ground_centroid(&mut self, centroid_id: NodeId) -> Option<&Node> {
         let &centroid_idx = self.node_id_map.get(&centroid_id)?;
-        
+
         // Collect V^L nodes that belong to this centroid via BelongsToFeature edges
         let mut children_paths: Vec<PathBuf> = Vec::new();
         let mut children_features: Vec<String> = Vec::new();
-        
-        for edge_ref in self.graph.edges_directed(centroid_idx, petgraph::Direction::Incoming) {
+
+        for edge_ref in self
+            .graph
+            .edges_directed(centroid_idx, petgraph::Direction::Incoming)
+        {
             let edge = edge_ref.weight();
             if edge.edge_type == EdgeType::BelongsToFeature {
                 let source_idx = edge_ref.source();
@@ -240,11 +241,11 @@ impl RpgGraph {
                 }
             }
         }
-        
+
         if children_paths.is_empty() && children_features.is_empty() {
             return None;
         }
-        
+
         // Update the centroid with aggregated info
         if let Some(centroid) = self.get_node_mut(centroid_id) {
             // Derive path from common ancestor of children
@@ -253,15 +254,15 @@ impl RpgGraph {
                 let common_path = find_common_ancestor(&children_paths);
                 centroid.path = Some(common_path);
             }
-            
+
             // Aggregate semantic features
             if !children_features.is_empty() {
                 centroid.semantic_feature = Some(children_features.join("; "));
             }
-            
+
             return self.get_node(centroid_id);
         }
-        
+
         None
     }
 
@@ -497,7 +498,7 @@ impl RpgGraph {
             .next()
             .map(|e| e.weight())
     }
-    
+
     /// Remove the edge between two nodes, if any.
     ///
     /// Returns true if an edge was removed, false otherwise.
@@ -518,13 +519,13 @@ impl RpgGraph {
 
         // Remove the edge
         self.graph.remove_edge(eidx);
-        
+
         // Rebuild edge_id_map since indices may have changed
         self.edge_id_map.clear();
         for eidx in self.graph.edge_indices() {
             self.edge_id_map.insert(EdgeId::new(eidx.index()), eidx);
         }
-        
+
         true
     }
 
@@ -567,29 +568,27 @@ impl RpgGraph {
     }
 }
 
-
 fn find_common_ancestor(paths: &[PathBuf]) -> PathBuf {
     if paths.is_empty() {
         return PathBuf::new();
     }
-    
+
     if paths.len() == 1 {
-        return paths[0].parent()
+        return paths[0]
+            .parent()
             .map(|p| p.to_path_buf())
             .unwrap_or_default();
     }
-    
+
     // Start with the first path's components
-    let mut common: Vec<&std::ffi::OsStr> = paths[0]
-        .iter()
-        .collect();
-    
+    let mut common: Vec<&std::ffi::OsStr> = paths[0].iter().collect();
+
     // Intersect with each subsequent path
     for path in &paths[1..] {
         let components: Vec<&std::ffi::OsStr> = path.iter().collect();
         let new_len = common.len().min(components.len());
         common.truncate(new_len);
-        
+
         for i in 0..new_len {
             if common[i] != components[i] {
                 common.truncate(i);
@@ -597,7 +596,7 @@ fn find_common_ancestor(paths: &[PathBuf]) -> PathBuf {
             }
         }
     }
-    
+
     // If we have components, return as path; otherwise return empty
     if common.is_empty() {
         PathBuf::new()

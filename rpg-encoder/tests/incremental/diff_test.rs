@@ -1,4 +1,3 @@
-
 use rpg_encoder::{CodeUnit, DiffStats, FileDiff, UnitType};
 use std::path::PathBuf;
 

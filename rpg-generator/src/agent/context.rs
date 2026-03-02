@@ -191,11 +191,7 @@ mod tests {
 
     #[test]
     fn test_codegen_context() {
-        let task = ImplementationTask::new(
-            "task_1",
-            PathBuf::from("src/main.rs"),
-            "core",
-        );
+        let task = ImplementationTask::new("task_1", PathBuf::from("src/main.rs"), "core");
         let ctx = CodeGenContext {
             task,
             interface: FileInterface {

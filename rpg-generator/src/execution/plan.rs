@@ -12,8 +12,7 @@ use crate::contract::ContractVerifier;
 use crate::error::{GeneratorError, Result};
 use crate::test_runner::{ShellTestRunner, TestConfig, TestRunner};
 use crate::types::{
-    ArchitectureDesign, ExecutionResult, TargetLanguage,
-    TaskOutcome, TestError, TestResult,
+    ArchitectureDesign, ExecutionResult, TargetLanguage, TaskOutcome, TestError, TestResult,
 };
 use crate::TaskStatus;
 
@@ -52,10 +51,9 @@ impl ExecutionPlan {
     #[cfg(feature = "opencode")]
     pub fn with_agent(design: ArchitectureDesign, agent: Box<dyn Agent>) -> Self {
         let language = design.skeleton.language.clone();
-        let test_runner = ShellTestRunner::new(
-            TargetLanguage::parse(&language).unwrap_or(TargetLanguage::Rust),
-        );
-        
+        let test_runner =
+            ShellTestRunner::new(TargetLanguage::parse(&language).unwrap_or(TargetLanguage::Rust));
+
         Self {
             design,
             agent,
@@ -81,7 +79,7 @@ impl ExecutionPlan {
         let test_runner = ShellTestRunner::new(
             TargetLanguage::from_str(&language).unwrap_or(TargetLanguage::Rust),
         );
-        
+
         Self {
             design,
             client,
@@ -104,10 +102,10 @@ impl ExecutionPlan {
 
     pub async fn execute(&self) -> Result<ExecutionResult> {
         let mut result = ExecutionResult::new(self.design.plan_id);
-        
+
         let tasks = self.collect_tasks();
         let total_tasks = tasks.len();
-        
+
         for (idx, ctx) in tasks.iter().enumerate() {
             tracing::info!(
                 "Executing task {}/{}: {}",
@@ -115,17 +113,17 @@ impl ExecutionPlan {
                 total_tasks,
                 ctx.task_id
             );
-            
+
             let outcome = self.execute_task(ctx, &mut result).await;
             result.add_outcome(outcome);
-            
+
             if let Some(ref checkpoint) = self.checkpoint {
                 let mut mgr = checkpoint.write().await;
                 let _ = mgr.set_execution_result(result.clone());
                 mgr.save()?;
             }
         }
-        
+
         result.complete();
         Ok(result)
     }
@@ -151,13 +149,13 @@ impl ExecutionPlan {
         let mut iterations = 0;
         let mut last_test_pass_rate = 0.0f32;
         let mut last_generated_code: Option<String> = None;
-        
+
         #[cfg(feature = "opencode")]
         let mut feedback = Feedback::new();
-        
+
         for iteration in 0..self.max_iterations {
             iterations = iteration + 1;
-            
+
             #[cfg(feature = "opencode")]
             {
                 feedback.iteration = iteration as u32;
@@ -165,7 +163,7 @@ impl ExecutionPlan {
                     feedback.previous_code = Some(code.clone());
                 }
             }
-            
+
             #[cfg(feature = "opencode")]
             let generated = match self.generate_code_with_feedback(ctx, &feedback).await {
                 Ok(code) => code,
@@ -180,7 +178,7 @@ impl ExecutionPlan {
                     };
                 }
             };
-            
+
             #[cfg(not(feature = "opencode"))]
             let generated = match self.generate_code(ctx).await {
                 Ok(code) => code,
@@ -195,23 +193,25 @@ impl ExecutionPlan {
                     };
                 }
             };
-            
+
             last_generated_code = Some(generated.code.clone());
             result.add_file(ctx.file_path.clone(), generated.code.clone());
             result.add_file(
-                ctx.file_path.with_extension(format!("test.{}", self.test_file_extension())),
+                ctx.file_path
+                    .with_extension(format!("test.{}", self.test_file_extension())),
                 generated.tests,
             );
-            
-            let test_result = self.run_tests(ctx.file_path.parent().unwrap_or(std::path::Path::new(".")));
+
+            let test_result =
+                self.run_tests(ctx.file_path.parent().unwrap_or(std::path::Path::new(".")));
             let test_pass_rate = if test_result.passed + test_result.failed > 0 {
                 test_result.passed as f32 / (test_result.passed + test_result.failed) as f32
             } else {
                 0.0
             };
-            
+
             last_test_pass_rate = test_pass_rate;
-            
+
             // Collect test errors for both result and feedback
             let test_errors: Vec<TestError> = test_result
                 .tests
@@ -224,14 +224,14 @@ impl ExecutionPlan {
                     stack_trace: t.stack_trace.clone(),
                 })
                 .collect();
-            
+
             result.test_results.push(TestResult {
                 task_id: ctx.task_id.clone(),
                 passed: test_result.passed,
                 failed: test_result.failed,
                 errors: test_errors.clone(),
             });
-            
+
             #[cfg(feature = "opencode")]
             {
                 // Accumulate feedback for next iteration with test failures
@@ -246,9 +246,13 @@ impl ExecutionPlan {
                     .collect();
                 feedback.test_failures.extend(new_failures);
             }
-            
+
             if test_result.success {
-                tracing::info!("Task {} passed all tests after {} iterations", ctx.task_id, iterations);
+                tracing::info!(
+                    "Task {} passed all tests after {} iterations",
+                    ctx.task_id,
+                    iterations
+                );
                 return TaskOutcome {
                     task_id: ctx.task_id.clone(),
                     status: TaskStatus::Completed,
@@ -257,7 +261,7 @@ impl ExecutionPlan {
                     generated_at: Utc::now(),
                 };
             }
-            
+
             if test_pass_rate > 0.8 {
                 tracing::warn!(
                     "Task {} has {:.0}% pass rate, attempting fix",
@@ -266,14 +270,14 @@ impl ExecutionPlan {
                 );
             }
         }
-        
+
         tracing::error!(
             "Task {} failed after {} iterations (last pass rate: {:.0}%)",
             ctx.task_id,
             iterations,
             last_test_pass_rate * 100.0
         );
-        
+
         TaskOutcome {
             task_id: ctx.task_id.clone(),
             status: TaskStatus::Failed,
@@ -287,17 +291,17 @@ impl ExecutionPlan {
     #[cfg(feature = "opencode")]
     #[allow(dead_code)]
     async fn generate_code(&self, ctx: &TaskContext) -> Result<CodeGenerationResponse> {
-        let interface = ctx.interface.clone().unwrap_or_else(|| crate::types::FileInterface {
-            path: ctx.file_path.clone(),
-            units: vec![],
-            imports: vec![],
-        });
+        let interface = ctx
+            .interface
+            .clone()
+            .unwrap_or_else(|| crate::types::FileInterface {
+                path: ctx.file_path.clone(),
+                units: vec![],
+                imports: vec![],
+            });
 
-        let task = crate::ImplementationTask::new(
-            &ctx.task_id,
-            ctx.file_path.clone(),
-            &ctx.component,
-        );
+        let task =
+            crate::ImplementationTask::new(&ctx.task_id, ctx.file_path.clone(), &ctx.component);
 
         let code_gen_ctx = CodeGenContext {
             task,
@@ -309,30 +313,36 @@ impl ExecutionPlan {
         let output = self.agent.execute(&prompt).await?;
 
         // Parse JSON response from agent output
-        let json_str = output.as_json()
+        let json_str = output
+            .as_json()
             .map(|v| v.to_string())
             .unwrap_or_else(|| output.to_text());
-        
-        let response: CodeGenerationResponse = serde_json::from_str(&json_str)
-            .map_err(|e| GeneratorError::ParseFailed(format!("Failed to parse code response: {}", e)))?;
+
+        let response: CodeGenerationResponse = serde_json::from_str(&json_str).map_err(|e| {
+            GeneratorError::ParseFailed(format!("Failed to parse code response: {}", e))
+        })?;
 
         Ok(response)
     }
 
     /// Generate code using agent with feedback from previous iterations (opencode feature).
     #[cfg(feature = "opencode")]
-    async fn generate_code_with_feedback(&self, ctx: &TaskContext, feedback: &Feedback) -> Result<CodeGenerationResponse> {
-        let interface = ctx.interface.clone().unwrap_or_else(|| crate::types::FileInterface {
-            path: ctx.file_path.clone(),
-            units: vec![],
-            imports: vec![],
-        });
+    async fn generate_code_with_feedback(
+        &self,
+        ctx: &TaskContext,
+        feedback: &Feedback,
+    ) -> Result<CodeGenerationResponse> {
+        let interface = ctx
+            .interface
+            .clone()
+            .unwrap_or_else(|| crate::types::FileInterface {
+                path: ctx.file_path.clone(),
+                units: vec![],
+                imports: vec![],
+            });
 
-        let task = crate::ImplementationTask::new(
-            &ctx.task_id,
-            ctx.file_path.clone(),
-            &ctx.component,
-        );
+        let task =
+            crate::ImplementationTask::new(&ctx.task_id, ctx.file_path.clone(), &ctx.component);
 
         let code_gen_ctx = CodeGenContext {
             task,
@@ -344,12 +354,14 @@ impl ExecutionPlan {
         let output = self.agent.execute(&prompt).await?;
 
         // Parse JSON response from agent output
-        let json_str = output.as_json()
+        let json_str = output
+            .as_json()
             .map(|v| v.to_string())
             .unwrap_or_else(|| output.to_text());
-        
-        let response: CodeGenerationResponse = serde_json::from_str(&json_str)
-            .map_err(|e| GeneratorError::ParseFailed(format!("Failed to parse code response: {}", e)))?;
+
+        let response: CodeGenerationResponse = serde_json::from_str(&json_str).map_err(|e| {
+            GeneratorError::ParseFailed(format!("Failed to parse code response: {}", e))
+        })?;
 
         Ok(response)
     }
@@ -379,7 +391,8 @@ impl ExecutionPlan {
             interface_desc
         );
 
-        let response: CodeGenerationResponse = self.client
+        let response: CodeGenerationResponse = self
+            .client
             .complete_json_raw("", &prompt)
             .await
             .and_then(|v| self.client.deserialize(v))?;
@@ -388,10 +401,8 @@ impl ExecutionPlan {
     }
 
     fn run_tests(&self, project_path: &std::path::Path) -> crate::test_runner::TestRunResult {
-        let config = TestConfig::new()
-            .with_timeout(60)
-            .with_parallel(false);
-        
+        let config = TestConfig::new().with_timeout(60).with_parallel(false);
+
         self.test_runner
             .run_tests(project_path, &config)
             .unwrap_or_else(|_| crate::test_runner::TestRunResult {
@@ -425,7 +436,6 @@ mod tests {
     use crate::{RepoSkeleton, TaskPlan};
     use uuid::Uuid;
 
-
     fn create_test_design() -> ArchitectureDesign {
         ArchitectureDesign::new(
             Uuid::new_v4(),
@@ -449,7 +459,7 @@ mod tests {
         let design = create_test_design();
         let config = LlmConfig::new("test-key");
         let client = crate::llm::OpenAIClient::new(config).unwrap();
-        
+
         let plan = ExecutionPlan::new_with_client(design, client);
         assert_eq!(plan.max_iterations, 5);
     }
@@ -470,7 +480,7 @@ mod tests {
             component: "core".to_string(),
             interface: None,
         };
-        
+
         assert_eq!(ctx.task_id, "task_123");
         assert_eq!(ctx.file_path, PathBuf::from("src/main.rs"));
     }

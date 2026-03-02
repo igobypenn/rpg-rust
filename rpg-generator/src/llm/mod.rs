@@ -1,9 +1,9 @@
 //! LLM client abstraction for code generation.
 
 mod client;
-mod openai;
 mod config;
+mod openai;
 
 pub use client::LlmClient;
-pub use openai::OpenAIClient;
 pub use config::LlmConfig;
+pub use openai::OpenAIClient;

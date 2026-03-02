@@ -232,7 +232,6 @@ mod tests {
     use super::*;
     use tempfile::TempDir;
 
-
     #[test]
     fn test_checkpoint_creation() {
         let checkpoint = Checkpoint::new("Test project", "rust");

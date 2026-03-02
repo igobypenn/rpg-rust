@@ -98,9 +98,9 @@ fn category_color(category: NodeCategory) -> &'static str {
         NodeCategory::Field => "#ffe4b5",
         NodeCategory::Parameter => "#e6e6fa",
         NodeCategory::Feature => "#ffd700",
-NodeCategory::Component => "#ff6347",
-NodeCategory::FunctionalCentroid => "#9c27b0",
-}
+        NodeCategory::Component => "#ff6347",
+        NodeCategory::FunctionalCentroid => "#9c27b0",
+    }
 }
 
 fn category_shape(category: NodeCategory) -> &'static str {
@@ -116,10 +116,10 @@ fn category_shape(category: NodeCategory) -> &'static str {
         NodeCategory::Constant => "box",
         NodeCategory::Field => "diamond",
         NodeCategory::Parameter => "diamond",
-NodeCategory::Component => "box3d",
-NodeCategory::FunctionalCentroid => "doublecircle",
-NodeCategory::Feature => "hexagon",
-}
+        NodeCategory::Component => "box3d",
+        NodeCategory::FunctionalCentroid => "doublecircle",
+        NodeCategory::Feature => "hexagon",
+    }
 }
 
 fn escape_dot_label(s: &str) -> String {
@@ -365,9 +365,9 @@ fn graph_to_dot(graph: &rpg_encoder::RpgGraph, config: &DotConfig) -> String {
                 attrs.push("style=\"solid\"".to_string());
                 attrs.push("color=\"#FFD700\"".to_string());
             }
-EdgeType::BelongsToComponent => {
-attrs.push("style=\"bold\"".to_string());
-attrs.push("color=\"#FF6347\"".to_string());
+            EdgeType::BelongsToComponent => {
+                attrs.push("style=\"bold\"".to_string());
+                attrs.push("color=\"#FF6347\"".to_string());
             }
             EdgeType::BelongsToFeature => {
                 attrs.push("style=\"solid\"".to_string());

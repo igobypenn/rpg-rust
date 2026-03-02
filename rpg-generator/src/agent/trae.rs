@@ -138,9 +138,7 @@ impl Agent for TraeAgent {
             .stdout(std::process::Stdio::piped())
             .stderr(std::process::Stdio::piped())
             .spawn()
-            .map_err(|e| {
-                GeneratorError::ExecutionFailed(format!("Failed to spawn trae: {}", e))
-            })?;
+            .map_err(|e| GeneratorError::ExecutionFailed(format!("Failed to spawn trae: {}", e)))?;
 
         // Write prompt to stdin
         if let Some(ref mut stdin) = child.stdin {
@@ -174,10 +172,7 @@ impl Agent for TraeAgent {
         }
 
         // Try JSON
-        if matches!(
-            prompt.format,
-            PromptFormat::Json | PromptFormat::Structured
-        ) {
+        if matches!(prompt.format, PromptFormat::Json | PromptFormat::Structured) {
             if let Ok(json) = serde_json::from_str(&stdout) {
                 return Ok(AgentOutput::Json(json));
             }

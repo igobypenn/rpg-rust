@@ -144,7 +144,6 @@ impl std::fmt::Display for TargetLanguage {
     }
 }
 
-
 /// Constraints on code generation.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Constraints {

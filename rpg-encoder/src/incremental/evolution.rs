@@ -80,19 +80,19 @@ impl<'a> RpgEvolution<'a> {
         all_changed_nodes.extend(deleted_result.nodes_removed.clone());
         all_changed_nodes.extend(added_result.nodes_created.clone());
         all_changed_nodes.extend(modified_result.nodes_created.clone());
-        
+
         // Invalidate stale BelongsToFeature edges from changed V^L nodes
         summary.feature_edges_invalidated = self.invalidate_stale_feature_edges(&all_changed_nodes);
-        
+
         // Invalidate affected V^H centroids
         summary.centroids_invalidated = self.invalidate_stale_centroids(&all_changed_nodes);
-        
+
         // Re-compute invalidated centroids
         #[cfg(feature = "llm")]
         {
             summary.centroids_recomputed = self.recompute_centroids().await?;
         }
-        
+
         // Re-link V^L nodes to appropriate V^H centroids
         summary.feature_edges_relinked = self.relink_feature_edges(&all_changed_nodes);
 
@@ -101,7 +101,6 @@ impl<'a> RpgEvolution<'a> {
         self.snapshot.update_timestamp();
 
         Ok(summary)
-
     }
     #[cfg(not(feature = "llm"))]
     pub fn process_diff(&mut self, diff: FileDiff) -> Result<EvolutionSummary> {
@@ -125,20 +124,20 @@ impl<'a> RpgEvolution<'a> {
         summary.nodes_created += modified_result.nodes_created.len();
         summary.nodes_removed += modified_result.nodes_removed;
         summary.cache_hits += modified_result.cache_hits;
-        
+
         // === V^H Centroid and Edge Invalidation ===
         // Collect all changed nodes for invalidation
         let mut all_changed_nodes = Vec::new();
         all_changed_nodes.extend(deleted_result.nodes_removed.clone());
         all_changed_nodes.extend(added_result.nodes_created.clone());
         all_changed_nodes.extend(modified_result.nodes_created.clone());
-        
+
         // Invalidate stale BelongsToFeature edges from changed V^L nodes
         summary.feature_edges_invalidated = self.invalidate_stale_feature_edges(&all_changed_nodes);
-        
+
         // Invalidate affected V^H centroids
         summary.centroids_invalidated = self.invalidate_stale_centroids(&all_changed_nodes);
-        
+
         // Re-link V^L nodes to appropriate V^H centroids
         summary.feature_edges_relinked = self.relink_feature_edges(&all_changed_nodes);
 
@@ -183,7 +182,7 @@ impl<'a> RpgEvolution<'a> {
 
         for file_path in files {
             let full_path = self.snapshot.repo_dir.join(file_path);
-            
+
             if !full_path.exists() {
                 continue;
             }
@@ -195,10 +194,15 @@ impl<'a> RpgEvolution<'a> {
 
             let source = std::fs::read_to_string(&full_path)?;
             let file_hash = compute_hash(&source);
-            self.snapshot.file_hashes.insert(file_path.clone(), file_hash);
+            self.snapshot
+                .file_hashes
+                .insert(file_path.clone(), file_hash);
 
             if let Some(config) = config {
-                match self.process_file_with_llm(file_path, &source, parser, config).await {
+                match self
+                    .process_file_with_llm(file_path, &source, parser, config)
+                    .await
+                {
                     Ok(units) => {
                         result.llm_calls += 1;
                         for unit in &units {
@@ -213,7 +217,7 @@ impl<'a> RpgEvolution<'a> {
                     }
                 }
             } else {
-            let units = self.process_file_structural(file_path, &source, parser)?;
+                let units = self.process_file_structural(file_path, &source, parser)?;
                 for unit in &units {
                     if let Some(node_id) = unit.node_id {
                         result.nodes_created.push(node_id);
@@ -232,7 +236,7 @@ impl<'a> RpgEvolution<'a> {
 
         for file_path in files {
             let full_path = self.snapshot.repo_dir.join(file_path);
-            
+
             if !full_path.exists() {
                 continue;
             }
@@ -244,7 +248,9 @@ impl<'a> RpgEvolution<'a> {
 
             let source = std::fs::read_to_string(&full_path)?;
             let file_hash = compute_hash(&source);
-            self.snapshot.file_hashes.insert(file_path.clone(), file_hash);
+            self.snapshot
+                .file_hashes
+                .insert(file_path.clone(), file_hash);
 
             let units = self.process_file_structural(file_path, &source, parser)?;
             for unit in &units {
@@ -272,10 +278,13 @@ impl<'a> RpgEvolution<'a> {
             NodeCategory::File,
             "file",
             parser.language_name(),
-            file_path.file_name().and_then(|n| n.to_str()).unwrap_or("unknown"),
+            file_path
+                .file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or("unknown"),
         )
         .with_path(file_path.to_path_buf());
-        
+
         let file_node_id = self.snapshot.graph.add_node(file_node);
 
         for def in &parse_result.definitions {
@@ -317,10 +326,18 @@ impl<'a> RpgEvolution<'a> {
             .with_path(file_path.to_path_buf());
 
             let node_id = self.snapshot.graph.add_node(node);
-            self.snapshot.graph.add_typed_edge(file_node_id, node_id, EdgeType::Contains);
+            self.snapshot
+                .graph
+                .add_typed_edge(file_node_id, node_id, EdgeType::Contains);
 
-            let cached_unit = CachedUnit::new(def.name.clone(), unit_type, content_hash, start_line, end_line)
-                .with_node_id(node_id);
+            let cached_unit = CachedUnit::new(
+                def.name.clone(),
+                unit_type,
+                content_hash,
+                start_line,
+                end_line,
+            )
+            .with_node_id(node_id);
 
             units.push(cached_unit);
         }
@@ -336,8 +353,9 @@ impl<'a> RpgEvolution<'a> {
         parser: &dyn LanguageParser,
         config: &SemanticConfig,
     ) -> Result<Vec<CachedUnit>> {
-        let extractor = FeatureExtractor::new(config.clone())
-            .map_err(|e| RpgError::Incremental(format!("Failed to create feature extractor: {}", e)))?;
+        let extractor = FeatureExtractor::new(config.clone()).map_err(|e| {
+            RpgError::Incremental(format!("Failed to create feature extractor: {}", e))
+        })?;
 
         let repo_info = format!("Repository: {}", self.snapshot.repo_name);
         let organized = extractor
@@ -353,10 +371,13 @@ impl<'a> RpgEvolution<'a> {
             NodeCategory::File,
             "file",
             parser.language_name(),
-            file_path.file_name().and_then(|n| n.to_str()).unwrap_or("unknown"),
+            file_path
+                .file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or("unknown"),
         )
         .with_path(file_path.to_path_buf());
-        
+
         let file_node_id = self.snapshot.graph.add_node(file_node);
 
         for def in &parse_result.definitions {
@@ -399,16 +420,36 @@ impl<'a> RpgEvolution<'a> {
             )
             .with_path(file_path.to_path_buf())
             .with_features(org_feature.map(|o| o.features.clone()).unwrap_or_default())
-            .with_description(org_feature.map(|o| o.description.clone()).unwrap_or_default())
-            .with_feature_path(org_feature.map(|o| o.feature_path.clone()).unwrap_or_default());
+            .with_description(
+                org_feature
+                    .map(|o| o.description.clone())
+                    .unwrap_or_default(),
+            )
+            .with_feature_path(
+                org_feature
+                    .map(|o| o.feature_path.clone())
+                    .unwrap_or_default(),
+            );
 
             let node_id = self.snapshot.graph.add_node(node);
-            self.snapshot.graph.add_typed_edge(file_node_id, node_id, EdgeType::Contains);
+            self.snapshot
+                .graph
+                .add_typed_edge(file_node_id, node_id, EdgeType::Contains);
 
-            let cached_unit = CachedUnit::new(def.name.clone(), unit_type, content_hash, start_line, end_line)
-                .with_features(org_feature.map(|o| o.features.clone()).unwrap_or_default())
-                .with_description(org_feature.map(|o| o.description.clone()).unwrap_or_default())
-                .with_node_id(node_id);
+            let cached_unit = CachedUnit::new(
+                def.name.clone(),
+                unit_type,
+                content_hash,
+                start_line,
+                end_line,
+            )
+            .with_features(org_feature.map(|o| o.features.clone()).unwrap_or_default())
+            .with_description(
+                org_feature
+                    .map(|o| o.description.clone())
+                    .unwrap_or_default(),
+            )
+            .with_node_id(node_id);
 
             units.push(cached_unit);
         }
@@ -428,7 +469,7 @@ impl<'a> RpgEvolution<'a> {
             self.process_deleted_files(std::slice::from_ref(&modified.path))?;
 
             let full_path = self.snapshot.repo_dir.join(&modified.path);
-            
+
             if !full_path.exists() {
                 continue;
             }
@@ -441,7 +482,9 @@ impl<'a> RpgEvolution<'a> {
             let source = std::fs::read_to_string(&full_path)?;
 
             if let Some(config) = config {
-                let units = self.process_file_with_llm(&modified.path, &source, parser, config).await?;
+                let units = self
+                    .process_file_with_llm(&modified.path, &source, parser, config)
+                    .await?;
                 result.llm_calls += 1;
                 result.units_added += modified.added_units.len();
                 result.units_changed += modified.changed_units.len();
@@ -452,12 +495,16 @@ impl<'a> RpgEvolution<'a> {
                         result.nodes_created.push(node_id);
                     }
                 }
-                self.snapshot.unit_cache.insert(modified.path.clone(), units);
+                self.snapshot
+                    .unit_cache
+                    .insert(modified.path.clone(), units);
             } else {
                 result.cache_hits += modified.unchanged_units.len();
             }
 
-            self.snapshot.file_hashes.insert(modified.path.clone(), modified.new_hash.clone());
+            self.snapshot
+                .file_hashes
+                .insert(modified.path.clone(), modified.new_hash.clone());
         }
 
         Ok(result)
@@ -471,7 +518,7 @@ impl<'a> RpgEvolution<'a> {
             self.process_deleted_files(std::slice::from_ref(&modified.path))?;
 
             let full_path = self.snapshot.repo_dir.join(&modified.path);
-            
+
             if !full_path.exists() {
                 continue;
             }
@@ -494,8 +541,12 @@ impl<'a> RpgEvolution<'a> {
                     result.nodes_created.push(node_id);
                 }
             }
-            self.snapshot.unit_cache.insert(modified.path.clone(), units);
-            self.snapshot.file_hashes.insert(modified.path.clone(), modified.new_hash.clone());
+            self.snapshot
+                .unit_cache
+                .insert(modified.path.clone(), units);
+            self.snapshot
+                .file_hashes
+                .insert(modified.path.clone(), modified.new_hash.clone());
         }
 
         Ok(result)
@@ -531,10 +582,10 @@ impl<'a> RpgEvolution<'a> {
     /// Returns the number of centroids invalidated.
     pub fn invalidate_stale_centroids(&mut self, changed_nodes: &[NodeId]) -> usize {
         use crate::core::NodeLevel;
-        
+
         // Find V^H centroids that contain any of the changed V^L nodes
         let mut invalidated = std::collections::HashSet::new();
-        
+
         for node_id in changed_nodes {
             // Walk up the graph to find parent centroids (edges_to returns incoming edges)
             for (source_id, _edge) in self.snapshot.graph.edges_to(*node_id) {
@@ -547,9 +598,9 @@ impl<'a> RpgEvolution<'a> {
                 }
             }
         }
-        
+
         let count = invalidated.len();
-        
+
         // Mark centroids as needing re-computation by clearing their semantic features
         for centroid_id in &invalidated {
             if let Some(node) = self.snapshot.graph.get_node_mut(*centroid_id) {
@@ -557,16 +608,16 @@ impl<'a> RpgEvolution<'a> {
                 node.semantic_feature = None;
             }
         }
-        
+
         tracing::info!(
             "Invalidated {} V^H centroids due to {} changed V^L nodes",
             count,
             changed_nodes.len()
         );
-        
+
         count
     }
-    
+
     /// Re-compute invalidated V^H centroids.
     ///
     /// This should be called after invalidation to update centroid metadata
@@ -574,40 +625,48 @@ impl<'a> RpgEvolution<'a> {
     #[cfg(feature = "llm")]
     pub async fn recompute_centroids(&mut self) -> Result<usize> {
         use crate::core::NodeLevel;
-        
+
         // Find stale centroids (semantic_feature is None)
-        let stale_centroids: Vec<NodeId> = self.snapshot.graph.nodes()
+        let stale_centroids: Vec<NodeId> = self
+            .snapshot
+            .graph
+            .nodes()
             .filter(|n| n.node_level == NodeLevel::High && n.semantic_feature.is_none())
             .map(|n| n.id)
             .collect();
-        
+
         let count = stale_centroids.len();
-        
+
         if count == 0 {
             return Ok(0);
         }
-        
+
         // First pass: collect features for each centroid (without holding references)
-        let mut centroid_features: std::collections::HashMap<NodeId, Vec<String>> = 
+        let mut centroid_features: std::collections::HashMap<NodeId, Vec<String>> =
             std::collections::HashMap::new();
-        
+
         for centroid_id in &stale_centroids {
             let mut features = Vec::new();
-            
+
             for node in self.snapshot.graph.nodes() {
                 if node.node_level == NodeLevel::Low {
                     // Check if this node is connected to the centroid
-                    if self.snapshot.graph.edge_between(node.id, *centroid_id).is_some() {
+                    if self
+                        .snapshot
+                        .graph
+                        .edge_between(node.id, *centroid_id)
+                        .is_some()
+                    {
                         if let Some(feat) = &node.semantic_feature {
                             features.push(feat.clone());
                         }
                     }
                 }
             }
-            
+
             centroid_features.insert(*centroid_id, features);
         }
-        
+
         // Second pass: update centroids with collected features
         for (centroid_id, features) in centroid_features {
             if let Some(centroid) = self.snapshot.graph.get_node_mut(centroid_id) {
@@ -618,11 +677,11 @@ impl<'a> RpgEvolution<'a> {
                 };
             }
         }
-        
+
         tracing::info!("Re-computed {} V^H centroids", count);
         Ok(count)
     }
-    
+
     /// Invalidate BelongsToFeature edges from changed V^L nodes.
     ///
     /// Per paper Section 3.2: When V^L nodes are modified, their edges to V^H centroids
@@ -634,17 +693,19 @@ impl<'a> RpgEvolution<'a> {
     /// Returns the number of edges removed.
     pub fn invalidate_stale_feature_edges(&mut self, changed_nodes: &[NodeId]) -> usize {
         use crate::core::NodeLevel;
-        
-        let changed_set: std::collections::HashSet<NodeId> = changed_nodes.iter().copied().collect();
+
+        let changed_set: std::collections::HashSet<NodeId> =
+            changed_nodes.iter().copied().collect();
         let mut removed = 0;
-        
+
         // Collect edges to remove first (can't mutate while iterating)
-        let edges_to_remove: Vec<(NodeId, NodeId)> = self.snapshot.graph.edges()
+        let edges_to_remove: Vec<(NodeId, NodeId)> = self
+            .snapshot
+            .graph
+            .edges()
             .filter_map(|(source, target, edge)| {
                 // Only BelongsToFeature edges from changed V^L nodes to V^H centroids
-                if edge.edge_type == EdgeType::BelongsToFeature 
-                    && changed_set.contains(&source)
-                {
+                if edge.edge_type == EdgeType::BelongsToFeature && changed_set.contains(&source) {
                     // Verify target is a V^H centroid
                     if let Some(target_node) = self.snapshot.graph.get_node(target) {
                         if target_node.node_level == NodeLevel::High {
@@ -655,13 +716,13 @@ impl<'a> RpgEvolution<'a> {
                 None
             })
             .collect();
-        
+
         // Remove the collected edges
         for (source, target) in &edges_to_remove {
             self.snapshot.graph.remove_edge_between(*source, *target);
             removed += 1;
         }
-        
+
         if removed > 0 {
             tracing::info!(
                 "Invalidated {} BelongsToFeature edges from {} changed V^L nodes",
@@ -669,10 +730,10 @@ impl<'a> RpgEvolution<'a> {
                 changed_nodes.len()
             );
         }
-        
+
         removed
     }
-    
+
     /// Re-link V^L nodes to V^H centroids based on semantic feature matching.
     ///
     /// Per paper Section 3.3: After V^H centroids are re-computed, V^L nodes should
@@ -684,50 +745,60 @@ impl<'a> RpgEvolution<'a> {
     /// Returns the number of edges created.
     pub fn relink_feature_edges(&mut self, changed_nodes: &[NodeId]) -> usize {
         use crate::core::NodeLevel;
-        
+
         let mut linked = 0;
-        
+
         // Get all V^H centroids with semantic features
-        let centroids: Vec<(NodeId, String)> = self.snapshot.graph.nodes()
+        let centroids: Vec<(NodeId, String)> = self
+            .snapshot
+            .graph
+            .nodes()
             .filter(|n| n.node_level == NodeLevel::High)
-            .filter_map(|n| {
-                n.semantic_feature.as_ref().map(|sf| (n.id, sf.clone()))
-            })
+            .filter_map(|n| n.semantic_feature.as_ref().map(|sf| (n.id, sf.clone())))
             .collect();
-        
+
         if centroids.is_empty() {
             return 0;
         }
-        
+
         // Re-link each changed V^L node to its best-matching centroid
         for &node_id in changed_nodes {
             let node = match self.snapshot.graph.get_node(node_id) {
                 Some(n) => n,
                 None => continue,
             };
-            
+
             // Skip nodes that aren't V^L or don't have semantic features
             if node.node_level != NodeLevel::Low {
                 continue;
             }
-            
+
             let node_feature = match &node.semantic_feature {
                 Some(f) => f,
                 None => continue,
             };
-            
+
             // Find best matching centroid using word overlap (same as functional.rs)
             let best_match = self.find_best_centroid_match(node_feature, &centroids);
-            
+
             if let Some(centroid_id) = best_match {
                 // Check if edge already exists
-                if self.snapshot.graph.edge_between(node_id, centroid_id).is_none() {
-                    self.snapshot.graph.add_typed_edge(node_id, centroid_id, EdgeType::BelongsToFeature);
+                if self
+                    .snapshot
+                    .graph
+                    .edge_between(node_id, centroid_id)
+                    .is_none()
+                {
+                    self.snapshot.graph.add_typed_edge(
+                        node_id,
+                        centroid_id,
+                        EdgeType::BelongsToFeature,
+                    );
                     linked += 1;
                 }
             }
         }
-        
+
         if linked > 0 {
             tracing::info!(
                 "Re-linked {} BelongsToFeature edges for {} changed V^L nodes",
@@ -735,10 +806,10 @@ impl<'a> RpgEvolution<'a> {
                 changed_nodes.len()
             );
         }
-        
+
         linked
     }
-    
+
     /// Find the best matching centroid for a semantic feature.
     ///
     /// Uses word overlap scoring similar to FunctionalAbstraction::find_best_centroid().
@@ -749,19 +820,21 @@ impl<'a> RpgEvolution<'a> {
     ) -> Option<NodeId> {
         let feature_lower = feature.to_lowercase();
         let mut best_match: Option<(NodeId, usize)> = None;
-        
+
         for (centroid_id, centroid_feature) in centroids {
             let centroid_lower = centroid_feature.to_lowercase();
-            
+
             // Score based on word overlap
-            let score = if feature_lower.contains(&centroid_lower) 
-                || centroid_lower.split_whitespace().any(|w| feature_lower.contains(w)) 
+            let score = if feature_lower.contains(&centroid_lower)
+                || centroid_lower
+                    .split_whitespace()
+                    .any(|w| feature_lower.contains(w))
             {
                 centroid_lower.split_whitespace().count()
             } else {
                 0
             };
-            
+
             if score > 0 {
                 match &best_match {
                     None => best_match = Some((*centroid_id, score)),
@@ -772,7 +845,7 @@ impl<'a> RpgEvolution<'a> {
                 }
             }
         }
-        
+
         best_match.map(|(id, _)| id)
     }
 }

@@ -167,7 +167,7 @@ impl FeatureExtractor {
         let client = Arc::new(OpenAIClient::new(config.llm.clone())?);
         Ok(Self { client, config })
     }
-    
+
     /// Get a reference to the underlying LLM client.
     pub fn client(&self) -> &OpenAIClient {
         &self.client
@@ -184,9 +184,7 @@ impl FeatureExtractor {
             .replace("{file_path}", file_path.to_string_lossy().as_ref())
             .replace("{code}", code);
 
-        let analysis: CodeAnalysis = self.client
-            .complete_json("", &prompt)
-            .await?;
+        let analysis: CodeAnalysis = self.client.complete_json("", &prompt).await?;
 
         let features: Vec<ExtractedFeature> = analysis
             .entities
@@ -217,7 +215,9 @@ impl FeatureExtractor {
                 let functional_areas = organizer
                     .identify_functional_areas(repo_info, repo_skeleton, &features)
                     .await?;
-                organizer.organize_features(&features, &functional_areas).await
+                organizer
+                    .organize_features(&features, &functional_areas)
+                    .await
             }
         }
     }

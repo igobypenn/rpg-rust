@@ -1,6 +1,6 @@
 mod extractor;
 
 pub use extractor::{
-    CodeAnalysis, ComponentOrganizer, EntityFeatures, ExtractionScope, ExtractedFeature,
+    CodeAnalysis, ComponentOrganizer, EntityFeatures, ExtractedFeature, ExtractionScope,
     FeatureExtractor, OrganizationMode, OrganizedFeature, SemanticConfig,
 };

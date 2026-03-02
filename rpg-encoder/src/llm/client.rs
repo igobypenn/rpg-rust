@@ -1,9 +1,9 @@
 use reqwest::Client;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::env;
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::io::Write;
 use thiserror::Error;
 use tokio::sync::Semaphore;
 
@@ -67,7 +67,7 @@ impl LlmConfig {
             .ok()
             .and_then(|s| s.parse().ok())
             .unwrap_or(3);
-        
+
         let debug_mode = env::var("RPG_DEBUG")
             .map(|v| v == "1" || v.to_lowercase() == "true")
             .unwrap_or(false);
@@ -137,7 +137,9 @@ impl LlmConfig {
     }
 
     fn base_url(&self) -> &str {
-        self.base_url.as_deref().unwrap_or("https://api.openai.com/v1")
+        self.base_url
+            .as_deref()
+            .unwrap_or("https://api.openai.com/v1")
     }
 
     fn get_api_key(&self) -> std::result::Result<String, LlmError> {
@@ -196,7 +198,11 @@ impl OpenAIClient {
     pub fn new(config: LlmConfig) -> std::result::Result<Self, LlmError> {
         let client = Client::new();
         let semaphore = Arc::new(Semaphore::new(config.max_concurrent));
-        Ok(Self { client, config, semaphore })
+        Ok(Self {
+            client,
+            config,
+            semaphore,
+        })
     }
 
     fn build_request(&self, system: &str, user: &str) -> ChatRequest {
@@ -220,7 +226,11 @@ impl OpenAIClient {
     async fn send_request(&self, request: ChatRequest) -> std::result::Result<String, LlmError> {
         let start = std::time::Instant::now();
 
-        let _permit = self.semaphore.acquire().await.map_err(|_| LlmError::ConcurrencyLimit)?;
+        let _permit = self
+            .semaphore
+            .acquire()
+            .await
+            .map_err(|_| LlmError::ConcurrencyLimit)?;
 
         let api_key = self.config.get_api_key()?;
         let url = format!("{}/chat/completions", self.config.base_url());
@@ -230,10 +240,13 @@ impl OpenAIClient {
         let mut debug_output = String::new();
         debug_output.push_str(&format!("\n{}\n", "=".repeat(60)));
         debug_output.push_str("=== LLM REQUEST ===\n");
-        debug_output.push_str(&format!("Timestamp: {}\n", std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map(|d| d.as_secs())
-            .unwrap_or(0)));
+        debug_output.push_str(&format!(
+            "Timestamp: {}\n",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_secs())
+                .unwrap_or(0)
+        ));
         debug_output.push_str(&format!("URL: {}\n", url));
         debug_output.push_str(&format!("Model: {}\n", request.model));
         debug_output.push_str(&format!("Max Tokens: {}\n", request.max_tokens));
@@ -267,8 +280,10 @@ impl OpenAIClient {
         debug_output.push_str(&format!("Length: {} chars\n", response_text.len()));
 
         if let Ok(json) = serde_json::from_str::<serde_json::Value>(&response_text) {
-            debug_output.push_str(&format!("\nResponse JSON:\n{}\n", 
-                serde_json::to_string_pretty(&json).unwrap_or(response_text.clone())));
+            debug_output.push_str(&format!(
+                "\nResponse JSON:\n{}\n",
+                serde_json::to_string_pretty(&json).unwrap_or(response_text.clone())
+            ));
         } else {
             debug_output.push_str(&format!("\nResponse Text:\n{}\n", response_text));
         }
@@ -300,7 +315,11 @@ impl OpenAIClient {
             .ok_or(LlmError::EmptyResponse)
     }
 
-    pub async fn complete(&self, system: &str, user: &str) -> std::result::Result<String, LlmError> {
+    pub async fn complete(
+        &self,
+        system: &str,
+        user: &str,
+    ) -> std::result::Result<String, LlmError> {
         let request = self.build_request(system, user);
         self.send_request(request).await
     }
@@ -314,7 +333,10 @@ impl OpenAIClient {
         let json_str = Self::extract_json(&content);
         if json_str.is_empty() {
             tracing::warn!("extract_json returned empty string");
-            tracing::debug!("Content ends with: {:?}", &content[content.len().saturating_sub(100)..]);
+            tracing::debug!(
+                "Content ends with: {:?}",
+                &content[content.len().saturating_sub(100)..]
+            );
         }
         serde_json::from_str(json_str).map_err(|e| {
             tracing::error!("JSON parse error: {:?}", e);
@@ -327,7 +349,7 @@ impl OpenAIClient {
         // Strategy: Find the LAST valid JSON structure at the end of the content
         // The model outputs thinking text followed by the actual JSON
         // The JSON should be the last thing, possibly on its own line(s)
-        
+
         // First try to find ```json or ``` markers and use that if present
         if let Some(start_marker) = content.find("```json\n") {
             let json_start = start_marker + 8;
@@ -341,12 +363,12 @@ impl OpenAIClient {
                 }
             }
         }
-        
+
         // Find the last line that starts with { or [ (after trimming)
         // This handles the case where JSON is at the end after thinking text
         let mut byte_offset = 0;
         let mut lines_with_offsets: Vec<(usize, &str)> = Vec::new();
-        
+
         for line in content.lines() {
             lines_with_offsets.push((byte_offset, line));
             byte_offset += line.len();
@@ -355,33 +377,42 @@ impl OpenAIClient {
                 byte_offset += 1;
             }
         }
-        
+
         tracing::trace!("Lines with offsets: {:?}", lines_with_offsets);
-        
+
         // Work backwards from the end to find the first line that starts with { or [
         for i in (0..lines_with_offsets.len()).rev() {
             let (offset, line) = lines_with_offsets[i];
             let trimmed = line.trim();
-            tracing::trace!("Checking line {}: offset={}, trimmed={:?}", i, offset, trimmed);
+            tracing::trace!(
+                "Checking line {}: offset={}, trimmed={:?}",
+                i,
+                offset,
+                trimmed
+            );
             if trimmed.starts_with('{') || trimmed.starts_with('[') {
                 // Found a potential JSON start, extract from here to end
                 let remaining = &content[offset..];
-                tracing::trace!("Found match at offset {}, remaining: {:?}", offset, &remaining[..remaining.len().min(50)]);
+                tracing::trace!(
+                    "Found match at offset {}, remaining: {:?}",
+                    offset,
+                    &remaining[..remaining.len().min(50)]
+                );
                 let chars: Vec<char> = remaining.chars().collect();
-                
+
                 if chars.is_empty() {
                     continue;
                 }
-                
+
                 // Find the end of the JSON structure
                 let open_char = chars[0];
                 let close_char = if open_char == '{' { '}' } else { ']' };
-                
+
                 let mut depth: i32 = 0;
                 let mut in_string = false;
                 let mut escape = false;
                 let mut end_idx = 0;
-                
+
                 for (j, &c) in chars.iter().enumerate() {
                     if escape {
                         escape = false;
@@ -401,14 +432,17 @@ impl OpenAIClient {
                         _ => {}
                     }
                 }
-                
+
                 if end_idx > 0 {
-                    let byte_len = chars[..=end_idx].iter().map(|c| c.len_utf8()).sum::<usize>();
+                    let byte_len = chars[..=end_idx]
+                        .iter()
+                        .map(|c| c.len_utf8())
+                        .sum::<usize>();
                     return remaining[..byte_len].trim();
                 }
             }
         }
-        
+
         // Fallback: just return trimmed content
         content.trim()
     }
@@ -424,9 +458,12 @@ mod tests {
     *   **Name:** Database layer
 
 ["ConnectionConfiguration", "ConnectionEstablishment", "QueryExecution"]"#;
-        
+
         let result = OpenAIClient::extract_json(content);
-        assert_eq!(result, r#"["ConnectionConfiguration", "ConnectionEstablishment", "QueryExecution"]"#);
+        assert_eq!(
+            result,
+            r#"["ConnectionConfiguration", "ConnectionEstablishment", "QueryExecution"]"#
+        );
     }
 
     #[test]
@@ -435,9 +472,12 @@ mod tests {
     *   **Role:** Senior Software Analyst.
 
 {"entities": {"User": {"features": ["test"], "description": "test"}}}"#;
-        
+
         let result = OpenAIClient::extract_json(content);
-        assert_eq!(result, r#"{"entities": {"User": {"features": ["test"], "description": "test"}}}"#);
+        assert_eq!(
+            result,
+            r#"{"entities": {"User": {"features": ["test"], "description": "test"}}}"#
+        );
     }
 
     #[test]
@@ -449,7 +489,7 @@ mod tests {
 ```
 
 More text."#;
-        
+
         let result = OpenAIClient::extract_json(content);
         assert_eq!(result, r#"{"key": "value"}"#);
     }
@@ -460,7 +500,7 @@ More text."#;
     *   `["ConnectionManagement", "QueryExecution"]`
 
 ["ConnectionManagement", "QueryExecution"]"#;
-        
+
         let result = OpenAIClient::extract_json(content);
         assert_eq!(result, r#"["ConnectionManagement", "QueryExecution"]"#);
     }
@@ -484,7 +524,7 @@ More text."#;
     `["ConnectionManagement", "QueryExecution"]`
 
 ["ConnectionManagement", "QueryExecution"]"#;
-        
+
         let result = OpenAIClient::extract_json(content);
         assert_eq!(result, r#"["ConnectionManagement", "QueryExecution"]"#);
     }

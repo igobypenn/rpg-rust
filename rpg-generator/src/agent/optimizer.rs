@@ -146,8 +146,8 @@ pub fn select_optimizer(caps: &AgentCapabilities) -> Box<dyn PromptOptimizer> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::prompt::PromptMetadata;
+    use super::*;
     use crate::types::Phase;
 
     fn create_test_prompt() -> RenderedPrompt {

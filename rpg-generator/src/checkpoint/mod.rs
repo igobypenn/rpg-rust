@@ -2,4 +2,4 @@
 
 mod manager;
 
-pub use manager::{Checkpoint, CheckpointManager, CheckpointId};
+pub use manager::{Checkpoint, CheckpointId, CheckpointManager};

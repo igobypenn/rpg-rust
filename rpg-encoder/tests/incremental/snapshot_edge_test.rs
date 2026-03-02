@@ -1,4 +1,3 @@
-
 use rpg_encoder::{compute_hash, CachedUnit, RpgSnapshot, UnitType, SNAPSHOT_VERSION};
 use std::path::PathBuf;
 use tempfile::TempDir;

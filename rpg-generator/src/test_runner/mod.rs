@@ -115,7 +115,11 @@ impl TestConfig {
 /// Trait for test runners.
 pub trait TestRunner: Send + Sync {
     /// Run tests for the project at the given path.
-    fn run_tests(&self, project_path: &std::path::Path, config: &TestConfig) -> crate::Result<TestRunResult>;
+    fn run_tests(
+        &self,
+        project_path: &std::path::Path,
+        config: &TestConfig,
+    ) -> crate::Result<TestRunResult>;
 
     /// Check if the test runner is available.
     fn is_available(&self) -> bool;

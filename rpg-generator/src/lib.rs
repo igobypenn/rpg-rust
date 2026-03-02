@@ -35,25 +35,25 @@
 //! }
 //! ```
 
-pub mod types;
-pub mod error;
-pub mod checkpoint;
-pub mod verification;
 pub mod centroid_expander;
+pub mod checkpoint;
+pub mod error;
+pub mod types;
+pub mod verification;
 
 // Conditional compilation for phases that require LLM
+#[cfg(feature = "llm")]
+pub mod contract;
+#[cfg(feature = "llm")]
+pub mod execution;
 #[cfg(feature = "llm")]
 pub mod llm;
 #[cfg(feature = "llm")]
 pub mod phases;
 #[cfg(feature = "llm")]
-pub mod contract;
+pub mod pipeline;
 #[cfg(feature = "llm")]
 pub mod test_runner;
-#[cfg(feature = "llm")]
-pub mod execution;
-#[cfg(feature = "llm")]
-pub mod pipeline;
 
 // Agent module (feature-gated CLI adapters)
 #[cfg(any(feature = "opencode", feature = "trae", feature = "claude"))]
@@ -62,38 +62,38 @@ pub mod agent;
 // Re-exports for convenience
 pub use error::{GeneratorError, Result};
 pub use types::{
-    GenerationRequest, GenerationPlan, ArchitectureDesign, ExecutionResult,
-    Phase, PhaseStatus, TargetLanguage, Constraints,
+    ArchitectureDesign, Constraints, ExecutionResult, GenerationPlan, GenerationRequest, Phase,
+    PhaseStatus, TargetLanguage,
 };
 
 #[cfg(feature = "llm")]
-pub use pipeline::{RpgGenerator, GenerationOutput};
-#[cfg(feature = "llm")]
 pub use llm::LlmConfig;
+#[cfg(feature = "llm")]
+pub use pipeline::{GenerationOutput, RpgGenerator};
 
 // Verification module
 pub use verification::{GraphVerifier, VerificationResult};
 
 // Centroid Expander
-pub use centroid_expander::{CentroidExpander, ExpansionResult, ExpansionConfig, create_planned_graph_from_features};
+pub use centroid_expander::{
+    create_planned_graph_from_features, CentroidExpander, ExpansionConfig, ExpansionResult,
+};
 
 // Re-export useful types from rpg-encoder
 pub use rpg_encoder::{
-    FeatureTree, FeatureNode, FlatFeature,
-    Component, ComponentPlan,
-    RepoSkeleton, SkeletonFile, UnitSkeleton, UnitKind,
-    ImplementationTask, TaskPlan, TaskStatus,
-    RpgGraph, Node, Edge, EdgeType, NodeCategory, NodeId,
+    Component, ComponentPlan, Edge, EdgeType, FeatureNode, FeatureTree, FlatFeature,
+    ImplementationTask, Node, NodeCategory, NodeId, RepoSkeleton, RpgGraph, SkeletonFile, TaskPlan,
+    TaskStatus, UnitKind, UnitSkeleton,
 };
 
 /// Prelude for common imports
 pub mod prelude {
+    pub use crate::centroid_expander::{CentroidExpander, ExpansionConfig, ExpansionResult};
+    pub use crate::checkpoint::{Checkpoint, CheckpointManager};
     pub use crate::error::{GeneratorError, Result};
     pub use crate::types::{
-        GenerationRequest, GenerationPlan, ArchitectureDesign, ExecutionResult,
-        Phase, PhaseStatus, TargetLanguage,
+        ArchitectureDesign, ExecutionResult, GenerationPlan, GenerationRequest, Phase, PhaseStatus,
+        TargetLanguage,
     };
-    pub use crate::checkpoint::{Checkpoint, CheckpointManager};
     pub use crate::verification::{GraphVerifier, VerificationResult};
-    pub use crate::centroid_expander::{CentroidExpander, ExpansionResult, ExpansionConfig};
 }

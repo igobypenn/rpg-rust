@@ -1,17 +1,16 @@
 //! Core types for the RPG Generator pipeline.
 
-mod request;
-pub mod plan;
 mod phase;
+pub mod plan;
+mod request;
 
-pub use request::{GenerationRequest, TargetLanguage, Constraints};
-pub use plan::{
-    GenerationPlan, ArchitectureDesign, ExecutionResult,
-    TaskOutcome, TestResult, TestError,
-};
 pub use phase::{Phase, PhaseStatus, PhaseType};
+pub use plan::{
+    ArchitectureDesign, ExecutionResult, GenerationPlan, TaskOutcome, TestError, TestResult,
+};
+pub use request::{Constraints, GenerationRequest, TargetLanguage};
 
 // Re-export validation types
-pub use rpg_encoder::{ValidationResult, ValidationIssue};
+pub use rpg_encoder::{ValidationIssue, ValidationResult};
 
-pub use plan::{FileInterface, UnitInterface, TypeDefinition, TypeField};
+pub use plan::{FileInterface, TypeDefinition, TypeField, UnitInterface};

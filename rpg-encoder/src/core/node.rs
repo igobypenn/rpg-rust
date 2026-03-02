@@ -65,7 +65,7 @@ pub enum NodeCategory {
 }
 
 /// Hierarchy level for nodes in the RPG.
-/// 
+///
 /// Per the paper, nodes are classified as either:
 /// - V^L (Low): Implementation-level nodes (functions, types, etc.)
 /// - V^H (High): Functional centroid nodes (abstract feature areas)

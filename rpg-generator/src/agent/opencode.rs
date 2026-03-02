@@ -156,14 +156,11 @@ impl Agent for OpenCodeAgent {
 
         // Spawn process
         let start_time = std::time::Instant::now();
-        
-        let output = cmd
-            .output()
-            .await
-            .map_err(|e| {
-                tracing::error!("Failed to spawn opencode: {}", e);
-                GeneratorError::ExecutionFailed(format!("Failed to spawn opencode: {}", e))
-            })?;
+
+        let output = cmd.output().await.map_err(|e| {
+            tracing::error!("Failed to spawn opencode: {}", e);
+            GeneratorError::ExecutionFailed(format!("Failed to spawn opencode: {}", e))
+        })?;
 
         let elapsed = start_time.elapsed();
         tracing::info!("OpenCode completed in {:.2}s", elapsed.as_secs_f64());
@@ -193,10 +190,7 @@ impl Agent for OpenCodeAgent {
         tracing::debug!("OpenCode stdout length: {} bytes", stdout.len());
 
         // Try to parse as JSON if format expects structured output
-        if matches!(
-            prompt.format,
-            PromptFormat::Json | PromptFormat::Structured
-        ) {
+        if matches!(prompt.format, PromptFormat::Json | PromptFormat::Structured) {
             // The output might contain multiple JSON lines (SSE format)
             // Find the last valid JSON object
             for line in stdout.lines().rev() {
@@ -207,13 +201,13 @@ impl Agent for OpenCodeAgent {
                     }
                 }
             }
-            
+
             // Try parsing the entire output as JSON
             if let Ok(json) = serde_json::from_str(&stdout) {
                 tracing::info!("Parsed full stdout as JSON successfully");
                 return Ok(AgentOutput::Json(json));
             }
-            
+
             tracing::warn!("Expected JSON output but failed to parse. Returning as text.");
         }
 

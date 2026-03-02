@@ -9,11 +9,10 @@
 
 use std::collections::HashMap;
 
+use rpg_encoder::encoder::{CollectedFeature, FunctionalCentroid};
 use rpg_encoder::{
-    RpgGraph, Node, NodeId, NodeCategory, NodeLevel, EdgeType,
-    FeatureTree, FeatureNode,
+    EdgeType, FeatureNode, FeatureTree, Node, NodeCategory, NodeId, NodeLevel, RpgGraph,
 };
-use rpg_encoder::encoder::{FunctionalCentroid, CollectedFeature};
 
 use crate::error::{GeneratorError, Result};
 
@@ -220,13 +219,14 @@ impl<'a> CentroidExpander<'a> {
 
         // Pattern: "store X" or "persist X" → data structure
         if (lower.contains("store") || lower.contains("persist") || lower.contains("save"))
-            && self.config.infer_data_structures {
-                units.push(InferredUnit {
-                    name: "Data".to_string(),
-                    kind: UnitKind::Struct,
-                    description: format!("Data structure for {}", semantic_feature),
-                });
-            }
+            && self.config.infer_data_structures
+        {
+            units.push(InferredUnit {
+                name: "Data".to_string(),
+                kind: UnitKind::Struct,
+                description: format!("Data structure for {}", semantic_feature),
+            });
+        }
 
         // Pattern: "compute X" or "calculate X" → function
         if lower.contains("compute") || lower.contains("calculate") {
@@ -354,15 +354,13 @@ impl UnitKind {
     }
 }
 
-
-
 /// Create a planned RpgGraph from a FeatureTree.
 ///
 /// This converts the hierarchical FeatureTree into an RpgGraph with
 /// functional centroids, ready for expansion or verification.
 pub fn create_planned_graph_from_features(feature_tree: &FeatureTree) -> RpgGraph {
     let mut graph = RpgGraph::new();
-    
+
     // Create repository root node
     let root_name = &feature_tree.root.name;
     let repo_node = Node::new(
@@ -371,16 +369,13 @@ pub fn create_planned_graph_from_features(feature_tree: &FeatureTree) -> RpgGrap
         "repository",
         "unknown",
         root_name.clone(),
-    ).with_description(format!("Planned repository: {}", root_name));
-    
+    )
+    .with_description(format!("Planned repository: {}", root_name));
+
     let repo_id = graph.add_node(repo_node);
-    
+
     // Recursively add features as functional centroids
-    fn add_feature_as_centroid(
-        graph: &mut RpgGraph,
-        parent_id: NodeId,
-        node: &FeatureNode,
-    ) {
+    fn add_feature_as_centroid(graph: &mut RpgGraph, parent_id: NodeId, node: &FeatureNode) {
         // Create a functional centroid for this feature
         let centroid = Node::new(
             NodeId::new(0), // Placeholder, will be replaced
@@ -392,26 +387,26 @@ pub fn create_planned_graph_from_features(feature_tree: &FeatureTree) -> RpgGrap
         .with_node_level(NodeLevel::High)
         .with_description(node.description.clone().unwrap_or_default())
         .with_semantic_feature(node.features.join("; "));
-        
+
         let centroid_id = graph.add_node(centroid);
         graph.add_typed_edge(centroid_id, parent_id, EdgeType::BelongsToFeature);
-        
+
         // Add child features
         for child in &node.children {
             add_feature_as_centroid(graph, centroid_id, child);
         }
     }
-    
+
     // Process root's children
     for child in &feature_tree.root.children {
         add_feature_as_centroid(&mut graph, repo_id, child);
     }
-    
+
     tracing::info!(
         "Created planned RPG with {} nodes from FeatureTree",
         graph.node_count()
     );
-    
+
     graph
 }
 
@@ -521,4 +516,3 @@ mod tests {
         assert!(config.create_categories);
     }
 }
-

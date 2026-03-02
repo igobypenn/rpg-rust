@@ -14,8 +14,8 @@ pub use walker::FileWalker;
 
 // Functional abstraction types for forward path (generator)
 pub use functional::{
-    FunctionalAbstraction, FunctionalConfig, FunctionalCentroid,
-    CollectedFeature, AbstractionResult,
+    AbstractionResult, CollectedFeature, FunctionalAbstraction, FunctionalCentroid,
+    FunctionalConfig,
 };
 
 use std::path::{Path, PathBuf};
@@ -110,7 +110,7 @@ impl RpgEncoder {
             crate::languages::CSharpParser,
             crate::languages::ScalaParser,
         );
-        
+
         Ok(Self {
             registry,
             root: None,
@@ -170,7 +170,7 @@ impl RpgEncoder {
                     let err = RpgError::Io(e);
                     parse_errors.push(ParseFailure::from_error(&file_path, &err));
                     files_skipped += 1;
-                    continue
+                    continue;
                 }
             };
 
@@ -279,10 +279,10 @@ impl RpgEncoder {
     ) -> crate::error::Result<EncodeResult> {
         use crate::agents::FeatureExtractor;
         use crate::encoder::functional::{FunctionalAbstraction, LlmOptions};
-        
+
         // Encode repository
         let mut result = self.encode(root)?;
-        
+
         // Create feature extractor
         let extractor = FeatureExtractor::new(config.clone())
             .map_err(|e| RpgError::HttpClient(e.to_string()))?;
@@ -291,13 +291,14 @@ impl RpgEncoder {
             .file_name()
             .and_then(|n| n.to_str())
             .unwrap_or("repository");
-        
+
         // Collect all extracted features for functional abstraction
         let mut all_organized_features: Vec<crate::agents::OrganizedFeature> = Vec::new();
         let (mut files_enriched, mut total_entities_enriched) = (0usize, 0usize);
-        
+
         // Get unique file paths from the graph nodes
-        let mut seen_paths: std::collections::HashSet<std::path::PathBuf> = std::collections::HashSet::new();
+        let mut seen_paths: std::collections::HashSet<std::path::PathBuf> =
+            std::collections::HashSet::new();
         for node in result.graph.nodes() {
             if let Some(ref path) = node.path {
                 if path.is_file() {
@@ -305,34 +306,43 @@ impl RpgEncoder {
                 }
             }
         }
-        
+
         for file_path in seen_paths {
             // Read file contents
             let code = match std::fs::read_to_string(&file_path) {
                 Ok(c) => c,
                 Err(_) => continue,
             };
-            
+
             // Extract features based on scope
             let organized = match config.scope {
                 crate::agents::ExtractionScope::File => {
-                    extractor.extract_and_organize(&code, &file_path, repo_info, "").await
+                    extractor
+                        .extract_and_organize(&code, &file_path, repo_info, "")
+                        .await
                 }
-                crate::agents::ExtractionScope::Module | crate::agents::ExtractionScope::Repository => {
+                crate::agents::ExtractionScope::Module
+                | crate::agents::ExtractionScope::Repository => {
                     // For broader scopes, extract then organize by path (simplified)
-                    extractor.extract_from_file(&code, &file_path, repo_info).await.map(|features: Vec<crate::agents::ExtractedFeature>| {
-                        features.into_iter().flat_map(|f| {
-                            extractor.organize_by_path(&[f], &file_path)
-                        }).collect()
-                    })
+                    extractor
+                        .extract_from_file(&code, &file_path, repo_info)
+                        .await
+                        .map(|features: Vec<crate::agents::ExtractedFeature>| {
+                            features
+                                .into_iter()
+                                .flat_map(|f| extractor.organize_by_path(&[f], &file_path))
+                                .collect()
+                        })
                 }
             };
-            
+
             match organized {
                 Ok(features) => {
                     for of in &features {
                         // Find matching node in graph and update semantics
-                        if let Some(node) = result.graph.find_node_in_file(&file_path, &of.entity_name) {
+                        if let Some(node) =
+                            result.graph.find_node_in_file(&file_path, &of.entity_name)
+                        {
                             result.graph.update_node_semantics(
                                 node.id,
                                 of.features.clone(),
@@ -346,29 +356,38 @@ impl RpgEncoder {
                     files_enriched += 1;
                 }
                 Err(_e) => {
-                    tracing::warn!("Failed to extract features from {}: {}", file_path.display(), _e);
+                    tracing::warn!(
+                        "Failed to extract features from {}: {}",
+                        file_path.display(),
+                        _e
+                    );
                 }
             }
         }
-        
+
         // Run functional abstraction for LlmBased organization
-        if matches!(config.organization, crate::agents::OrganizationMode::LlmBased) {
+        if matches!(
+            config.organization,
+            crate::agents::OrganizationMode::LlmBased
+        ) {
             let mut abstraction = FunctionalAbstraction::new(&mut result.graph);
             let llm_options = LlmOptions::new(extractor.client(), repo_info.to_string());
-            let _abstraction_result = abstraction.run_with_llm(Some(&llm_options)).await
+            let _abstraction_result = abstraction
+                .run_with_llm(Some(&llm_options))
+                .await
                 .map_err(|e| RpgError::HttpClient(e.to_string()))?;
         }
-        
+
         tracing::info!(
             files_enriched = files_enriched,
             entities_enriched = total_entities_enriched,
             total_features = all_organized_features.len(),
             "Semantic encoding complete"
         );
-        
+
         // Update the stored graph
         self.graph = Some(result.graph.clone());
-        
+
         Ok(result)
     }
 }

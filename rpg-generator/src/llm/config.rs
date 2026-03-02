@@ -1,6 +1,5 @@
 //! LLM configuration types.
 
-
 #[derive(Clone, Debug)]
 pub struct LlmConfig {
     pub api_key: String,

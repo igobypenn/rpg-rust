@@ -49,7 +49,6 @@ impl From<EdgeType> for Edge {
     }
 }
 
-
 impl std::fmt::Display for EdgeType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -73,7 +72,7 @@ impl std::fmt::Display for EdgeType {
 }
 
 /// Classification of edge types into functional or dependency views.
-/// 
+///
 /// Per the paper, edges are classified as:
 /// - E_dep (Dependency): Calls, Imports, DependsOn, etc.
 /// - E_feature (Functional): BelongsToFeature, ImplementsFeature, ContainsFeature
@@ -87,14 +86,14 @@ pub enum EdgeView {
 
 impl EdgeType {
     /// Returns the view classification for this edge type.
-    /// 
+    ///
     /// - Functional edges: BelongsToFeature, ImplementsFeature, ContainsFeature
     /// - dependency edges: all others (Calls, Imports, etc.)
     #[must_use]
     pub fn view(&self) -> EdgeView {
         match self {
-            EdgeType::BelongsToFeature 
-            | EdgeType::ImplementsFeature 
+            EdgeType::BelongsToFeature
+            | EdgeType::ImplementsFeature
             | EdgeType::ContainsFeature => EdgeView::Functional,
             _ => EdgeView::Dependency,
         }

@@ -20,8 +20,6 @@ use crate::phases::{ImplementationLevelBuilder, PropertyLevelBuilder};
 #[cfg(feature = "opencode")]
 use crate::agent::AgentRegistry;
 
-
-
 /// Response from agent for feature extraction.
 #[cfg(feature = "opencode")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -63,8 +61,6 @@ struct AgentComponent {
     description: String,
     features: Vec<String>,
 }
-
-
 
 /// Response from agent for skeleton design.
 #[cfg(feature = "opencode")]
@@ -169,7 +165,7 @@ impl RpgGenerator {
         tracing::info!("Starting generation for: {}", request.description);
 
         let phase1_result = self.run_phase1(&request).await?;
-        
+
         if let Some(ref checkpoint) = self.checkpoint {
             let mut mgr = checkpoint.write().await;
             let _ = mgr.set_generation_plan(phase1_result.clone());
@@ -177,7 +173,7 @@ impl RpgGenerator {
         }
 
         let phase2_result = self.run_phase2(&phase1_result).await?;
-        
+
         if let Some(ref checkpoint) = self.checkpoint {
             let mut mgr = checkpoint.write().await;
             let _ = mgr.set_architecture_design(phase2_result.clone());
@@ -185,15 +181,15 @@ impl RpgGenerator {
         }
 
         let mut phase3_result = self.run_phase3(&phase2_result).await?;
-        
+
         // === Verification: Close the loop with retry ===
         // Verify generated code against planned RPG with up to max_verification_retries attempts
         let mut verification_attempts = 0;
         let mut final_verification_passed = false;
-        
+
         if let Some(ref planned_rpg) = phase1_result.planned_rpg {
             let output_dir = &self.output_dir;
-            
+
             for retry in 0..self.max_verification_retries {
                 verification_attempts = retry + 1;
                 tracing::info!(
@@ -201,7 +197,7 @@ impl RpgGenerator {
                     verification_attempts,
                     self.max_verification_retries
                 );
-                
+
                 match crate::verification::GraphVerifier::new() {
                     Ok(mut verifier) => {
                         match verifier.verify(output_dir, planned_rpg) {
@@ -213,19 +209,22 @@ impl RpgGenerator {
                                     verification_result.passed,
                                     self.verification_threshold * 100.0
                                 );
-                                
+
                                 // Check if verification passed our threshold
                                 if verification_result.similarity >= self.verification_threshold {
                                     final_verification_passed = true;
-                                    
+
                                     // Get the generated graph from the verifier
                                     if let Ok(encode_result) = rpg_encoder::RpgEncoder::new()
                                         .and_then(|mut e| e.encode(output_dir))
                                     {
                                         phase3_result.final_graph = Some(encode_result.graph);
                                     }
-                                    
-                                    tracing::info!("Verification passed after {} attempt(s)", verification_attempts);
+
+                                    tracing::info!(
+                                        "Verification passed after {} attempt(s)",
+                                        verification_attempts
+                                    );
                                     break;
                                 } else {
                                     tracing::warn!(
@@ -233,19 +232,25 @@ impl RpgGenerator {
                                         similarity_percent,
                                         self.verification_threshold * 100.0
                                     );
-                                    
+
                                     // If not the last attempt, log what's missing for the next iteration
                                     if retry + 1 < self.max_verification_retries {
                                         if !verification_result.missing_features.is_empty() {
                                             tracing::info!(
                                                 "Missing features to address: {:?}",
-                                                verification_result.missing_features.iter().take(5).collect::<Vec<_>>()
+                                                verification_result
+                                                    .missing_features
+                                                    .iter()
+                                                    .take(5)
+                                                    .collect::<Vec<_>>()
                                             );
                                         }
-                                        
+
                                         // Re-run phase 3 with the missing features as additional context
-                                        tracing::info!("Re-running Phase 3 code generation to address gaps...");
-                                        
+                                        tracing::info!(
+                                            "Re-running Phase 3 code generation to address gaps..."
+                                        );
+
                                         // Note: In a full implementation, we would pass missing_features
                                         // back to the agent as context. For now, we just retry.
                                         match self.run_phase3(&phase2_result).await {
@@ -262,7 +267,7 @@ impl RpgGenerator {
                             }
                             Err(e) => {
                                 tracing::warn!("Verification error: {}", e);
-                                
+
                                 if retry + 1 < self.max_verification_retries {
                                     // Retry phase 3 on verification error
                                     match self.run_phase3(&phase2_result).await {
@@ -284,22 +289,22 @@ impl RpgGenerator {
                     }
                 }
             }
-            
+
             if !final_verification_passed && verification_attempts > 0 {
                 tracing::warn!(
                     "Verification did not pass after {} attempts. Proceeding with best-effort result.",
                     verification_attempts
                 );
-                
+
                 // Still try to encode the final result
-                if let Ok(encode_result) = rpg_encoder::RpgEncoder::new()
-                    .and_then(|mut e| e.encode(output_dir))
+                if let Ok(encode_result) =
+                    rpg_encoder::RpgEncoder::new().and_then(|mut e| e.encode(output_dir))
                 {
                     phase3_result.final_graph = Some(encode_result.graph);
                 }
             }
         }
-        
+
         if let Some(ref checkpoint) = self.checkpoint {
             let mut mgr = checkpoint.write().await;
             let _ = mgr.set_execution_result(phase3_result.clone());
@@ -318,14 +323,15 @@ impl RpgGenerator {
     #[cfg(feature = "opencode")]
     async fn run_phase1(&self, request: &GenerationRequest) -> Result<GenerationPlan> {
         tracing::info!("Phase 1: Property Level - Feature extraction (via agent)");
-        
+
         let mut registry = AgentRegistry::new();
         let agent = registry.take_default();
-        
+
         if !agent.is_available() {
-            return Err(crate::GeneratorError::AgentNotAvailable(
-                format!("Agent '{}' CLI not found in PATH. Install it first.", agent.name())
-            ));
+            return Err(crate::GeneratorError::AgentNotAvailable(format!(
+                "Agent '{}' CLI not found in PATH. Install it first.",
+                agent.name()
+            )));
         }
 
         let prompt = crate::agent::RenderedPrompt {
@@ -345,24 +351,23 @@ impl RpgGenerator {
         };
 
         let output = agent.execute(&prompt).await?;
-        
+
         // Parse the agent response
-        let json_str = output.as_json()
+        let json_str = output
+            .as_json()
             .map(|v| v.to_string())
             .unwrap_or_else(|| output.to_text());
-        
-        let (feature_tree, component_plan) = self.parse_phase1_response(&json_str, &request.description)?;
-        
-        let mut plan = GenerationPlan::new(
-            request.clone(),
-            feature_tree,
-            component_plan,
-        );
-        
+
+        let (feature_tree, component_plan) =
+            self.parse_phase1_response(&json_str, &request.description)?;
+
+        let mut plan = GenerationPlan::new(request.clone(), feature_tree, component_plan);
+
         // Create planned RPG from features for verification
-        let planned_rpg = crate::centroid_expander::create_planned_graph_from_features(&plan.feature_tree);
+        let planned_rpg =
+            crate::centroid_expander::create_planned_graph_from_features(&plan.feature_tree);
         plan.set_planned_rpg(planned_rpg);
-        
+
         Ok(plan)
     }
     /// Parse Phase 1 agent response into FeatureTree and ComponentPlan.
@@ -381,46 +386,46 @@ impl RpgGenerator {
             } else {
                 rpg_encoder::FeatureTree::new("project")
             };
-            
+
             let component_plan = if let Some(components) = combined.get("components") {
                 self.json_to_component_plan(components)
             } else {
                 self.infer_components_from_features(&feature_tree)
             };
-            
+
             return Ok((feature_tree, component_plan));
         }
-        
+
         // Fallback: try direct parsing
         if let Ok(response) = serde_json::from_str::<AgentFeatureResponse>(json_str) {
             let feature_tree = self.response_to_feature_tree(response);
             let component_plan = self.infer_components_from_features(&feature_tree);
             return Ok((feature_tree, component_plan));
         }
-        
+
         // Ultimate fallback: create basic plan from description
         tracing::warn!("Failed to parse agent response, creating basic plan");
         let feature_tree = rpg_encoder::FeatureTree::new("project");
         let component_plan = rpg_encoder::ComponentPlan::new(vec![]);
         Ok((feature_tree, component_plan))
     }
-    
+
     /// Convert AgentFeatureResponse to FeatureTree.
     #[cfg(feature = "opencode")]
     fn response_to_feature_tree(&self, response: AgentFeatureResponse) -> rpg_encoder::FeatureTree {
         let mut tree = rpg_encoder::FeatureTree::new(&response.root_name);
-        
+
         for category in response.categories {
             let mut category_node = rpg_encoder::FeatureNode::new(&category.name);
-            
+
             if let Some(desc) = &category.description {
                 category_node = category_node.with_description(desc);
             }
-            
+
             for feature in &category.features {
                 category_node.add_feature(feature);
             }
-            
+
             for subcategory in &category.subcategories {
                 let mut sub_node = rpg_encoder::FeatureNode::new(&subcategory.name);
                 for feature in &subcategory.features {
@@ -428,27 +433,31 @@ impl RpgGenerator {
                 }
                 category_node.add_child(sub_node);
             }
-            
+
             tree.root.add_child(category_node);
         }
-        
+
         tree
     }
-    
+
     /// Convert JSON value to FeatureTree.
     #[cfg(feature = "opencode")]
-    fn json_to_feature_tree(&self, value: &serde_json::Value, description: &str) -> rpg_encoder::FeatureTree {
+    fn json_to_feature_tree(
+        &self,
+        value: &serde_json::Value,
+        description: &str,
+    ) -> rpg_encoder::FeatureTree {
         let mut tree = rpg_encoder::FeatureTree::new("project");
-        
+
         if let Some(categories) = value.as_array() {
             for cat in categories {
                 if let Some(name) = cat.get("name").and_then(|n| n.as_str()) {
                     let mut category_node = rpg_encoder::FeatureNode::new(name);
-                    
+
                     if let Some(desc) = cat.get("description").and_then(|d| d.as_str()) {
                         category_node = category_node.with_description(desc);
                     }
-                    
+
                     if let Some(features) = cat.get("features").and_then(|f| f.as_array()) {
                         for feature in features {
                             if let Some(feat_name) = feature.as_str() {
@@ -456,37 +465,38 @@ impl RpgGenerator {
                             }
                         }
                     }
-                    
+
                     tree.root.add_child(category_node);
                 }
             }
         }
-        
+
         // If no categories found, create a basic feature from description
         if tree.root.children.is_empty() {
             let mut feature_node = rpg_encoder::FeatureNode::new("main");
             feature_node.add_feature(description);
             tree.root.add_child(feature_node);
         }
-        
+
         tree
     }
-    
+
     /// Convert JSON value to ComponentPlan.
     #[cfg(feature = "opencode")]
     fn json_to_component_plan(&self, value: &serde_json::Value) -> rpg_encoder::ComponentPlan {
         let mut components = Vec::new();
-        
+
         if let Some(comps) = value.as_array() {
             for comp in comps {
                 if let Some(name) = comp.get("name").and_then(|n| n.as_str()) {
-                    let description = comp.get("description")
+                    let description = comp
+                        .get("description")
                         .and_then(|d| d.as_str())
                         .unwrap_or_default()
                         .to_string();
-                    
+
                     let mut component = rpg_encoder::Component::new(name, &description);
-                    
+
                     if let Some(features) = comp.get("features").and_then(|f| f.as_array()) {
                         for feature in features {
                             if let Some(feat_name) = feature.as_str() {
@@ -494,36 +504,42 @@ impl RpgGenerator {
                             }
                         }
                     }
-                    
+
                     components.push(component);
                 }
             }
         }
-        
+
         rpg_encoder::ComponentPlan::new(components)
     }
-    
+
     /// Infer components from feature tree when not explicitly provided.
     #[cfg(feature = "opencode")]
-    fn infer_components_from_features(&self, feature_tree: &rpg_encoder::FeatureTree) -> rpg_encoder::ComponentPlan {
+    fn infer_components_from_features(
+        &self,
+        feature_tree: &rpg_encoder::FeatureTree,
+    ) -> rpg_encoder::ComponentPlan {
         let mut components = Vec::new();
-        
+
         for child in &feature_tree.root.children {
-            let mut component = rpg_encoder::Component::new(&child.name, &child.description.clone().unwrap_or_default());
-            
+            let mut component = rpg_encoder::Component::new(
+                &child.name,
+                &child.description.clone().unwrap_or_default(),
+            );
+
             for feature in &child.features {
                 component.subtree.add_feature(feature);
             }
-            
+
             for subchild in &child.children {
                 for feature in &subchild.features {
                     component.subtree.add_feature(feature);
                 }
             }
-            
+
             components.push(component);
         }
-        
+
         if components.is_empty() {
             // Create a single "core" component from all features
             let mut core = rpg_encoder::Component::new("core", "Core functionality");
@@ -532,14 +548,14 @@ impl RpgGenerator {
             }
             components.push(core);
         }
-        
+
         rpg_encoder::ComponentPlan::new(components)
     }
 
     #[cfg(not(feature = "opencode"))]
     async fn run_phase1(&self, request: &GenerationRequest) -> Result<GenerationPlan> {
         tracing::info!("Phase 1: Property Level - Feature extraction");
-        
+
         let client = OpenAIClient::new(self.config.clone())?;
         let builder = PropertyLevelBuilder::new(client);
         builder.build(request).await
@@ -550,15 +566,18 @@ impl RpgGenerator {
     #[cfg(feature = "opencode")]
     async fn run_phase2(&self, plan: &GenerationPlan) -> Result<ArchitectureDesign> {
         tracing::info!("Phase 2: Implementation Level - Architecture design (via agent)");
-        
+
         let mut registry = AgentRegistry::new();
         let agent = registry.take_default();
 
         // Build component info for prompt
-        let component_info: Vec<String> = plan.component_plan.components.iter()
+        let component_info: Vec<String> = plan
+            .component_plan
+            .components
+            .iter()
             .map(|c| format!("- {}: {}", c.name, c.description))
             .collect();
-        
+
         let prompt = crate::agent::RenderedPrompt {
             content: format!(
                 "Design the architecture and file structure for a project with these components:\n{}\n\n\
@@ -576,13 +595,13 @@ impl RpgGenerator {
         };
 
         let output = agent.execute(&prompt).await?;
-        
+
         // Parse the architecture response
         let design = self.parse_phase2_response(&output, plan)?;
-        
+
         Ok(design)
     }
-    
+
     /// Parse Phase 2 agent response into ArchitectureDesign.
     #[cfg(feature = "opencode")]
     fn parse_phase2_response(
@@ -590,25 +609,26 @@ impl RpgGenerator {
         output: &crate::agent::AgentOutput,
         plan: &GenerationPlan,
     ) -> Result<ArchitectureDesign> {
-        let json_str = output.as_json()
+        let json_str = output
+            .as_json()
             .map(|v| v.to_string())
             .unwrap_or_else(|| output.to_text());
-        
+
         // Try to parse skeleton response
         if let Ok(response) = serde_json::from_str::<AgentSkeletonResponse>(&json_str) {
             return Ok(self.skeleton_response_to_design(&response, plan));
         }
-        
+
         // Try to parse as generic JSON
         if let Ok(value) = serde_json::from_str::<serde_json::Value>(&json_str) {
             return Ok(self.json_to_design(&value, plan));
         }
-        
+
         // Fallback: create basic design from component plan
         tracing::warn!("Failed to parse architecture response, creating basic design");
         Ok(self.create_default_design(plan))
     }
-    
+
     /// Convert AgentSkeletonResponse to ArchitectureDesign.
     #[cfg(feature = "opencode")]
     fn skeleton_response_to_design(
@@ -618,13 +638,10 @@ impl RpgGenerator {
     ) -> ArchitectureDesign {
         let mut skeleton = rpg_encoder::RepoSkeleton::new(PathBuf::from("src"), "rust");
         let mut task_plan = rpg_encoder::TaskPlan::new();
-        
+
         for file_design in &response.files {
-            let mut file = rpg_encoder::SkeletonFile::new(
-                PathBuf::from(&file_design.path),
-                "rust",
-            );
-            
+            let mut file = rpg_encoder::SkeletonFile::new(PathBuf::from(&file_design.path), "rust");
+
             if let Some(units) = &file_design.units {
                 for unit in units {
                     let kind = match unit.kind.as_str() {
@@ -637,24 +654,24 @@ impl RpgGenerator {
                         "interface" => rpg_encoder::UnitKind::Interface,
                         _ => rpg_encoder::UnitKind::Function,
                     };
-                    
+
                     let mut unit_skeleton = rpg_encoder::UnitSkeleton::new(&unit.name, kind)
                         .with_features(unit.features.clone());
-                    
+
                     if let Some(sig) = &unit.signature {
                         unit_skeleton = unit_skeleton.with_signature(sig);
                     }
                     if let Some(doc) = &unit.docstring {
                         unit_skeleton = unit_skeleton.with_docstring(doc);
                     }
-                    
+
                     file.add_unit(unit_skeleton);
                 }
             }
-            
+
             skeleton.add_file(file);
         }
-        
+
         // Create tasks from components
         for component in &plan.component_plan.components {
             let task = rpg_encoder::ImplementationTask::new(
@@ -664,10 +681,10 @@ impl RpgGenerator {
             );
             task_plan.add_batch(&component.name, vec![task]);
         }
-        
+
         ArchitectureDesign::new(uuid::Uuid::new_v4(), skeleton, task_plan)
     }
-    
+
     /// Convert JSON value to ArchitectureDesign.
     #[cfg(feature = "opencode")]
     fn json_to_design(
@@ -677,7 +694,7 @@ impl RpgGenerator {
     ) -> ArchitectureDesign {
         let mut skeleton = rpg_encoder::RepoSkeleton::new(PathBuf::from("src"), "rust");
         let mut task_plan = rpg_encoder::TaskPlan::new();
-        
+
         // Parse files array if present
         if let Some(files) = value.get("files").and_then(|f| f.as_array()) {
             for file_val in files {
@@ -687,7 +704,7 @@ impl RpgGenerator {
                 }
             }
         }
-        
+
         // Create tasks from components
         for component in &plan.component_plan.components {
             let task = rpg_encoder::ImplementationTask::new(
@@ -697,16 +714,16 @@ impl RpgGenerator {
             );
             task_plan.add_batch(&component.name, vec![task]);
         }
-        
+
         ArchitectureDesign::new(uuid::Uuid::new_v4(), skeleton, task_plan)
     }
-    
+
     /// Create default design from component plan.
     #[cfg(feature = "opencode")]
     fn create_default_design(&self, plan: &GenerationPlan) -> ArchitectureDesign {
         let mut skeleton = rpg_encoder::RepoSkeleton::new(PathBuf::from("src"), "rust");
         let mut task_plan = rpg_encoder::TaskPlan::new();
-        
+
         for component in &plan.component_plan.components {
             // Create skeleton file for each component
             let file = rpg_encoder::SkeletonFile::new(
@@ -714,7 +731,7 @@ impl RpgGenerator {
                 "rust",
             );
             skeleton.add_file(file);
-            
+
             // Create task for each component
             let task = rpg_encoder::ImplementationTask::new(
                 &format!("task_{}", component.name.replace('.', "_")),
@@ -723,14 +740,14 @@ impl RpgGenerator {
             );
             task_plan.add_batch(&component.name, vec![task]);
         }
-        
+
         ArchitectureDesign::new(uuid::Uuid::new_v4(), skeleton, task_plan)
     }
 
     #[cfg(not(feature = "opencode"))]
     async fn run_phase2(&self, plan: &GenerationPlan) -> Result<ArchitectureDesign> {
         tracing::info!("Phase 2: Implementation Level - Architecture design");
-        
+
         let client = OpenAIClient::new(self.config.clone())?;
         let builder = ImplementationLevelBuilder::new(client);
         builder.build(plan).await
@@ -741,21 +758,20 @@ impl RpgGenerator {
     #[cfg(feature = "opencode")]
     async fn run_phase3(&self, design: &ArchitectureDesign) -> Result<ExecutionResult> {
         tracing::info!("Phase 3: Code Generation - TDD loop (via agent)");
-        
-        let plan = ExecutionPlan::new(design.clone())
-            .with_max_iterations(self.max_test_iterations);
-        
+
+        let plan = ExecutionPlan::new(design.clone()).with_max_iterations(self.max_test_iterations);
+
         plan.execute().await
     }
 
     #[cfg(not(feature = "opencode"))]
     async fn run_phase3(&self, design: &ArchitectureDesign) -> Result<ExecutionResult> {
         tracing::info!("Phase 3: Code Generation - TDD loop");
-        
+
         let client = OpenAIClient::new(self.config.clone())?;
         let plan = ExecutionPlan::new_with_client(design.clone(), client)
             .with_max_iterations(self.max_test_iterations);
-        
+
         plan.execute().await
     }
 }
@@ -799,7 +815,7 @@ impl GenerationOutput {
         }
         self.result.completed_count() as f32 / total as f32
     }
-    
+
     /// Get the final RPG graph (if verification was run).
     pub fn final_graph(&self) -> Option<&rpg_encoder::RpgGraph> {
         self.result.final_graph.as_ref()
@@ -831,7 +847,7 @@ mod tests {
         let generator = RpgGenerator::new()
             .with_max_test_iterations(10)
             .with_output_dir("/tmp/output");
-        
+
         assert_eq!(generator.max_test_iterations, 10);
         assert_eq!(generator.output_dir, PathBuf::from("/tmp/output"));
     }
@@ -843,11 +859,11 @@ mod tests {
         let generator = RpgGenerator::new(config)
             .with_max_test_iterations(10)
             .with_output_dir("/tmp/output");
-        
+
         assert_eq!(generator.max_test_iterations, 10);
         assert_eq!(generator.output_dir, PathBuf::from("/tmp/output"));
     }
-    
+
     #[cfg(feature = "opencode")]
     #[test]
     fn test_parse_feature_response() {
@@ -863,15 +879,15 @@ mod tests {
                 }
             ]
         }"#;
-        
+
         let response: AgentFeatureResponse = serde_json::from_str(json).expect("Failed to parse");
         let tree = generator.response_to_feature_tree(response);
-        
+
         assert_eq!(tree.root.name, "test_project");
         assert_eq!(tree.root.children.len(), 1);
         assert_eq!(tree.root.children[0].name, "auth");
     }
-    
+
     #[cfg(feature = "opencode")]
     #[test]
     fn test_infer_components() {
@@ -880,7 +896,7 @@ mod tests {
         let mut auth = rpg_encoder::FeatureNode::new("auth");
         auth.add_feature("login");
         tree.root.add_child(auth);
-        
+
         let plan = generator.infer_components_from_features(&tree);
         assert_eq!(plan.components.len(), 1);
         assert_eq!(plan.components[0].name, "auth");

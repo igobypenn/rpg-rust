@@ -77,7 +77,6 @@ impl std::fmt::Display for Phase {
     }
 }
 
-
 /// Status tracking for a phase.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PhaseStatus {

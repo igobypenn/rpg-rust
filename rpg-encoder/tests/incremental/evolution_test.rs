@@ -1,4 +1,3 @@
-
 use rpg_encoder::{EvolutionSummary, RpgSnapshot};
 use std::path::PathBuf;
 

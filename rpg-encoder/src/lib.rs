@@ -189,24 +189,28 @@ pub mod incremental;
 pub mod languages;
 pub mod parser;
 
-pub mod features;
 pub mod components;
+pub mod features;
 pub mod skeleton;
 pub mod tasks;
 
 #[cfg(feature = "llm")]
-pub mod llm;
-#[cfg(feature = "llm")]
 pub mod agents;
+#[cfg(feature = "llm")]
+pub mod llm;
 
 // LLM re-exports for convenience
 #[cfg(feature = "llm")]
-pub use llm::{LlmConfig, OpenAIClient};
-#[cfg(feature = "llm")]
 pub use agents::{ExtractionScope, FeatureExtractor, OrganizationMode, SemanticConfig};
+#[cfg(feature = "llm")]
+pub use llm::{LlmConfig, OpenAIClient};
 
-pub use core::{Edge, EdgeType, EdgeView, Node, NodeCategory, NodeId, NodeLevel, RpgGraph, SourceLocation};
-pub use encoder::{to_json, to_json_compact, EncodeResult, FileWalker, GraphBuilder, RpgEncoder, SerializedGraph};
+pub use core::{
+    Edge, EdgeType, EdgeView, Node, NodeCategory, NodeId, NodeLevel, RpgGraph, SourceLocation,
+};
+pub use encoder::{
+    to_json, to_json_compact, EncodeResult, FileWalker, GraphBuilder, RpgEncoder, SerializedGraph,
+};
 pub use error::{ParseErrorCategory, ParseFailure, Result, RpgError};
 pub use incremental::{
     compute_hash, generate_diff, CachedUnit, CodeUnit, DiffStats, EvolutionSummary, FileDiff,
@@ -214,9 +218,9 @@ pub use incremental::{
 };
 pub use parser::{LanguageParser, ParserRegistry};
 
-pub use features::{FeatureTree, FeatureNode, FlatFeature};
 pub use components::{Component, ComponentPlan, ValidationIssue, ValidationResult};
-pub use skeleton::{RepoSkeleton, SkeletonFile, UnitSkeleton, UnitKind, Visibility};
+pub use features::{FeatureNode, FeatureTree, FlatFeature};
+pub use skeleton::{RepoSkeleton, SkeletonFile, UnitKind, UnitSkeleton, Visibility};
 pub use tasks::{ImplementationTask, TaskPlan, TaskStatus};
 
 pub mod utils;

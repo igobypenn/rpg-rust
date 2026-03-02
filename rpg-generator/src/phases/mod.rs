@@ -1,8 +1,8 @@
 //! Pipeline phases for code generation.
 
-mod property;
 mod implementation;
 mod prompts;
+mod property;
 
-pub use property::PropertyLevelBuilder;
 pub use implementation::ImplementationLevelBuilder;
+pub use property::PropertyLevelBuilder;

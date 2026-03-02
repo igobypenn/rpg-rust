@@ -1,4 +1,3 @@
-
 use rpg_encoder::languages::LuaParser;
 use rpg_encoder::parser::LanguageParser;
 use std::path::PathBuf;

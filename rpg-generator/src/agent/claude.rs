@@ -176,10 +176,7 @@ impl Agent for ClaudeAgent {
             // Extract content
             if let Some(content) = json.get("content").and_then(|c| c.as_str()) {
                 // Try to parse content as JSON
-                if matches!(
-                    prompt.format,
-                    PromptFormat::Json | PromptFormat::Structured
-                ) {
+                if matches!(prompt.format, PromptFormat::Json | PromptFormat::Structured) {
                     if let Ok(inner_json) = serde_json::from_str(content) {
                         return Ok(AgentOutput::Json(inner_json));
                     }
@@ -214,10 +211,7 @@ mod tests {
 
         assert!(agent.thinking);
         assert!(agent.capabilities().supports_extended_thinking);
-        assert_eq!(
-            agent.model,
-            Some("claude-3-opus-20240229".to_string())
-        );
+        assert_eq!(agent.model, Some("claude-3-opus-20240229".to_string()));
     }
 
     #[test]

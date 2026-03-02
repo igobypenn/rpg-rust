@@ -107,10 +107,7 @@ impl ComponentPlan {
         for component in &self.components {
             let lower = component.name.to_lowercase();
             for vague in &vague_names {
-                if lower
-                    .split(['.', '_', '-'])
-                    .any(|part| part == *vague)
-                {
+                if lower.split(['.', '_', '-']).any(|part| part == *vague) {
                     issues.push(ValidationIssue::VagueComponentName(component.name.clone()));
                     break;
                 }
