@@ -1,0 +1,2067 @@
+  digraph RPG {
+    compound=true;
+    rankdir=TB;
+    fontname="Helvetica,Arial,sans-serif";
+    node [fontname="Helvetica,Arial,sans-serif", fontsize=10];
+    edge [fontname="Helvetica,Arial,sans-serif", fontsize=9];
+
+    // Nodes
+    n0 [
+      label="repository\\nrpg-encoder",
+      shape=folder,
+      style="filled,rounded",
+      fillcolor="#f0f0f0",
+    ];
+    n1 [
+      label="file\\nbasic.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n2 [
+      label="directory\\nexamples",
+      shape=folder,
+      style="filled,rounded",
+      fillcolor="#e8e8e8",
+    ];
+    n3 [
+      label="directory\\nrpg-encoder",
+      shape=folder,
+      style="filled,rounded",
+      fillcolor="#e8e8e8",
+    ];
+    n4 [
+      label="directory",
+      shape=folder,
+      style="filled,rounded",
+      fillcolor="#e8e8e8",
+    ];
+    n5 [
+      label="fn\\nmain",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n8 [
+      label="file\\nvisualize.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n9 [
+      label="struct\\nDotConfig",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n10 [
+      label="impl_trait\\nDotConfig",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n11 [
+      label="fn\\ndefault",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n12 [
+      label="impl\\nDotConfig",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n13 [
+      label="fn\\nfrom_args",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n14 [
+      label="fn\\nprint_usage",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n15 [
+      label="fn\\ncategory_color",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n16 [
+      label="fn\\ncategory_shape",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n17 [
+      label="fn\\nescape_dot_label",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n18 [
+      label="struct\\nGraphData",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n19 [
+      label="impl\\nGraphData\<'a\>",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n20 [
+      label="fn\\nfrom_graph",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n21 [
+      label="fn\\nshould_hide_node",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n22 [
+      label="fn\\nget_hidden_nodes",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n23 [
+      label="fn\\ngraph_to_dot",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n24 [
+      label="fn\\nwrite_cluster",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n25 [
+      label="fn\\nmain",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n29 [
+      label="file\\nintegration_test.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n30 [
+      label="directory\\ntests",
+      shape=folder,
+      style="filled,rounded",
+      fillcolor="#e8e8e8",
+    ];
+    n31 [
+      label="fn\\ncreate_test_rust_project",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n32 [
+      label="fn\\ntest_encode_rust_project",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n33 [
+      label="fn\\ntest_json_output",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n34 [
+      label="fn\\ntest_contains_edges",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n35 [
+      label="fn\\ntest_import_edges",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n36 [
+      label="fn\\ntest_graph_builder_directly",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n41 [
+      label="file\\ntrait.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n42 [
+      label="directory\\nparser",
+      shape=folder,
+      style="filled,rounded",
+      fillcolor="#e8e8e8",
+    ];
+    n43 [
+      label="directory\\nsrc",
+      shape=folder,
+      style="filled,rounded",
+      fillcolor="#e8e8e8",
+    ];
+    n44 [
+      label="trait\\nLanguageParser",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n45 [
+      label="fn\\ndefault_category",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n46 [
+      label="fn\\ncan_parse",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n47 [
+      label="struct\\nParserRegistry",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n48 [
+      label="impl\\nParserRegistry",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n49 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n50 [
+      label="fn\\nregister",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n51 [
+      label="fn\\nget_parser",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n52 [
+      label="fn\\nhas_parser",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n53 [
+      label="fn\\nlanguages",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n54 [
+      label="impl_trait\\nParserRegistry",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n55 [
+      label="fn\\ndefault",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n60 [
+      label="file\\ntypes.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n61 [
+      label="struct\\nImportInfo",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n62 [
+      label="impl\\nImportInfo",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n63 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n64 [
+      label="fn\\nwith_names",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n65 [
+      label="fn\\nwith_glob",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n66 [
+      label="fn\\nwith_location",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n67 [
+      label="struct\\nDefinitionInfo",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n68 [
+      label="impl\\nDefinitionInfo",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n69 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n70 [
+      label="fn\\nwith_location",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n71 [
+      label="fn\\nwith_parent",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n72 [
+      label="fn\\nwith_signature",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n73 [
+      label="fn\\nwith_visibility",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n74 [
+      label="fn\\nwith_doc",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n75 [
+      label="fn\\nwith_metadata",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n76 [
+      label="enum\\nCallKind",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n77 [
+      label="struct\\nCallInfo",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n78 [
+      label="impl\\nCallInfo",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n79 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n80 [
+      label="fn\\nwith_receiver",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n81 [
+      label="fn\\nwith_kind",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n82 [
+      label="fn\\nwith_location",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n83 [
+      label="fn\\nmethod",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n84 [
+      label="fn\\nassociated",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n85 [
+      label="enum\\nTypeRefKind",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n86 [
+      label="struct\\nTypeRefInfo",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n87 [
+      label="impl\\nTypeRefInfo",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n88 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n89 [
+      label="fn\\nwith_kind",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n90 [
+      label="fn\\nwith_location",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n91 [
+      label="fn\\nparam",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n92 [
+      label="fn\\nret",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n93 [
+      label="fn\\nfield",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n94 [
+      label="struct\\nReferenceInfo",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n95 [
+      label="impl\\nReferenceInfo",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n96 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n97 [
+      label="fn\\nwith_location",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n98 [
+      label="struct\\nParseResult",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n99 [
+      label="impl\\nParseResult",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n100 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n104 [
+      label="file\\nmod.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n105 [
+      label="mod\\ntypes",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n106 [
+      label="mod\\nr#trait",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n109 [
+      label="file\\nlib.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n110 [
+      label="mod\\ncore",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n111 [
+      label="mod\\nencoder",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n112 [
+      label="mod\\nerror",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n113 [
+      label="mod\\nlanguages",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n114 [
+      label="mod\\nparser",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n119 [
+      label="file\\nwalker.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n120 [
+      label="directory\\nencoder",
+      shape=folder,
+      style="filled,rounded",
+      fillcolor="#e8e8e8",
+    ];
+    n121 [
+      label="struct\\nFileWalker",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n122 [
+      label="impl\\nFileWalker",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n123 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n124 [
+      label="fn\\nwith_ignore_file",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n125 [
+      label="fn\\nwith_max_depth",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n126 [
+      label="fn\\nwalk",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n127 [
+      label="fn\\nwalk_with_parser_filter",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n131 [
+      label="file\\nbuilder.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n132 [
+      label="struct\\nGraphBuilder",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n133 [
+      label="impl\\nGraphBuilder",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n134 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n135 [
+      label="fn\\nwith_repo",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n136 [
+      label="fn\\nget_or_create_dir",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n137 [
+      label="fn\\nadd_file",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n138 [
+      label="fn\\nadd_definition",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n139 [
+      label="fn\\nadd_import",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n140 [
+      label="fn\\nadd_call",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n141 [
+      label="fn\\nadd_type_ref",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n142 [
+      label="fn\\nadd_parsed_file",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n143 [
+      label="fn\\nlink_imports",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n144 [
+      label="fn\\nlink_calls",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n145 [
+      label="fn\\nlink_type_refs",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n146 [
+      label="fn\\nlink_all",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n147 [
+      label="fn\\nbuild",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n148 [
+      label="fn\\ngraph",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n149 [
+      label="fn\\ngraph_mut",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n150 [
+      label="impl_trait\\nGraphBuilder",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n151 [
+      label="fn\\ndefault",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n156 [
+      label="file\\noutput.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n157 [
+      label="struct\\nSerializedNode",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n158 [
+      label="struct\\nSerializedLocation",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n159 [
+      label="struct\\nSerializedEdge",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n160 [
+      label="struct\\nGraphMetadata",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n161 [
+      label="struct\\nSerializedGraph",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n162 [
+      label="impl_trait\\nSerializedLocation",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n163 [
+      label="fn\\nfrom",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n164 [
+      label="fn\\nserialize_graph",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n165 [
+      label="fn\\nto_json",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n166 [
+      label="fn\\nto_json_compact",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n170 [
+      label="file\\nmod.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n171 [
+      label="mod\\nbuilder",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n172 [
+      label="mod\\noutput",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n173 [
+      label="mod\\nwalker",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n174 [
+      label="struct\\nRpgEncoder",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n175 [
+      label="impl_trait\\nRpgEncoder",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n176 [
+      label="fn\\ndefault",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n177 [
+      label="impl\\nRpgEncoder",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n178 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n179 [
+      label="fn\\nwith_parser",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n180 [
+      label="fn\\nregister_parser",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n181 [
+      label="fn\\nencode",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n182 [
+      label="fn\\ngraph",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n183 [
+      label="fn\\ninto_graph",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n184 [
+      label="fn\\nto_json",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n185 [
+      label="fn\\nto_json_compact",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n186 [
+      label="fn\\nlanguages",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n195 [
+      label="file\\nrust.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n196 [
+      label="directory\\nlanguages",
+      shape=folder,
+      style="filled,rounded",
+      fillcolor="#e8e8e8",
+    ];
+    n197 [
+      label="struct\\nRustParser",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n198 [
+      label="impl\\nRustParser",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n199 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n200 [
+      label="fn\\nnode_text",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n201 [
+      label="fn\\nextract_location",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n202 [
+      label="fn\\nextract_doc_comment",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n203 [
+      label="fn\\nextract_use_declaration",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n204 [
+      label="fn\\nextract_use_path",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n205 [
+      label="fn\\nextract_function",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n206 [
+      label="fn\\nextract_struct",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n207 [
+      label="fn\\nextract_enum",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n208 [
+      label="fn\\nextract_trait",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n209 [
+      label="fn\\nextract_impl",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n210 [
+      label="fn\\nextract_const",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n211 [
+      label="fn\\nextract_static",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n212 [
+      label="fn\\nextract_mod",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n213 [
+      label="fn\\nextract_type_alias",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n214 [
+      label="fn\\nextract_type_identifiers",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n215 [
+      label="fn\\ncollect_types",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n216 [
+      label="fn\\nextract_call_expression",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n217 [
+      label="fn\\nextract_type_refs_from_function",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n218 [
+      label="fn\\nextract_type_refs_from_struct",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n219 [
+      label="fn\\nwalk_and_extract",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n220 [
+      label="impl_trait\\nRustParser",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n221 [
+      label="fn\\ndefault",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n222 [
+      label="impl_trait\\nRustParser",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n223 [
+      label="fn\\nlanguage_name",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n224 [
+      label="fn\\nfile_extensions",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n225 [
+      label="fn\\nparse",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n231 [
+      label="file\\nmod.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n232 [
+      label="mod\\nrust",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n234 [
+      label="file\\nlocation.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n235 [
+      label="directory\\ncore",
+      shape=folder,
+      style="filled,rounded",
+      fillcolor="#e8e8e8",
+    ];
+    n236 [
+      label="struct\\nSourceLocation",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n237 [
+      label="impl\\nSourceLocation",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n238 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n239 [
+      label="fn\\nsingle_line",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n242 [
+      label="file\\ngraph.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n243 [
+      label="struct\\nRpgGraph",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n244 [
+      label="impl_trait\\nRpgGraph",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n245 [
+      label="fn\\ndefault",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n246 [
+      label="impl\\nRpgGraph",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n247 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n248 [
+      label="fn\\nadd_node",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n249 [
+      label="fn\\nadd_edge",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n250 [
+      label="fn\\nadd_typed_edge",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n251 [
+      label="fn\\nget_node",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n252 [
+      label="fn\\nget_node_mut",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n253 [
+      label="fn\\nnodes",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n254 [
+      label="fn\\nedges",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n255 [
+      label="fn\\nnode_count",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n256 [
+      label="fn\\nedge_count",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n257 [
+      label="fn\\nfind_node_by_path",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n258 [
+      label="fn\\nfind_node_by_name",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n259 [
+      label="fn\\nchildren_of",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n260 [
+      label="fn\\nto_petgraph",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n268 [
+      label="file\\nid.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n269 [
+      label="struct\\nNodeId",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n270 [
+      label="impl\\nNodeId",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n271 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n272 [
+      label="fn\\nindex",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n273 [
+      label="struct\\nEdgeId",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n274 [
+      label="impl\\nEdgeId",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n275 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n276 [
+      label="fn\\nindex",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n279 [
+      label="file\\nedge.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n280 [
+      label="enum\\nEdgeType",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n281 [
+      label="struct\\nEdge",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n282 [
+      label="impl\\nEdge",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n283 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n284 [
+      label="fn\\nwith_metadata",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n285 [
+      label="impl_trait\\nEdge",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n286 [
+      label="fn\\nfrom",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n289 [
+      label="file\\nmod.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n290 [
+      label="mod\\nedge",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n291 [
+      label="mod\\ngraph",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n292 [
+      label="mod\\nid",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n293 [
+      label="mod\\nlocation",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n294 [
+      label="mod\\nnode",
+      shape=component,
+      style="filled,rounded",
+      fillcolor="#98fb98",
+    ];
+    n300 [
+      label="file\\nnode.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n301 [
+      label="enum\\nNodeCategory",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n302 [
+      label="struct\\nNode",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n303 [
+      label="impl\\nNode",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n304 [
+      label="fn\\nnew",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n305 [
+      label="fn\\nwith_path",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n306 [
+      label="fn\\nwith_location",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n307 [
+      label="fn\\nwith_metadata",
+      shape=ellipse,
+      style="filled,rounded",
+      fillcolor="#90ee90",
+    ];
+    n313 [
+      label="file\\nerror.rs",
+      shape=note,
+      style="filled,rounded",
+      fillcolor="#fffacd",
+    ];
+    n314 [
+      label="enum\\nRpgError",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+    n315 [
+      label="type\\nResult",
+      shape=box,
+      style="filled,rounded",
+      fillcolor="#87ceeb",
+    ];
+
+    // Clusters
+    subgraph cluster_0 {
+      label="rpg-encoder";
+      style="rounded,filled";
+      fillcolor="#f5f5f5";
+      color="#cccccc";
+      n2;
+      n30;
+      n43;
+    }
+    subgraph cluster_1 {
+      label="src";
+      style="rounded,filled";
+      fillcolor="#f5f5f5";
+      color="#cccccc";
+      n42;
+      n120;
+      n196;
+      n235;
+    }
+
+    // Edges
+    n0 -> n4 [style="solid", color="#666666"];
+    n4 -> n3 [style="solid", color="#666666"];
+    n3 -> n2 [style="solid", color="#666666"];
+    n2 -> n1 [style="solid", color="#666666"];
+    n1 -> n5 [style="solid", color="#9C27B0"];
+    n2 -> n8 [style="solid", color="#666666"];
+    n8 -> n9 [style="solid", color="#9C27B0"];
+    n8 -> n10 [style="solid", color="#9C27B0"];
+    n8 -> n11 [style="solid", color="#9C27B0"];
+    n8 -> n12 [style="solid", color="#9C27B0"];
+    n8 -> n13 [style="solid", color="#9C27B0"];
+    n8 -> n14 [style="solid", color="#9C27B0"];
+    n8 -> n15 [style="solid", color="#9C27B0"];
+    n8 -> n16 [style="solid", color="#9C27B0"];
+    n8 -> n17 [style="solid", color="#9C27B0"];
+    n8 -> n18 [style="solid", color="#9C27B0"];
+    n8 -> n19 [style="solid", color="#9C27B0"];
+    n8 -> n20 [style="solid", color="#9C27B0"];
+    n8 -> n21 [style="solid", color="#9C27B0"];
+    n8 -> n22 [style="solid", color="#9C27B0"];
+    n8 -> n23 [style="solid", color="#9C27B0"];
+    n8 -> n24 [style="solid", color="#9C27B0"];
+    n8 -> n25 [style="solid", color="#9C27B0"];
+    n3 -> n30 [style="solid", color="#666666"];
+    n30 -> n29 [style="solid", color="#666666"];
+    n29 -> n31 [style="solid", color="#9C27B0"];
+    n29 -> n32 [style="solid", color="#9C27B0"];
+    n29 -> n33 [style="solid", color="#9C27B0"];
+    n29 -> n34 [style="solid", color="#9C27B0"];
+    n29 -> n35 [style="solid", color="#9C27B0"];
+    n29 -> n36 [style="solid", color="#9C27B0"];
+    n3 -> n43 [style="solid", color="#666666"];
+    n43 -> n42 [style="solid", color="#666666"];
+    n42 -> n41 [style="solid", color="#666666"];
+    n41 -> n44 [style="solid", color="#9C27B0"];
+    n41 -> n45 [style="solid", color="#9C27B0"];
+    n41 -> n46 [style="solid", color="#9C27B0"];
+    n41 -> n47 [style="solid", color="#9C27B0"];
+    n41 -> n48 [style="solid", color="#9C27B0"];
+    n41 -> n49 [style="solid", color="#9C27B0"];
+    n41 -> n50 [style="solid", color="#9C27B0"];
+    n41 -> n51 [style="solid", color="#9C27B0"];
+    n41 -> n52 [style="solid", color="#9C27B0"];
+    n41 -> n53 [style="solid", color="#9C27B0"];
+    n41 -> n54 [style="solid", color="#9C27B0"];
+    n41 -> n55 [style="solid", color="#9C27B0"];
+    n42 -> n60 [style="solid", color="#666666"];
+    n60 -> n61 [style="solid", color="#9C27B0"];
+    n60 -> n62 [style="solid", color="#9C27B0"];
+    n60 -> n63 [style="solid", color="#9C27B0"];
+    n60 -> n64 [style="solid", color="#9C27B0"];
+    n60 -> n65 [style="solid", color="#9C27B0"];
+    n60 -> n66 [style="solid", color="#9C27B0"];
+    n60 -> n67 [style="solid", color="#9C27B0"];
+    n60 -> n68 [style="solid", color="#9C27B0"];
+    n60 -> n69 [style="solid", color="#9C27B0"];
+    n60 -> n70 [style="solid", color="#9C27B0"];
+    n60 -> n71 [style="solid", color="#9C27B0"];
+    n60 -> n72 [style="solid", color="#9C27B0"];
+    n60 -> n73 [style="solid", color="#9C27B0"];
+    n60 -> n74 [style="solid", color="#9C27B0"];
+    n60 -> n75 [style="solid", color="#9C27B0"];
+    n60 -> n76 [style="solid", color="#9C27B0"];
+    n60 -> n77 [style="solid", color="#9C27B0"];
+    n60 -> n78 [style="solid", color="#9C27B0"];
+    n60 -> n79 [style="solid", color="#9C27B0"];
+    n60 -> n80 [style="solid", color="#9C27B0"];
+    n60 -> n81 [style="solid", color="#9C27B0"];
+    n60 -> n82 [style="solid", color="#9C27B0"];
+    n60 -> n83 [style="solid", color="#9C27B0"];
+    n60 -> n84 [style="solid", color="#9C27B0"];
+    n60 -> n85 [style="solid", color="#9C27B0"];
+    n60 -> n86 [style="solid", color="#9C27B0"];
+    n60 -> n87 [style="solid", color="#9C27B0"];
+    n60 -> n88 [style="solid", color="#9C27B0"];
+    n60 -> n89 [style="solid", color="#9C27B0"];
+    n60 -> n90 [style="solid", color="#9C27B0"];
+    n60 -> n91 [style="solid", color="#9C27B0"];
+    n60 -> n92 [style="solid", color="#9C27B0"];
+    n60 -> n93 [style="solid", color="#9C27B0"];
+    n60 -> n94 [style="solid", color="#9C27B0"];
+    n60 -> n95 [style="solid", color="#9C27B0"];
+    n60 -> n96 [style="solid", color="#9C27B0"];
+    n60 -> n97 [style="solid", color="#9C27B0"];
+    n60 -> n98 [style="solid", color="#9C27B0"];
+    n60 -> n99 [style="solid", color="#9C27B0"];
+    n60 -> n100 [style="solid", color="#9C27B0"];
+    n42 -> n104 [style="solid", color="#666666"];
+    n104 -> n105 [style="solid", color="#9C27B0"];
+    n104 -> n106 [style="solid", color="#9C27B0"];
+    n43 -> n109 [style="solid", color="#666666"];
+    n109 -> n110 [style="solid", color="#9C27B0"];
+    n109 -> n111 [style="solid", color="#9C27B0"];
+    n109 -> n112 [style="solid", color="#9C27B0"];
+    n109 -> n113 [style="solid", color="#9C27B0"];
+    n109 -> n114 [style="solid", color="#9C27B0"];
+    n43 -> n120 [style="solid", color="#666666"];
+    n120 -> n119 [style="solid", color="#666666"];
+    n119 -> n121 [style="solid", color="#9C27B0"];
+    n119 -> n122 [style="solid", color="#9C27B0"];
+    n119 -> n123 [style="solid", color="#9C27B0"];
+    n119 -> n124 [style="solid", color="#9C27B0"];
+    n119 -> n125 [style="solid", color="#9C27B0"];
+    n119 -> n126 [style="solid", color="#9C27B0"];
+    n119 -> n127 [style="solid", color="#9C27B0"];
+    n120 -> n131 [style="solid", color="#666666"];
+    n131 -> n132 [style="solid", color="#9C27B0"];
+    n131 -> n133 [style="solid", color="#9C27B0"];
+    n131 -> n134 [style="solid", color="#9C27B0"];
+    n131 -> n135 [style="solid", color="#9C27B0"];
+    n131 -> n136 [style="solid", color="#9C27B0"];
+    n131 -> n137 [style="solid", color="#9C27B0"];
+    n131 -> n138 [style="solid", color="#9C27B0"];
+    n131 -> n139 [style="solid", color="#9C27B0"];
+    n131 -> n140 [style="solid", color="#9C27B0"];
+    n131 -> n141 [style="solid", color="#9C27B0"];
+    n131 -> n142 [style="solid", color="#9C27B0"];
+    n131 -> n143 [style="solid", color="#9C27B0"];
+    n131 -> n144 [style="solid", color="#9C27B0"];
+    n131 -> n145 [style="solid", color="#9C27B0"];
+    n131 -> n146 [style="solid", color="#9C27B0"];
+    n131 -> n147 [style="solid", color="#9C27B0"];
+    n131 -> n148 [style="solid", color="#9C27B0"];
+    n131 -> n149 [style="solid", color="#9C27B0"];
+    n131 -> n150 [style="solid", color="#9C27B0"];
+    n131 -> n151 [style="solid", color="#9C27B0"];
+    n120 -> n156 [style="solid", color="#666666"];
+    n156 -> n157 [style="solid", color="#9C27B0"];
+    n156 -> n158 [style="solid", color="#9C27B0"];
+    n156 -> n159 [style="solid", color="#9C27B0"];
+    n156 -> n160 [style="solid", color="#9C27B0"];
+    n156 -> n161 [style="solid", color="#9C27B0"];
+    n156 -> n162 [style="solid", color="#9C27B0"];
+    n156 -> n163 [style="solid", color="#9C27B0"];
+    n156 -> n164 [style="solid", color="#9C27B0"];
+    n156 -> n165 [style="solid", color="#9C27B0"];
+    n156 -> n166 [style="solid", color="#9C27B0"];
+    n120 -> n170 [style="solid", color="#666666"];
+    n170 -> n171 [style="solid", color="#9C27B0"];
+    n170 -> n172 [style="solid", color="#9C27B0"];
+    n170 -> n173 [style="solid", color="#9C27B0"];
+    n170 -> n174 [style="solid", color="#9C27B0"];
+    n170 -> n175 [style="solid", color="#9C27B0"];
+    n170 -> n176 [style="solid", color="#9C27B0"];
+    n170 -> n177 [style="solid", color="#9C27B0"];
+    n170 -> n178 [style="solid", color="#9C27B0"];
+    n170 -> n179 [style="solid", color="#9C27B0"];
+    n170 -> n180 [style="solid", color="#9C27B0"];
+    n170 -> n181 [style="solid", color="#9C27B0"];
+    n170 -> n182 [style="solid", color="#9C27B0"];
+    n170 -> n183 [style="solid", color="#9C27B0"];
+    n170 -> n184 [style="solid", color="#9C27B0"];
+    n170 -> n185 [style="solid", color="#9C27B0"];
+    n170 -> n186 [style="solid", color="#9C27B0"];
+    n43 -> n196 [style="solid", color="#666666"];
+    n196 -> n195 [style="solid", color="#666666"];
+    n195 -> n197 [style="solid", color="#9C27B0"];
+    n195 -> n198 [style="solid", color="#9C27B0"];
+    n195 -> n199 [style="solid", color="#9C27B0"];
+    n195 -> n200 [style="solid", color="#9C27B0"];
+    n195 -> n201 [style="solid", color="#9C27B0"];
+    n195 -> n202 [style="solid", color="#9C27B0"];
+    n195 -> n203 [style="solid", color="#9C27B0"];
+    n195 -> n204 [style="solid", color="#9C27B0"];
+    n195 -> n205 [style="solid", color="#9C27B0"];
+    n195 -> n206 [style="solid", color="#9C27B0"];
+    n195 -> n207 [style="solid", color="#9C27B0"];
+    n195 -> n208 [style="solid", color="#9C27B0"];
+    n195 -> n209 [style="solid", color="#9C27B0"];
+    n195 -> n210 [style="solid", color="#9C27B0"];
+    n195 -> n211 [style="solid", color="#9C27B0"];
+    n195 -> n212 [style="solid", color="#9C27B0"];
+    n195 -> n213 [style="solid", color="#9C27B0"];
+    n195 -> n214 [style="solid", color="#9C27B0"];
+    n195 -> n215 [style="solid", color="#9C27B0"];
+    n195 -> n216 [style="solid", color="#9C27B0"];
+    n195 -> n217 [style="solid", color="#9C27B0"];
+    n195 -> n218 [style="solid", color="#9C27B0"];
+    n195 -> n219 [style="solid", color="#9C27B0"];
+    n195 -> n220 [style="solid", color="#9C27B0"];
+    n195 -> n221 [style="solid", color="#9C27B0"];
+    n195 -> n222 [style="solid", color="#9C27B0"];
+    n195 -> n223 [style="solid", color="#9C27B0"];
+    n195 -> n224 [style="solid", color="#9C27B0"];
+    n195 -> n225 [style="solid", color="#9C27B0"];
+    n196 -> n231 [style="solid", color="#666666"];
+    n231 -> n232 [style="solid", color="#9C27B0"];
+    n43 -> n235 [style="solid", color="#666666"];
+    n235 -> n234 [style="solid", color="#666666"];
+    n234 -> n236 [style="solid", color="#9C27B0"];
+    n234 -> n237 [style="solid", color="#9C27B0"];
+    n234 -> n238 [style="solid", color="#9C27B0"];
+    n234 -> n239 [style="solid", color="#9C27B0"];
+    n235 -> n242 [style="solid", color="#666666"];
+    n242 -> n243 [style="solid", color="#9C27B0"];
+    n242 -> n244 [style="solid", color="#9C27B0"];
+    n242 -> n245 [style="solid", color="#9C27B0"];
+    n242 -> n246 [style="solid", color="#9C27B0"];
+    n242 -> n247 [style="solid", color="#9C27B0"];
+    n242 -> n248 [style="solid", color="#9C27B0"];
+    n242 -> n249 [style="solid", color="#9C27B0"];
+    n242 -> n250 [style="solid", color="#9C27B0"];
+    n242 -> n251 [style="solid", color="#9C27B0"];
+    n242 -> n252 [style="solid", color="#9C27B0"];
+    n242 -> n253 [style="solid", color="#9C27B0"];
+    n242 -> n254 [style="solid", color="#9C27B0"];
+    n242 -> n255 [style="solid", color="#9C27B0"];
+    n242 -> n256 [style="solid", color="#9C27B0"];
+    n242 -> n257 [style="solid", color="#9C27B0"];
+    n242 -> n258 [style="solid", color="#9C27B0"];
+    n242 -> n259 [style="solid", color="#9C27B0"];
+    n242 -> n260 [style="solid", color="#9C27B0"];
+    n235 -> n268 [style="solid", color="#666666"];
+    n268 -> n269 [style="solid", color="#9C27B0"];
+    n268 -> n270 [style="solid", color="#9C27B0"];
+    n268 -> n271 [style="solid", color="#9C27B0"];
+    n268 -> n272 [style="solid", color="#9C27B0"];
+    n268 -> n273 [style="solid", color="#9C27B0"];
+    n268 -> n274 [style="solid", color="#9C27B0"];
+    n268 -> n275 [style="solid", color="#9C27B0"];
+    n268 -> n276 [style="solid", color="#9C27B0"];
+    n235 -> n279 [style="solid", color="#666666"];
+    n279 -> n280 [style="solid", color="#9C27B0"];
+    n279 -> n281 [style="solid", color="#9C27B0"];
+    n279 -> n282 [style="solid", color="#9C27B0"];
+    n279 -> n283 [style="solid", color="#9C27B0"];
+    n279 -> n284 [style="solid", color="#9C27B0"];
+    n279 -> n285 [style="solid", color="#9C27B0"];
+    n279 -> n286 [style="solid", color="#9C27B0"];
+    n235 -> n289 [style="solid", color="#666666"];
+    n289 -> n290 [style="solid", color="#9C27B0"];
+    n289 -> n291 [style="solid", color="#9C27B0"];
+    n289 -> n292 [style="solid", color="#9C27B0"];
+    n289 -> n293 [style="solid", color="#9C27B0"];
+    n289 -> n294 [style="solid", color="#9C27B0"];
+    n235 -> n300 [style="solid", color="#666666"];
+    n300 -> n301 [style="solid", color="#9C27B0"];
+    n300 -> n302 [style="solid", color="#9C27B0"];
+    n300 -> n303 [style="solid", color="#9C27B0"];
+    n300 -> n304 [style="solid", color="#9C27B0"];
+    n300 -> n305 [style="solid", color="#9C27B0"];
+    n300 -> n306 [style="solid", color="#9C27B0"];
+    n300 -> n307 [style="solid", color="#9C27B0"];
+    n43 -> n313 [style="solid", color="#666666"];
+    n313 -> n314 [style="solid", color="#9C27B0"];
+    n313 -> n315 [style="solid", color="#9C27B0"];
+    n5 -> n181 [style="solid", color="#4CAF50"];
+    n5 -> n184 [style="solid", color="#4CAF50"];
+    n13 -> n245 [style="solid", color="#4CAF50"];
+    n13 -> n225 [style="solid", color="#4CAF50"];
+    n13 -> n14 [style="solid", color="#4CAF50"];
+    n20 -> n253 [style="solid", color="#4CAF50"];
+    n20 -> n254 [style="solid", color="#4CAF50"];
+    n22 -> n21 [style="solid", color="#4CAF50"];
+    n23 -> n22 [style="solid", color="#4CAF50"];
+    n24 -> n24 [style="solid", color="#4CAF50"];
+    n23 -> n24 [style="solid", color="#4CAF50"];
+    n25 -> n181 [style="solid", color="#4CAF50"];
+    n25 -> n23 [style="solid", color="#4CAF50"];
+    n32 -> n31 [style="solid", color="#4CAF50"];
+    n32 -> n181 [style="solid", color="#4CAF50"];
+    n32 -> n253 [style="solid", color="#4CAF50"];
+    n32 -> n253 [style="solid", color="#4CAF50"];
+    n33 -> n31 [style="solid", color="#4CAF50"];
+    n33 -> n181 [style="solid", color="#4CAF50"];
+    n33 -> n184 [style="solid", color="#4CAF50"];
+    n34 -> n31 [style="solid", color="#4CAF50"];
+    n34 -> n181 [style="solid", color="#4CAF50"];
+    n34 -> n254 [style="solid", color="#4CAF50"];
+    n35 -> n31 [style="solid", color="#4CAF50"];
+    n35 -> n181 [style="solid", color="#4CAF50"];
+    n35 -> n253 [style="solid", color="#4CAF50"];
+    n36 -> n135 [style="solid", color="#4CAF50"];
+    n36 -> n147 [style="solid", color="#4CAF50"];
+    n36 -> n253 [style="solid", color="#4CAF50"];
+    n46 -> n224 [style="solid", color="#4CAF50"];
+    n50 -> n224 [style="solid", color="#4CAF50"];
+    n52 -> n51 [style="solid", color="#4CAF50"];
+    n53 -> n223 [style="solid", color="#4CAF50"];
+    n55 -> n304 [style="solid", color="#4CAF50"];
+    n126 -> n147 [style="solid", color="#4CAF50"];
+    n127 -> n126 [style="solid", color="#4CAF50"];
+    n127 -> n52 [style="solid", color="#4CAF50"];
+    n135 -> n305 [style="solid", color="#4CAF50"];
+    n135 -> n248 [style="solid", color="#4CAF50"];
+    n136 -> n305 [style="solid", color="#4CAF50"];
+    n136 -> n255 [style="solid", color="#4CAF50"];
+    n136 -> n248 [style="solid", color="#4CAF50"];
+    n136 -> n136 [style="solid", color="#4CAF50"];
+    n136 -> n250 [style="solid", color="#4CAF50"];
+    n136 -> n250 [style="solid", color="#4CAF50"];
+    n136 -> n250 [style="solid", color="#4CAF50"];
+    n137 -> n305 [style="solid", color="#4CAF50"];
+    n137 -> n255 [style="solid", color="#4CAF50"];
+    n137 -> n248 [style="solid", color="#4CAF50"];
+    n137 -> n136 [style="solid", color="#4CAF50"];
+    n137 -> n250 [style="solid", color="#4CAF50"];
+    n137 -> n250 [style="solid", color="#4CAF50"];
+    n138 -> n255 [style="solid", color="#4CAF50"];
+    n138 -> n306 [style="solid", color="#4CAF50"];
+    n138 -> n248 [style="solid", color="#4CAF50"];
+    n138 -> n250 [style="solid", color="#4CAF50"];
+    n139 -> n255 [style="solid", color="#4CAF50"];
+    n139 -> n248 [style="solid", color="#4CAF50"];
+    n139 -> n250 [style="solid", color="#4CAF50"];
+    n142 -> n137 [style="solid", color="#4CAF50"];
+    n142 -> n138 [style="solid", color="#4CAF50"];
+    n142 -> n139 [style="solid", color="#4CAF50"];
+    n142 -> n140 [style="solid", color="#4CAF50"];
+    n142 -> n141 [style="solid", color="#4CAF50"];
+    n143 -> n253 [style="solid", color="#4CAF50"];
+    n143 -> n253 [style="solid", color="#4CAF50"];
+    n143 -> n250 [style="solid", color="#4CAF50"];
+    n144 -> n253 [style="solid", color="#4CAF50"];
+    n144 -> n249 [style="solid", color="#4CAF50"];
+    n145 -> n253 [style="solid", color="#4CAF50"];
+    n145 -> n249 [style="solid", color="#4CAF50"];
+    n146 -> n143 [style="solid", color="#4CAF50"];
+    n146 -> n144 [style="solid", color="#4CAF50"];
+    n146 -> n145 [style="solid", color="#4CAF50"];
+    n151 -> n304 [style="solid", color="#4CAF50"];
+    n164 -> n253 [style="solid", color="#4CAF50"];
+    n164 -> n253 [style="solid", color="#4CAF50"];
+    n164 -> n254 [style="solid", color="#4CAF50"];
+    n165 -> n164 [style="solid", color="#4CAF50"];
+    n166 -> n164 [style="solid", color="#4CAF50"];
+    n176 -> n304 [style="solid", color="#4CAF50"];
+    n178 -> n50 [style="solid", color="#4CAF50"];
+    n179 -> n50 [style="solid", color="#4CAF50"];
+    n180 -> n50 [style="solid", color="#4CAF50"];
+    n181 -> n135 [style="solid", color="#4CAF50"];
+    n181 -> n127 [style="solid", color="#4CAF50"];
+    n181 -> n51 [style="solid", color="#4CAF50"];
+    n181 -> n223 [style="solid", color="#4CAF50"];
+    n181 -> n225 [style="solid", color="#4CAF50"];
+    n181 -> n142 [style="solid", color="#4CAF50"];
+    n181 -> n146 [style="solid", color="#4CAF50"];
+    n181 -> n147 [style="solid", color="#4CAF50"];
+    n184 -> n184 [style="solid", color="#4CAF50"];
+    n185 -> n185 [style="solid", color="#4CAF50"];
+    n186 -> n186 [style="solid", color="#4CAF50"];
+    n202 -> n200 [style="solid", color="#4CAF50"];
+    n204 -> n126 [style="solid", color="#4CAF50"];
+    n204 -> n204 [style="solid", color="#4CAF50"];
+    n204 -> n126 [style="solid", color="#4CAF50"];
+    n204 -> n204 [style="solid", color="#4CAF50"];
+    n203 -> n126 [style="solid", color="#4CAF50"];
+    n203 -> n204 [style="solid", color="#4CAF50"];
+    n203 -> n201 [style="solid", color="#4CAF50"];
+    n205 -> n200 [style="solid", color="#4CAF50"];
+    n205 -> n201 [style="solid", color="#4CAF50"];
+    n205 -> n200 [style="solid", color="#4CAF50"];
+    n205 -> n200 [style="solid", color="#4CAF50"];
+    n205 -> n200 [style="solid", color="#4CAF50"];
+    n205 -> n202 [style="solid", color="#4CAF50"];
+    n206 -> n200 [style="solid", color="#4CAF50"];
+    n206 -> n201 [style="solid", color="#4CAF50"];
+    n206 -> n200 [style="solid", color="#4CAF50"];
+    n206 -> n202 [style="solid", color="#4CAF50"];
+    n207 -> n200 [style="solid", color="#4CAF50"];
+    n207 -> n201 [style="solid", color="#4CAF50"];
+    n207 -> n200 [style="solid", color="#4CAF50"];
+    n207 -> n202 [style="solid", color="#4CAF50"];
+    n208 -> n200 [style="solid", color="#4CAF50"];
+    n208 -> n201 [style="solid", color="#4CAF50"];
+    n208 -> n200 [style="solid", color="#4CAF50"];
+    n208 -> n202 [style="solid", color="#4CAF50"];
+    n209 -> n200 [style="solid", color="#4CAF50"];
+    n209 -> n200 [style="solid", color="#4CAF50"];
+    n209 -> n201 [style="solid", color="#4CAF50"];
+    n210 -> n200 [style="solid", color="#4CAF50"];
+    n210 -> n201 [style="solid", color="#4CAF50"];
+    n210 -> n200 [style="solid", color="#4CAF50"];
+    n210 -> n202 [style="solid", color="#4CAF50"];
+    n211 -> n200 [style="solid", color="#4CAF50"];
+    n211 -> n201 [style="solid", color="#4CAF50"];
+    n211 -> n200 [style="solid", color="#4CAF50"];
+    n211 -> n202 [style="solid", color="#4CAF50"];
+    n212 -> n200 [style="solid", color="#4CAF50"];
+    n212 -> n201 [style="solid", color="#4CAF50"];
+    n212 -> n200 [style="solid", color="#4CAF50"];
+    n212 -> n202 [style="solid", color="#4CAF50"];
+    n213 -> n200 [style="solid", color="#4CAF50"];
+    n213 -> n201 [style="solid", color="#4CAF50"];
+    n213 -> n200 [style="solid", color="#4CAF50"];
+    n213 -> n202 [style="solid", color="#4CAF50"];
+    n215 -> n215 [style="solid", color="#4CAF50"];
+    n215 -> n126 [style="solid", color="#4CAF50"];
+    n215 -> n215 [style="solid", color="#4CAF50"];
+    n215 -> n126 [style="solid", color="#4CAF50"];
+    n215 -> n215 [style="solid", color="#4CAF50"];
+    n214 -> n215 [style="solid", color="#4CAF50"];
+    n216 -> n201 [style="solid", color="#4CAF50"];
+    n216 -> n200 [style="solid", color="#4CAF50"];
+    n216 -> n200 [style="solid", color="#4CAF50"];
+    n216 -> n200 [style="solid", color="#4CAF50"];
+    n216 -> n200 [style="solid", color="#4CAF50"];
+    n216 -> n200 [style="solid", color="#4CAF50"];
+    n216 -> n306 [style="solid", color="#4CAF50"];
+    n216 -> n89 [style="solid", color="#4CAF50"];
+    n216 -> n80 [style="solid", color="#4CAF50"];
+    n217 -> n126 [style="solid", color="#4CAF50"];
+    n217 -> n214 [style="solid", color="#4CAF50"];
+    n217 -> n214 [style="solid", color="#4CAF50"];
+    n218 -> n126 [style="solid", color="#4CAF50"];
+    n218 -> n214 [style="solid", color="#4CAF50"];
+    n219 -> n203 [style="solid", color="#4CAF50"];
+    n219 -> n205 [style="solid", color="#4CAF50"];
+    n219 -> n217 [style="solid", color="#4CAF50"];
+    n219 -> n126 [style="solid", color="#4CAF50"];
+    n219 -> n219 [style="solid", color="#4CAF50"];
+    n219 -> n206 [style="solid", color="#4CAF50"];
+    n219 -> n218 [style="solid", color="#4CAF50"];
+    n219 -> n207 [style="solid", color="#4CAF50"];
+    n219 -> n208 [style="solid", color="#4CAF50"];
+    n219 -> n209 [style="solid", color="#4CAF50"];
+    n219 -> n210 [style="solid", color="#4CAF50"];
+    n219 -> n211 [style="solid", color="#4CAF50"];
+    n219 -> n212 [style="solid", color="#4CAF50"];
+    n219 -> n213 [style="solid", color="#4CAF50"];
+    n219 -> n216 [style="solid", color="#4CAF50"];
+    n219 -> n214 [style="solid", color="#4CAF50"];
+    n219 -> n89 [style="solid", color="#4CAF50"];
+    n219 -> n126 [style="solid", color="#4CAF50"];
+    n219 -> n219 [style="solid", color="#4CAF50"];
+    n221 -> n304 [style="solid", color="#4CAF50"];
+    n225 -> n225 [style="solid", color="#4CAF50"];
+    n225 -> n126 [style="solid", color="#4CAF50"];
+    n225 -> n219 [style="solid", color="#4CAF50"];
+    n239 -> n304 [style="solid", color="#4CAF50"];
+    n245 -> n304 [style="solid", color="#4CAF50"];
+    n250 -> n249 [style="solid", color="#4CAF50"];
+    n251 -> n276 [style="solid", color="#4CAF50"];
+    n252 -> n276 [style="solid", color="#4CAF50"];
+    n259 -> n251 [style="solid", color="#4CAF50"];
+    n260 -> n248 [style="solid", color="#4CAF50"];
+    n260 -> n249 [style="solid", color="#4CAF50"];
+    n286 -> n304 [style="solid", color="#4CAF50"];
+    n15 -> n301 [style="dotted", color="#E91E63"];
+    n16 -> n301 [style="dotted", color="#E91E63"];
+    n20 -> n243 [style="dotted", color="#E91E63"];
+    n20 -> n9 [style="dotted", color="#E91E63"];
+    n21 -> n302 [style="dotted", color="#E91E63"];
+    n21 -> n9 [style="dotted", color="#E91E63"];
+    n22 -> n9 [style="dotted", color="#E91E63"];
+    n22 -> n269 [style="dotted", color="#E91E63"];
+    n23 -> n243 [style="dotted", color="#E91E63"];
+    n23 -> n9 [style="dotted", color="#E91E63"];
+    n23 -> n269 [style="dotted", color="#E91E63"];
+    n23 -> n269 [style="dotted", color="#E91E63"];
+    n24 -> n269 [style="dotted", color="#E91E63"];
+    n24 -> n243 [style="dotted", color="#E91E63"];
+    n24 -> n269 [style="dotted", color="#E91E63"];
+    n31 -> n315 [style="dotted", color="#E91E63"];
+    n45 -> n301 [style="dotted", color="#E91E63"];
+    n50 -> n44 [style="dotted", color="#E91E63"];
+    n51 -> n44 [style="dotted", color="#E91E63"];
+    n97 -> n236 [style="dotted", color="#E91E63"];
+    n97 -> n236 [style="dotted", color="#E91E63"];
+    n89 -> n76 [style="dotted", color="#E91E63"];
+    n97 -> n236 [style="dotted", color="#E91E63"];
+    n89 -> n85 [style="dotted", color="#E91E63"];
+    n97 -> n236 [style="dotted", color="#E91E63"];
+    n97 -> n236 [style="dotted", color="#E91E63"];
+    n126 -> n315 [style="dotted", color="#E91E63"];
+    n127 -> n47 [style="dotted", color="#E91E63"];
+    n127 -> n315 [style="dotted", color="#E91E63"];
+    n136 -> n269 [style="dotted", color="#E91E63"];
+    n137 -> n269 [style="dotted", color="#E91E63"];
+    n138 -> n67 [style="dotted", color="#E91E63"];
+    n138 -> n269 [style="dotted", color="#E91E63"];
+    n138 -> n269 [style="dotted", color="#E91E63"];
+    n139 -> n61 [style="dotted", color="#E91E63"];
+    n139 -> n269 [style="dotted", color="#E91E63"];
+    n140 -> n269 [style="dotted", color="#E91E63"];
+    n140 -> n77 [style="dotted", color="#E91E63"];
+    n141 -> n269 [style="dotted", color="#E91E63"];
+    n141 -> n86 [style="dotted", color="#E91E63"];
+    n142 -> n98 [style="dotted", color="#E91E63"];
+    n142 -> n315 [style="dotted", color="#E91E63"];
+    n142 -> n269 [style="dotted", color="#E91E63"];
+    n142 -> n269 [style="dotted", color="#E91E63"];
+    n143 -> n269 [style="dotted", color="#E91E63"];
+    n143 -> n269 [style="dotted", color="#E91E63"];
+    n144 -> n269 [style="dotted", color="#E91E63"];
+    n145 -> n269 [style="dotted", color="#E91E63"];
+    n147 -> n243 [style="dotted", color="#E91E63"];
+    n148 -> n243 [style="dotted", color="#E91E63"];
+    n149 -> n243 [style="dotted", color="#E91E63"];
+    n163 -> n236 [style="dotted", color="#E91E63"];
+    n164 -> n243 [style="dotted", color="#E91E63"];
+    n164 -> n161 [style="dotted", color="#E91E63"];
+    n164 -> n157 [style="dotted", color="#E91E63"];
+    n164 -> n159 [style="dotted", color="#E91E63"];
+    n165 -> n243 [style="dotted", color="#E91E63"];
+    n165 -> n315 [style="dotted", color="#E91E63"];
+    n166 -> n243 [style="dotted", color="#E91E63"];
+    n166 -> n315 [style="dotted", color="#E91E63"];
+    n179 -> n44 [style="dotted", color="#E91E63"];
+    n180 -> n44 [style="dotted", color="#E91E63"];
+    n181 -> n315 [style="dotted", color="#E91E63"];
+    n181 -> n243 [style="dotted", color="#E91E63"];
+    n182 -> n243 [style="dotted", color="#E91E63"];
+    n183 -> n243 [style="dotted", color="#E91E63"];
+    n184 -> n315 [style="dotted", color="#E91E63"];
+    n185 -> n315 [style="dotted", color="#E91E63"];
+    n199 -> n315 [style="dotted", color="#E91E63"];
+    n201 -> n236 [style="dotted", color="#E91E63"];
+    n203 -> n61 [style="dotted", color="#E91E63"];
+    n205 -> n67 [style="dotted", color="#E91E63"];
+    n206 -> n67 [style="dotted", color="#E91E63"];
+    n207 -> n67 [style="dotted", color="#E91E63"];
+    n208 -> n67 [style="dotted", color="#E91E63"];
+    n209 -> n67 [style="dotted", color="#E91E63"];
+    n210 -> n67 [style="dotted", color="#E91E63"];
+    n211 -> n67 [style="dotted", color="#E91E63"];
+    n212 -> n67 [style="dotted", color="#E91E63"];
+    n213 -> n67 [style="dotted", color="#E91E63"];
+    n216 -> n98 [style="dotted", color="#E91E63"];
+    n217 -> n98 [style="dotted", color="#E91E63"];
+    n218 -> n98 [style="dotted", color="#E91E63"];
+    n219 -> n98 [style="dotted", color="#E91E63"];
+    n225 -> n315 [style="dotted", color="#E91E63"];
+    n225 -> n98 [style="dotted", color="#E91E63"];
+    n248 -> n302 [style="dotted", color="#E91E63"];
+    n248 -> n269 [style="dotted", color="#E91E63"];
+    n249 -> n269 [style="dotted", color="#E91E63"];
+    n249 -> n269 [style="dotted", color="#E91E63"];
+    n249 -> n281 [style="dotted", color="#E91E63"];
+    n249 -> n273 [style="dotted", color="#E91E63"];
+    n250 -> n269 [style="dotted", color="#E91E63"];
+    n250 -> n269 [style="dotted", color="#E91E63"];
+    n250 -> n280 [style="dotted", color="#E91E63"];
+    n250 -> n273 [style="dotted", color="#E91E63"];
+    n251 -> n269 [style="dotted", color="#E91E63"];
+    n251 -> n302 [style="dotted", color="#E91E63"];
+    n252 -> n269 [style="dotted", color="#E91E63"];
+    n252 -> n302 [style="dotted", color="#E91E63"];
+    n253 -> n302 [style="dotted", color="#E91E63"];
+    n254 -> n269 [style="dotted", color="#E91E63"];
+    n254 -> n281 [style="dotted", color="#E91E63"];
+    n257 -> n302 [style="dotted", color="#E91E63"];
+    n258 -> n301 [style="dotted", color="#E91E63"];
+    n258 -> n302 [style="dotted", color="#E91E63"];
+    n259 -> n269 [style="dotted", color="#E91E63"];
+    n259 -> n302 [style="dotted", color="#E91E63"];
+    n260 -> n302 [style="dotted", color="#E91E63"];
+    n260 -> n281 [style="dotted", color="#E91E63"];
+    n283 -> n280 [style="dotted", color="#E91E63"];
+    n286 -> n280 [style="dotted", color="#E91E63"];
+    n304 -> n269 [style="dotted", color="#E91E63"];
+    n304 -> n301 [style="dotted", color="#E91E63"];
+    n306 -> n236 [style="dotted", color="#E91E63"];
+  }

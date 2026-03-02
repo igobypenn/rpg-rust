@@ -1,0 +1,45 @@
+[package]
+name = "rpg-generator"
+version = "0.1.0"
+edition = "2021"
+description = "Generate codebases from natural language descriptions using Repository Planning Graphs"
+license = "Apache-2.0"
+authors = ["rpg-rust contributors"]
+
+[dependencies]
+rpg-encoder = { path = "../rpg-encoder" }
+
+# Async runtime
+tokio = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Utilities
+thiserror = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+
+# HTTP client for LLM (optional)
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false, optional = true }
+
+# CLI availability checking
+which = { version = "6.0", optional = true }
+
+[dev-dependencies]
+tokio-test = "0.4"
+tempfile = "3"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+[features]
+default = ["llm", "opencode"]
+llm = ["rpg-encoder/llm", "dep:reqwest"]
+
+# Agent features (CLI adapters)
+opencode = ["dep:which"]
+trae = ["dep:which"]
+claude = ["dep:which"]
+all-agents = ["opencode", "trae", "claude"]

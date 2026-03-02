@@ -1,0 +1,4256 @@
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:46103/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 129 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "```json\n                    {\"name\": \"test\", \"value\": 42}\n                    ```"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:37827/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 403 Forbidden
+Duration: 12ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:36625/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 401 Unauthorized
+Duration: 12ms
+Length: 27 chars
+
+Response JSON:
+{
+  "error": "Invalid API key"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:41853/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] sys1
+  [user] user1
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "sys1"
+    },
+    {
+      "role": "user",
+      "content": "user1"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:38355/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 500 Internal Server Error
+Duration: 13ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:33633/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 13ms
+Length: 8 chars
+
+Response Text:
+not json
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:44099/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 400 Bad Request
+Duration: 13ms
+Length: 27 chars
+
+Response JSON:
+{
+  "error": "Invalid request"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:41005/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 60 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "{\"status\": \"ok\"}"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:35807/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 61 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "not valid json at all"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:43363/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 13ms
+Length: 62 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "🎉 Hello 世界 🌍"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:40913/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 503 Service Unavailable
+Duration: 13ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:39461/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 53 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "Hello, world!"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:41853/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] sys2
+  [user] user2
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "sys2"
+    },
+    {
+      "role": "user",
+      "content": "user2"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 0ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:37425/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 13ms
+Length: 14 chars
+
+Response JSON:
+{
+  "choices": []
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:40695/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 429 Too Many Requests
+Duration: 13ms
+Length: 31 chars
+
+Response JSON:
+{
+  "error": "Rate limit exceeded"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:44297/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 10040 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:36211/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 64ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:36211/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 64ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:36211/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 116ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772035910
+URL: http://127.0.0.1:36211/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 116ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:36929/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 500 Internal Server Error
+Duration: 0ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:42005/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 0ms
+Length: 60 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "{\"status\": \"ok\"}"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:32923/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 403 Forbidden
+Duration: 17ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:33247/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 429 Too Many Requests
+Duration: 0ms
+Length: 31 chars
+
+Response JSON:
+{
+  "error": "Rate limit exceeded"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:42533/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 401 Unauthorized
+Duration: 17ms
+Length: 27 chars
+
+Response JSON:
+{
+  "error": "Invalid API key"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:40441/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] sys1
+  [user] user1
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "sys1"
+    },
+    {
+      "role": "user",
+      "content": "user1"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 17ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:44201/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 129 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "```json\n                    {\"name\": \"test\", \"value\": 42}\n                    ```"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:41179/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 14 chars
+
+Response JSON:
+{
+  "choices": []
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:43279/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 400 Bad Request
+Duration: 12ms
+Length: 27 chars
+
+Response JSON:
+{
+  "error": "Invalid request"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:40623/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 503 Service Unavailable
+Duration: 12ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:44035/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 62 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "🎉 Hello 世界 🌍"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:37027/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 8 chars
+
+Response Text:
+not json
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:43579/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 53 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "Hello, world!"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:40441/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] sys2
+  [user] user2
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "sys2"
+    },
+    {
+      "role": "user",
+      "content": "user2"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 0ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:33059/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 12ms
+Length: 61 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "not valid json at all"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:42661/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 11ms
+Length: 10040 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:41557/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 63ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:41557/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 63ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:41557/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 103ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: http://127.0.0.1:41557/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 103ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: https://api.z.ai/api/coding/paas/v4/chat/completions
+Model: glm-4.7-flash
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] You are a code analyzer. You MUST respond ONLY with valid JSON, no other text.
+This response must be a JSON object with this exact structure:
+{
+  "name": "function_name",
+  "description": "brief descr...
+  [user] fn add(a: i32, b: i32) -> i32 { a + b }
+
+Full Request JSON:
+{
+  "model": "glm-4.7-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a code analyzer. You MUST respond ONLY with valid JSON, no other text.\nThis response must be a JSON object with this exact structure:\n{\n  \"name\": \"function_name\",\n  \"description\": \"brief description\"\n}\n\nDo not include any text before or after the JSON. Do not use markdown code blocks.\nDo not show your thinking process. Output ONLY the JSON object."
+    },
+    {
+      "role": "user",
+      "content": "fn add(a: i32, b: i32) -> i32 { a + b }"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 429 Too Many Requests
+Duration: 625ms
+Length: 69 chars
+
+Response JSON:
+{
+  "error": {
+    "code": "1302",
+    "message": "Rate limit reached for requests"
+  }
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036058
+URL: https://api.z.ai/api/coding/paas/v4/chat/completions
+Model: glm-4.7-flash
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] You are a code analyzer. Respond with a brief description.
+  [user] fn add(a: i32, b: i32) -> i32 { a + b }
+
+Full Request JSON:
+{
+  "model": "glm-4.7-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a code analyzer. Respond with a brief description."
+    },
+    {
+      "role": "user",
+      "content": "fn add(a: i32, b: i32) -> i32 { a + b }"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 33075ms
+Length: 1577 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Defines a function in Rust that takes two 32-bit integers as arguments and returns their sum.",
+        "reasoning_content": "1.  **Analyze the Request:**\n    *   Input: A snippet of Rust code: `fn add(a: i32, b: i32) -> i32 { a + b }`.\n    *   Role: Code Analyzer.\n    *   Constraint: Respond with a *brief description*.\n\n2.  **Analyze the Code:**\n    *   Language: Rust.\n    *   Definition: `fn` defines a function.\n    *   Name: `add`.\n    *   Parameters: `a: i32, b: i32` takes two integer arguments.\n    *   Return type: `-> i32` returns an integer result.\n    *   Body: `{ a + b }` performs the addition.\n\n3.  **Drafting the Description:**\n    *   *Draft 1:* This is a Rust function named add that takes two integers and returns their sum. (A bit too long)\n    *   *Draft 2:* Defines a function called add that takes two 32-bit integers and returns their sum. (Good)\n    *   *Draft 3:* A simple function in Rust that adds two 32-bit integers and returns the result. (Concise)\n\n4.  **Final Polish:**\n    *   Make it punchy.\n    *   \"Defines a function in Rust that accepts two 32-bit integers as arguments and returns their sum.\"\n\n5.  **Final Output Generation:** (Matching the selected draft).",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1772036091,
+  "id": "202602260014183e5778e0017144af",
+  "model": "glm-4.7-flash",
+  "object": "chat.completion",
+  "request_id": "202602260014183e5778e0017144af",
+  "usage": {
+    "completion_tokens": 325,
+    "prompt_tokens": 38,
+    "prompt_tokens_details": {
+      "cached_tokens": 5
+    },
+    "total_tokens": 363
+  }
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:45627/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 500 Internal Server Error
+Duration: 0ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:43063/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 6ms
+Length: 62 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "🎉 Hello 世界 🌍"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:35091/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 0ms
+Length: 61 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "not valid json at all"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:36871/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 0ms
+Length: 129 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "```json\n                    {\"name\": \"test\", \"value\": 42}\n                    ```"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:32965/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 401 Unauthorized
+Duration: 10ms
+Length: 27 chars
+
+Response JSON:
+{
+  "error": "Invalid API key"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:44321/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 403 Forbidden
+Duration: 11ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:45055/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 10ms
+Length: 8 chars
+
+Response Text:
+not json
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:34015/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 429 Too Many Requests
+Duration: 17ms
+Length: 31 chars
+
+Response JSON:
+{
+  "error": "Rate limit exceeded"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:37111/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 400 Bad Request
+Duration: 11ms
+Length: 27 chars
+
+Response JSON:
+{
+  "error": "Invalid request"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:42017/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 11ms
+Length: 14 chars
+
+Response JSON:
+{
+  "choices": []
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:44529/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 503 Service Unavailable
+Duration: 11ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:43041/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 11ms
+Length: 60 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "{\"status\": \"ok\"}"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:40139/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 10ms
+Length: 53 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "Hello, world!"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:37095/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 10ms
+Length: 10040 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:44113/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] sys1
+  [user] user1
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "sys1"
+    },
+    {
+      "role": "user",
+      "content": "user1"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 11ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:44113/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] sys2
+  [user] user2
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "sys2"
+    },
+    {
+      "role": "user",
+      "content": "user2"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 0ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:33387/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 63ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:33387/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 53ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:33387/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 104ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036100
+URL: http://127.0.0.1:33387/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 105ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:45863/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] sys1
+  [user] user1
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "sys1"
+    },
+    {
+      "role": "user",
+      "content": "user1"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 9ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:40829/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 503 Service Unavailable
+Duration: 9ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:41303/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 9ms
+Length: 129 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "```json\n                    {\"name\": \"test\", \"value\": 42}\n                    ```"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:45199/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 500 Internal Server Error
+Duration: 9ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:45245/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 9ms
+Length: 14 chars
+
+Response JSON:
+{
+  "choices": []
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:40725/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 10ms
+Length: 61 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "not valid json at all"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:34491/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 400 Bad Request
+Duration: 10ms
+Length: 27 chars
+
+Response JSON:
+{
+  "error": "Invalid request"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:37495/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 17ms
+Length: 53 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "Hello, world!"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:37019/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 26ms
+Length: 8 chars
+
+Response Text:
+not json
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:42625/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 26ms
+Length: 60 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "{\"status\": \"ok\"}"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:45863/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] sys2
+  [user] user2
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "sys2"
+    },
+    {
+      "role": "user",
+      "content": "user2"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 0ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:45015/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 403 Forbidden
+Duration: 26ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:34505/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 16ms
+Length: 62 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "🎉 Hello 世界 🌍"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:40407/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 429 Too Many Requests
+Duration: 27ms
+Length: 31 chars
+
+Response JSON:
+{
+  "error": "Rate limit exceeded"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:41791/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 26ms
+Length: 10040 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772036115
+URL: http://127.0.0.1:39229/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 401 Unauthorized
+Duration: 17ms
+Length: 27 chars
+
+Response JSON:
+{
+  "error": "Invalid API key"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:39833/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 503 Service Unavailable
+Duration: 0ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:41041/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 403 Forbidden
+Duration: 1ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:43261/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 1ms
+Length: 14 chars
+
+Response JSON:
+{
+  "choices": []
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:33469/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 10ms
+Length: 129 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "```json\n                    {\"name\": \"test\", \"value\": 42}\n                    ```"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:39563/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 10ms
+Length: 61 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "not valid json at all"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:41745/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 10ms
+Length: 53 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "Hello, world!"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:37175/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 11ms
+Length: 60 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "{\"status\": \"ok\"}"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:44205/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 11ms
+Length: 8 chars
+
+Response Text:
+not json
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:43843/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 500 Internal Server Error
+Duration: 11ms
+Length: 0 chars
+
+Response Text:
+
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:42629/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 429 Too Many Requests
+Duration: 11ms
+Length: 31 chars
+
+Response JSON:
+{
+  "error": "Rate limit exceeded"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:41961/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 400 Bad Request
+Duration: 11ms
+Length: 27 chars
+
+Response JSON:
+{
+  "error": "Invalid request"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:41205/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] sys1
+  [user] user1
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "sys1"
+    },
+    {
+      "role": "user",
+      "content": "user1"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 11ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:35767/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 401 Unauthorized
+Duration: 11ms
+Length: 27 chars
+
+Response JSON:
+{
+  "error": "Invalid API key"
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:39495/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 11ms
+Length: 62 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "🎉 Hello 世界 🌍"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:33075/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 11ms
+Length: 10040 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:41205/chat/completions
+Model: gpt-4o-mini
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] sys2
+  [user] user2
+
+Full Request JSON:
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "sys2"
+    },
+    {
+      "role": "user",
+      "content": "user2"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 0ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:35165/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 62ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037067
+URL: http://127.0.0.1:35165/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 62ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037068
+URL: http://127.0.0.1:35165/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 104ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037068
+URL: http://127.0.0.1:35165/chat/completions
+Model: test
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] system
+  [user] user
+
+Full Request JSON:
+{
+  "model": "test",
+  "messages": [
+    {
+      "role": "system",
+      "content": "system"
+    },
+    {
+      "role": "user",
+      "content": "user"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 104ms
+Length: 48 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "message": {
+        "content": "response"
+      }
+    }
+  ]
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037068
+URL: https://api.z.ai/api/coding/paas/v4/chat/completions
+Model: glm-4.7-flash
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] You are a code analyzer. You MUST respond ONLY with valid JSON, no other text.
+This response must be a JSON object with this exact structure:
+{
+  "name": "function_name",
+  "description": "brief descr...
+  [user] fn add(a: i32, b: i32) -> i32 { a + b }
+
+Full Request JSON:
+{
+  "model": "glm-4.7-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a code analyzer. You MUST respond ONLY with valid JSON, no other text.\nThis response must be a JSON object with this exact structure:\n{\n  \"name\": \"function_name\",\n  \"description\": \"brief description\"\n}\n\nDo not include any text before or after the JSON. Do not use markdown code blocks.\nDo not show your thinking process. Output ONLY the JSON object."
+    },
+    {
+      "role": "user",
+      "content": "fn add(a: i32, b: i32) -> i32 { a + b }"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 429 Too Many Requests
+Duration: 695ms
+Length: 69 chars
+
+Response JSON:
+{
+  "error": {
+    "code": "1302",
+    "message": "Rate limit reached for requests"
+  }
+}
+
+============================================================
+=== LLM REQUEST ===
+Timestamp: 1772037068
+URL: https://api.z.ai/api/coding/paas/v4/chat/completions
+Model: glm-4.7-flash
+Max Tokens: 4096
+Temperature: 0.7
+
+Messages:
+  [system] You are a code analyzer. Respond with a brief description.
+  [user] fn add(a: i32, b: i32) -> i32 { a + b }
+
+Full Request JSON:
+{
+  "model": "glm-4.7-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a code analyzer. Respond with a brief description."
+    },
+    {
+      "role": "user",
+      "content": "fn add(a: i32, b: i32) -> i32 { a + b }"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+=== LLM RESPONSE ===
+Status: 200 OK
+Duration: 8489ms
+Length: 1603 chars
+
+Response JSON:
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "This is a Rust function definition that takes two 32-bit signed integers (`i32`) as arguments and returns their sum.",
+        "reasoning_content": "1.  **Analyze the Input:**\n    *   Code snippet: `fn add(a: i32, b: i32) -> i32 { a + b }`\n    *   Language: Rust (indicated by `fn`, type annotations like `i32`, arrow syntax `->`).\n\n2.  **Identify the Function:**\n    *   It defines a function named `add`.\n    *   It takes two parameters, both of type `i32`.\n    *   It returns the sum of these two parameters.\n\n3.  **Formulate the Description:**\n    *   *What is it?* A Rust function definition.\n    *   *What does it do?* Adds two integers together.\n    *   *Structure:* Takes two `i32` inputs, returns an `i32`.\n\n4.  **Draft the Response (Internal Monologue/Drafts):**\n    *   *Draft 1:* This is a Rust function that adds two numbers.\n    *   *Draft 2:* The code defines a function named `add` in Rust. It accepts two `i32` arguments, returns their sum, and has an explicit return type of `i32`.\n    *   *Draft 3 (Concise):* A Rust function definition that takes two integers and returns their sum.\n\n5.  **Final Polish:** \"A Rust function definition that takes two 32-bit signed integers as arguments and returns their sum.\"",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1772037076,
+  "id": "2026022600310850b4a32f741d4f12",
+  "model": "glm-4.7-flash",
+  "object": "chat.completion",
+  "request_id": "2026022600310850b4a32f741d4f12",
+  "usage": {
+    "completion_tokens": 329,
+    "prompt_tokens": 38,
+    "prompt_tokens_details": {
+      "cached_tokens": 6
+    },
+    "total_tokens": 367
+  }
+}

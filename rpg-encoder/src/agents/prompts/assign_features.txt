@@ -1,0 +1,28 @@
+You are an expert software architect. Assign features to functional areas and categories.
+
+## Target Path Format:
+{functional_area}/{category}/{subcategory}
+- functional_area: Must be one of the provided areas
+- category: Broader purpose (e.g., "parsing", "validation")
+- subcategory: Specific context (e.g., "rust_parser", "token_check")
+
+## Constraints:
+1. Every feature MUST be assigned to exactly one path
+2. Use only the provided functional areas
+3. Paths should be meaningful and domain-aligned
+
+## Output Format:
+Return ONLY valid JSON. No markdown code blocks. No explanation.
+{
+  "assignments": {
+    "functional_area/category/subcategory": ["feature_name_1", "feature_name_2"],
+    ...
+  }
+}
+
+Assign these features to paths:
+
+Functional Areas: {{functional_areas}}
+
+Features:
+{{features}}

@@ -1,0 +1,873 @@
+digraph RPG {
+  compound=true;
+  rankdir=TB;
+  fontname="Helvetica,Arial,sans-serif";
+  node [fontname="Helvetica,Arial,sans-serif", fontsize=10];
+  edge [fontname="Helvetica,Arial,sans-serif", fontsize=9];
+
+  // Nodes
+  n0 [
+    label="repository\ntest-repo",
+    shape=folder,
+    style="filled,rounded",
+    fillcolor="#f0f0f0",
+  ];
+  n1 [
+    label="file\nrpg_math.js",
+    shape=note,
+    style="filled,rounded",
+    fillcolor="#fffacd",
+  ];
+  n2 [
+    label="directory\njs",
+    shape=folder,
+    style="filled,rounded",
+    fillcolor="#e8e8e8",
+  ];
+  n3 [
+    label="directory\ntest-repo",
+    shape=folder,
+    style="filled,rounded",
+    fillcolor="#e8e8e8",
+  ];
+  n4 [
+    label="directory\nexamples",
+    shape=folder,
+    style="filled,rounded",
+    fillcolor="#e8e8e8",
+  ];
+  n5 [
+    label="directory",
+    shape=folder,
+    style="filled,rounded",
+    fillcolor="#e8e8e8",
+  ];
+  n6 [
+    label="function\nloadBinding",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n7 [
+    label="function\nadd",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n8 [
+    label="function\nmultiply",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n9 [
+    label="function\nsubtract",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n10 [
+    label="function\nprocess",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n11 [
+    label="function\ngreet",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n12 [
+    label="function\nvalidateInput",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n13 [
+    label="function\nsafeProcess",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n14 [
+    label="function\nbatchProcess",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n15 [
+    label="class\nMathClient",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n16 [
+    label="method\nconstructor",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n17 [
+    label="method\nadd",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n18 [
+    label="method\nmultiply",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n19 [
+    label="method\nprocess",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n20 [
+    label="method\nsetDefaultPrecision",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n23 [
+    label="file\nrpgmath.go",
+    shape=note,
+    style="filled,rounded",
+    fillcolor="#fffacd",
+  ];
+  n24 [
+    label="directory\ngo",
+    shape=folder,
+    style="filled,rounded",
+    fillcolor="#e8e8e8",
+  ];
+  n25 [
+    label="struct\nConfig",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n26 [
+    label="method\ntoC",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n27 [
+    label="func\nAdd",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n28 [
+    label="func\nMultiply",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n29 [
+    label="func\nSubtract",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n30 [
+    label="func\nProcess",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n31 [
+    label="func\nGreet",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n32 [
+    label="func\nInit",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n33 [
+    label="func\nShutdown",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n34 [
+    label="func\nBatchProcess",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n35 [
+    label="func\nSafeProcess",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n36 [
+    label="struct\nMathClient",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n37 [
+    label="func\nNewMathClient",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n38 [
+    label="method\nClose",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n39 [
+    label="method\nAdd",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n40 [
+    label="method\nMultiply",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n41 [
+    label="method\nProcess",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n42 [
+    label="method\nSetDefaultPrecision",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n45 [
+    label="file\nrpg_math.py",
+    shape=note,
+    style="filled,rounded",
+    fillcolor="#fffacd",
+  ];
+  n46 [
+    label="directory\npython",
+    shape=folder,
+    style="filled,rounded",
+    fillcolor="#e8e8e8",
+  ];
+  n47 [
+    label="class\nConfig",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n48 [
+    label="class\nStringResult",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n49 [
+    label="def\n_load_library",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n50 [
+    label="def\n_get_lib",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n51 [
+    label="def\nadd",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n52 [
+    label="def\nmultiply",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n53 [
+    label="def\nsubtract",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n54 [
+    label="def\nprocess",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n55 [
+    label="def\ngreet",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n56 [
+    label="class\nMathClient",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n57 [
+    label="def\n__init__",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n58 [
+    label="def\nadd",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n59 [
+    label="def\nmultiply",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n60 [
+    label="def\nprocess",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n61 [
+    label="def\ncreate_cffi_client",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n67 [
+    label="file\nlib.rs",
+    shape=note,
+    style="filled,rounded",
+    fillcolor="#fffacd",
+  ];
+  n68 [
+    label="directory\nrust",
+    shape=folder,
+    style="filled,rounded",
+    fillcolor="#e8e8e8",
+  ];
+  n69 [
+    label="mod\nmath",
+    shape=component,
+    style="filled,rounded",
+    fillcolor="#98fb98",
+  ];
+  n70 [
+    label="const\nVERSION",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#dda0dd",
+  ];
+  n71 [
+    label="const\nNAME",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#dda0dd",
+  ];
+  n72 [
+    label="fn\ninit",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n73 [
+    label="fn\nshutdown",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n74 [
+    label="mod\nwasm",
+    shape=component,
+    style="filled,rounded",
+    fillcolor="#98fb98",
+  ];
+  n75 [
+    label="fn\nwasm_add",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n76 [
+    label="fn\nwasm_multiply",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n78 [
+    label="file\nmath.rs",
+    shape=note,
+    style="filled,rounded",
+    fillcolor="#fffacd",
+  ];
+  n79 [
+    label="fn\nrpg_add",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n80 [
+    label="fn\nrpg_multiply",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n81 [
+    label="fn\nrpg_subtract",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n82 [
+    label="struct\nConfig",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n83 [
+    label="fn\nrpg_process",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n84 [
+    label="struct\nStringResult",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n85 [
+    label="fn\nrpg_greet",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n86 [
+    label="fn\nrpg_free_string",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n87 [
+    label="fn\nvalidate_input",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n88 [
+    label="fn\nsafe_process",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n89 [
+    label="mod\ntests",
+    shape=component,
+    style="filled,rounded",
+    fillcolor="#98fb98",
+  ];
+  n90 [
+    label="fn\ntest_add",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n91 [
+    label="fn\ntest_multiply",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n92 [
+    label="fn\ntest_safe_process",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n95 [
+    label="file\nrpg_math.h",
+    shape=note,
+    style="filled,rounded",
+    fillcolor="#fffacd",
+  ];
+  n96 [
+    label="directory\nc",
+    shape=folder,
+    style="filled,rounded",
+    fillcolor="#e8e8e8",
+  ];
+  n97 [
+    label="typedef\nRpgConfig",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n98 [
+    label="typedef\nRpgStringResult",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n99 [
+    label="var\nrpg_add",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n100 [
+    label="var\nrpg_multiply",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n101 [
+    label="var\nrpg_subtract",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n102 [
+    label="var\nrpg_process",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n103 [
+    label="var\nrpg_greet",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n104 [
+    label="var\nrpg_free_string",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n105 [
+    label="var\nrpg_init",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n106 [
+    label="var\nrpg_shutdown",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n109 [
+    label="file\nrpg_math.c",
+    shape=note,
+    style="filled,rounded",
+    fillcolor="#fffacd",
+  ];
+  n110 [
+    label="var\nrpg_add",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n111 [
+    label="var\nrpg_multiply",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n112 [
+    label="var\nrpg_subtract",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n113 [
+    label="var\nrpg_process",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n114 [
+    label="var\nrpg_greet",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n115 [
+    label="var\nrpg_free_string",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n116 [
+    label="var\ng_initialized = 0",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n117 [
+    label="fn\nvalidate_input",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n118 [
+    label="fn\nrpg_default_config",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n119 [
+    label="var\nconfig",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n120 [
+    label="fn\nrpg_safe_process",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n121 [
+    label="var\nconfig = rpg_default_config()",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n122 [
+    label="fn\nrpg_init",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n123 [
+    label="fn\nrpg_shutdown",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n124 [
+    label="fn\nrpg_batch_process",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+  n125 [
+    label="var\nconfig = rpg_default_config()",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n126 [
+    label="var\ni = 0",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n127 [
+    label="var\nname_len = strlen(name)",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n128 [
+    label="var\ntitle_len = strlen(title)",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n129 [
+    label="var\ntotal_len = name_len + title_len + 20",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n130 [
+    label="var\n* result = (char*)malloc(total_len)",
+    shape=box,
+    style="filled,rounded",
+    fillcolor="#87ceeb",
+  ];
+  n131 [
+    label="fn\nrpg_free_greeting",
+    shape=ellipse,
+    style="filled,rounded",
+    fillcolor="#90ee90",
+  ];
+
+  // Clusters
+  subgraph cluster_0 {
+    label="examples";
+    style="rounded,filled";
+    fillcolor="#f5f5f5";
+    color="#cccccc";
+    n3;
+  }
+  subgraph cluster_1 {
+    label="test-repo";
+    style="rounded,filled";
+    fillcolor="#f5f5f5";
+    color="#cccccc";
+    n2;
+    n24;
+    n46;
+    n68;
+    n96;
+  }
+
+  // Edges
+  n0 -> n5 [label="contains", style="solid", color="#666666"];
+  n5 -> n4 [label="contains", style="solid", color="#666666"];
+  n4 -> n3 [label="contains", style="solid", color="#666666"];
+  n3 -> n2 [label="contains", style="solid", color="#666666"];
+  n2 -> n1 [label="contains", style="solid", color="#666666"];
+  n1 -> n6 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n7 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n8 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n9 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n10 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n11 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n12 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n13 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n14 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n15 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n16 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n17 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n18 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n19 [label="defines", style="solid", color="#9C27B0"];
+  n1 -> n20 [label="defines", style="solid", color="#9C27B0"];
+  n3 -> n24 [label="contains", style="solid", color="#666666"];
+  n24 -> n23 [label="contains", style="solid", color="#666666"];
+  n23 -> n25 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n26 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n27 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n28 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n29 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n30 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n31 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n32 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n33 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n34 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n35 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n36 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n37 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n38 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n39 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n40 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n41 [label="defines", style="solid", color="#9C27B0"];
+  n23 -> n42 [label="defines", style="solid", color="#9C27B0"];
+  n3 -> n46 [label="contains", style="solid", color="#666666"];
+  n46 -> n45 [label="contains", style="solid", color="#666666"];
+  n45 -> n47 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n48 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n49 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n50 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n51 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n52 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n53 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n54 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n55 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n56 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n57 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n58 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n59 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n60 [label="defines", style="solid", color="#9C27B0"];
+  n45 -> n61 [label="defines", style="solid", color="#9C27B0"];
+  n3 -> n68 [label="contains", style="solid", color="#666666"];
+  n68 -> n67 [label="contains", style="solid", color="#666666"];
+  n67 -> n69 [label="defines", style="solid", color="#9C27B0"];
+  n67 -> n70 [label="defines", style="solid", color="#9C27B0"];
+  n67 -> n71 [label="defines", style="solid", color="#9C27B0"];
+  n67 -> n72 [label="defines", style="solid", color="#9C27B0"];
+  n67 -> n73 [label="defines", style="solid", color="#9C27B0"];
+  n67 -> n74 [label="defines", style="solid", color="#9C27B0"];
+  n67 -> n75 [label="defines", style="solid", color="#9C27B0"];
+  n67 -> n76 [label="defines", style="solid", color="#9C27B0"];
+  n68 -> n78 [label="contains", style="solid", color="#666666"];
+  n78 -> n79 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n80 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n81 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n82 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n83 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n84 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n85 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n86 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n87 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n88 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n89 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n90 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n91 [label="defines", style="solid", color="#9C27B0"];
+  n78 -> n92 [label="defines", style="solid", color="#9C27B0"];
+  n3 -> n96 [label="contains", style="solid", color="#666666"];
+  n96 -> n95 [label="contains", style="solid", color="#666666"];
+  n95 -> n97 [label="defines", style="solid", color="#9C27B0"];
+  n95 -> n98 [label="defines", style="solid", color="#9C27B0"];
+  n95 -> n99 [label="defines", style="solid", color="#9C27B0"];
+  n95 -> n100 [label="defines", style="solid", color="#9C27B0"];
+  n95 -> n101 [label="defines", style="solid", color="#9C27B0"];
+  n95 -> n102 [label="defines", style="solid", color="#9C27B0"];
+  n95 -> n103 [label="defines", style="solid", color="#9C27B0"];
+  n95 -> n104 [label="defines", style="solid", color="#9C27B0"];
+  n95 -> n105 [label="defines", style="solid", color="#9C27B0"];
+  n95 -> n106 [label="defines", style="solid", color="#9C27B0"];
+  n96 -> n109 [label="contains", style="solid", color="#666666"];
+  n109 -> n110 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n111 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n112 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n113 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n114 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n115 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n116 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n117 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n118 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n119 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n120 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n121 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n122 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n123 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n124 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n125 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n126 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n127 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n128 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n129 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n130 [label="defines", style="solid", color="#9C27B0"];
+  n109 -> n131 [label="defines", style="solid", color="#9C27B0"];
+  n88 -> n117 [label="calls", style="solid", color="#4CAF50"];
+  n120 -> n117 [label="calls", style="solid", color="#4CAF50"];
+  n120 -> n118 [label="calls", style="solid", color="#4CAF50"];
+  n120 -> n83 [label="calls", style="solid", color="#4CAF50"];
+  n124 -> n118 [label="calls", style="solid", color="#4CAF50"];
+  n124 -> n117 [label="calls", style="solid", color="#4CAF50"];
+  n124 -> n83 [label="calls", style="solid", color="#4CAF50"];
+  n83 -> n82 [label="usestype", style="dotted", color="#E91E63"];
+  n85 -> n84 [label="usestype", style="dotted", color="#E91E63"];
+  n86 -> n84 [label="usestype", style="dotted", color="#E91E63"];
+  n118 -> n97 [label="usestype", style="dotted", color="#E91E63"];
+  n45 -> n78 [label="ffibinding", style="bold", color="#F44336"];
+  n45 -> n78 [label="ffibinding", style="bold", color="#F44336"];
+  n45 -> n78 [label="ffibinding", style="bold", color="#F44336"];
+  n45 -> n78 [label="ffibinding", style="bold", color="#F44336"];
+  n45 -> n78 [label="ffibinding", style="bold", color="#F44336"];
+  n45 -> n78 [label="ffibinding", style="bold", color="#F44336"];
+}

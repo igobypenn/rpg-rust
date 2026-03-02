@@ -1,0 +1,252 @@
+[package]
+name = "rpg-encoder"
+version = "0.1.0"
+edition = "2021"
+description = "Repository Planning Graph encoder for code analysis"
+license = "Apache-2.0"
+
+[features]
+default = []
+llm = ["reqwest", "tokio", "async-trait"]
+integration = ["llm"]
+
+[dependencies]
+petgraph = { workspace = true }
+tree-sitter = { workspace = true }
+tree-sitter-rust = { workspace = true }
+tree-sitter-python = { workspace = true }
+tree-sitter-go = { workspace = true }
+tree-sitter-ruby = { workspace = true }
+tree-sitter-cpp = { workspace = true }
+tree-sitter-c = { workspace = true }
+tree-sitter-javascript = { workspace = true }
+tree-sitter-typescript = { workspace = true }
+tree-sitter-java = { workspace = true }
+tree-sitter-swift = { workspace = true }
+tree-sitter-lua = { workspace = true }
+tree-sitter-haskell = { workspace = true }
+tree-sitter-c-sharp = { workspace = true }
+tree-sitter-scala = { workspace = true }
+ignore = { workspace = true }
+walkdir = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = "0.1"
+sha2 = "0.10"
+
+# Optional LLM dependencies
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], optional = true, default-features = false }
+tokio = { version = "1", features = ["rt-multi-thread", "macros"], optional = true }
+async-trait = { version = "0.1", optional = true }
+
+[dev-dependencies]
+tempfile = "3"
+dotenvy = "0.15"
+futures = "0.3"
+proptest = "1.4"
+criterion = { version = "0.5", features = ["html_reports"] }
+dhat = "0.3"
+rand = "0.8"
+insta = { version = "1.39", features = ["json", "yaml"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+
+[[bench]]
+name = "parser"
+harness = false
+
+[[bench]]
+name = "graph"
+harness = false
+
+[[bench]]
+name = "encoder"
+harness = false
+
+[[bench]]
+name = "memory"
+harness = false
+
+[[test]]
+name = "parser_registry"
+path = "tests/parser/registry_test.rs"
+
+[[test]]
+name = "graph_edge"
+path = "tests/core/graph_edge_test.rs"
+
+[[test]]
+name = "encoder_edge"
+path = "tests/encoder/encoder_edge_test.rs"
+
+[[test]]
+name = "output_edge"
+path = "tests/encoder/output_edge_test.rs"
+
+[[test]]
+name = "error_edge"
+path = "tests/error/error_edge_test.rs"
+
+[[test]]
+name = "ffi_edge"
+path = "tests/languages/ffi_edge_test.rs"
+
+[[test]]
+name = "rust_edge"
+path = "tests/languages/rust_edge_test.rs"
+
+[[test]]
+name = "python_edge"
+path = "tests/languages/python_edge_test.rs"
+
+[[test]]
+name = "go_edge"
+path = "tests/languages/go_edge_test.rs"
+
+[[test]]
+name = "ruby_edge"
+path = "tests/languages/ruby_edge_test.rs"
+
+[[test]]
+name = "cpp_edge"
+path = "tests/languages/cpp_edge_test.rs"
+
+[[test]]
+name = "c_edge"
+path = "tests/languages/c_edge_test.rs"
+
+[[test]]
+name = "javascript_edge"
+path = "tests/languages/javascript_edge_test.rs"
+
+[[test]]
+name = "typescript_edge"
+path = "tests/languages/typescript_edge_test.rs"
+
+[[test]]
+name = "java_edge"
+path = "tests/languages/java_edge_test.rs"
+
+[[test]]
+name = "swift_edge"
+path = "tests/languages/swift_edge_test.rs"
+
+[[test]]
+name = "lua_edge"
+path = "tests/languages/lua_edge_test.rs"
+
+[[test]]
+name = "haskell_edge"
+path = "tests/languages/haskell_edge_test.rs"
+
+[[test]]
+name = "csharp_edge"
+path = "tests/languages/csharp_edge_test.rs"
+
+[[test]]
+name = "scala_edge"
+path = "tests/languages/scala_edge_test.rs"
+
+[[test]]
+name = "location"
+path = "tests/core/location_test.rs"
+
+[[test]]
+name = "walker"
+path = "tests/encoder/walker_test.rs"
+
+[[test]]
+name = "builder"
+path = "tests/encoder/builder_test.rs"
+
+[[test]]
+name = "output"
+path = "tests/encoder/output_test.rs"
+
+[[test]]
+name = "error"
+path = "tests/error/error_test.rs"
+
+[[test]]
+name = "rust_parser"
+path = "tests/languages/rust_test.rs"
+
+[[test]]
+name = "python_parser"
+path = "tests/languages/python_test.rs"
+
+[[test]]
+name = "go_parser"
+path = "tests/languages/go_test.rs"
+
+[[test]]
+name = "ruby_parser"
+path = "tests/languages/ruby_test.rs"
+
+[[test]]
+name = "cpp_parser"
+path = "tests/languages/cpp_test.rs"
+
+[[test]]
+name = "c_parser"
+path = "tests/languages/c_test.rs"
+
+[[test]]
+name = "javascript_parser"
+path = "tests/languages/javascript_test.rs"
+
+[[test]]
+name = "typescript_parser"
+path = "tests/languages/typescript_test.rs"
+
+[[test]]
+name = "java_parser"
+path = "tests/languages/java_test.rs"
+
+[[test]]
+name = "swift_parser"
+path = "tests/languages/swift_test.rs"
+
+[[test]]
+name = "lua_parser"
+path = "tests/languages/lua_test.rs"
+
+[[test]]
+name = "haskell_parser"
+path = "tests/languages/haskell_test.rs"
+
+[[test]]
+name = "csharp_parser"
+path = "tests/languages/csharp_test.rs"
+
+[[test]]
+name = "scala_parser"
+path = "tests/languages/scala_test.rs"
+
+[[test]]
+name = "llm_response_debug"
+path = "tests/llm_response_debug.rs"
+required-features = ["llm"]
+
+[[test]]
+name = "llm_e2e"
+path = "tests/llm/e2e_test.rs"
+required-features = ["integration"]
+
+[[test]]
+name = "incremental_diff"
+path = "tests/incremental/diff_test.rs"
+
+[[test]]
+name = "incremental_evolution"
+path = "tests/incremental/evolution_test.rs"
+
+[[test]]
+name = "incremental_snapshot_edge"
+path = "tests/incremental/snapshot_edge_test.rs"
+
+[[example]]
+name = "llm_debug"
+path = "examples/llm_debug.rs"
+required-features = ["llm"]
