@@ -4,3 +4,10 @@
 target/
 .ruff_cache/
 *.pdf
+.opencode/
+.env
+.env.*
+!.env.example
+target/
+.ruff_cache/
+*.pdf
