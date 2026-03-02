@@ -1,6 +1,5 @@
 #![cfg(feature = "integration")]
 
-
 //! LLM Response Debug Test
 
 use rpg_encoder::{LlmConfig, OpenAIClient};
