@@ -2,7 +2,7 @@
 
 > Repository Planning Graph encoder for semantic code analysis
 
-Part of the [RPG-Rust](https://github.com/microsoft/rpg-rust) workspace implementing Microsoft's [ZeroRepo](https://arxiv.org/abs/2502.02084) paper.
+Part of the [RPG-Rust](https://github.com/microsoft/rpg-rust) workspace implementing Microsoft's [ZeroRepo](https://arxiv.org/abs/2602.02084) paper.
 
 ## Overview
 
