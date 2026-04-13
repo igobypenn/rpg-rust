@@ -44,24 +44,6 @@ struct AgentSubcategory {
     features: Vec<String>,
 }
 
-/// Response from agent for component refactoring.
-/// TODO: Used when Phase 1 returns structured component breakdown
-#[cfg(feature = "opencode")]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(dead_code)]
-struct AgentComponentResponse {
-    components: Vec<AgentComponent>,
-}
-
-#[cfg(feature = "opencode")]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(dead_code)]
-struct AgentComponent {
-    name: String,
-    description: String,
-    features: Vec<String>,
-}
-
 /// Response from agent for skeleton design.
 #[cfg(feature = "opencode")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -168,16 +150,24 @@ impl RpgGenerator {
 
         if let Some(ref checkpoint) = self.checkpoint {
             let mut mgr = checkpoint.write().await;
-            let _ = mgr.set_generation_plan(phase1_result.clone());
-            let _ = mgr.advance_phase(crate::types::Phase::ArchitectureDesign);
+            if let Err(e) = mgr.set_generation_plan(phase1_result.clone()) {
+                tracing::warn!("checkpoint: failed to save generation plan: {}", e);
+            }
+            if let Err(e) = mgr.advance_phase(crate::types::Phase::ArchitectureDesign) {
+                tracing::warn!("checkpoint: failed to advance phase: {}", e);
+            }
         }
 
         let phase2_result = self.run_phase2(&phase1_result).await?;
 
         if let Some(ref checkpoint) = self.checkpoint {
             let mut mgr = checkpoint.write().await;
-            let _ = mgr.set_architecture_design(phase2_result.clone());
-            let _ = mgr.advance_phase(crate::types::Phase::CodeGeneration);
+            if let Err(e) = mgr.set_architecture_design(phase2_result.clone()) {
+                tracing::warn!("checkpoint: failed to save architecture design: {}", e);
+            }
+            if let Err(e) = mgr.advance_phase(crate::types::Phase::CodeGeneration) {
+                tracing::warn!("checkpoint: failed to advance phase: {}", e);
+            }
         }
 
         let mut phase3_result = self.run_phase3(&phase2_result).await?;
@@ -307,8 +297,12 @@ impl RpgGenerator {
 
         if let Some(ref checkpoint) = self.checkpoint {
             let mut mgr = checkpoint.write().await;
-            let _ = mgr.set_execution_result(phase3_result.clone());
-            let _ = mgr.advance_phase(crate::types::Phase::Completed);
+            if let Err(e) = mgr.set_execution_result(phase3_result.clone()) {
+                tracing::warn!("checkpoint: failed to save execution result: {}", e);
+            }
+            if let Err(e) = mgr.advance_phase(crate::types::Phase::Completed) {
+                tracing::warn!("checkpoint: failed to advance phase: {}", e);
+            }
         }
         Ok(GenerationOutput {
             request,

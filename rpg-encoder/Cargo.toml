@@ -32,7 +32,7 @@ walkdir = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-tracing = "0.1"
+tracing = { workspace = true }
 sha2 = "0.10"
 
 # Optional LLM dependencies
@@ -43,10 +43,8 @@ async-trait = { version = "0.1", optional = true }
 [dev-dependencies]
 tempfile = "3"
 dotenvy = "0.15"
-futures = "0.3"
 proptest = "1.4"
 criterion = { version = "0.5", features = ["html_reports"] }
-dhat = "0.3"
 rand = "0.8"
 insta = { version = "1.39", features = ["json", "yaml"] }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
@@ -62,10 +60,6 @@ harness = false
 
 [[bench]]
 name = "encoder"
-harness = false
-
-[[bench]]
-name = "memory"
 harness = false
 
 [[test]]
@@ -159,6 +153,10 @@ path = "tests/encoder/walker_test.rs"
 [[test]]
 name = "builder"
 path = "tests/encoder/builder_test.rs"
+
+[[test]]
+name = "builder_link"
+path = "tests/encoder/builder_link_test.rs"
 
 [[test]]
 name = "output"

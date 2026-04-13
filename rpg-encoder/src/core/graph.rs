@@ -1,12 +1,14 @@
-use petgraph::graph::{DiGraph, EdgeIndex, NodeIndex};
+use petgraph::graph::NodeIndex;
 use petgraph::visit::EdgeRef;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use super::edge::{Edge, EdgeType};
-use super::id::{EdgeId, NodeId};
+use super::id::NodeId;
 use super::node::{Node, NodeCategory, NodeLevel};
+
+use petgraph::graph::DiGraph;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RpgGraph {
@@ -17,8 +19,6 @@ pub struct RpgGraph {
     graph: DiGraph<Node, Edge>,
     #[serde(skip)]
     node_id_map: HashMap<NodeId, NodeIndex>,
-    #[serde(skip)]
-    edge_id_map: HashMap<EdgeId, EdgeIndex>,
     #[serde(skip)]
     next_node_id: usize,
     #[serde(skip)]
@@ -109,7 +109,6 @@ impl RpgGraph {
         Self {
             graph: DiGraph::new(),
             node_id_map: HashMap::new(),
-            edge_id_map: HashMap::new(),
             next_node_id: 0,
             next_edge_id: 0,
         }
@@ -126,26 +125,20 @@ impl RpgGraph {
         id
     }
 
-    pub fn add_edge(&mut self, source: NodeId, target: NodeId, edge: Edge) -> EdgeId {
-        let id = EdgeId::new(self.next_edge_id);
+    pub fn add_edge(&mut self, source: NodeId, target: NodeId, edge: Edge) -> bool {
         self.next_edge_id += 1;
 
         if let (Some(&sidx), Some(&tidx)) =
             (self.node_id_map.get(&source), self.node_id_map.get(&target))
         {
-            let eidx = self.graph.add_edge(sidx, tidx, edge);
-            self.edge_id_map.insert(id, eidx);
+            self.graph.add_edge(sidx, tidx, edge);
+            true
+        } else {
+            false
         }
-
-        id
     }
 
-    pub fn add_typed_edge(
-        &mut self,
-        source: NodeId,
-        target: NodeId,
-        edge_type: EdgeType,
-    ) -> EdgeId {
+    pub fn add_typed_edge(&mut self, source: NodeId, target: NodeId, edge_type: EdgeType) -> bool {
         self.add_edge(source, target, Edge::new(edge_type))
     }
 
@@ -195,32 +188,52 @@ impl RpgGraph {
             .find(|n| n.name == name && category.is_none_or(|c| n.category == c))
     }
 
-    /// Returns an iterator over low-level (V^L) nodes.
-    ///
-    /// V^L nodes are implementation-level entities (functions, types, etc.)
-    /// as opposed to high-level functional centroids (V^H).
     pub fn low_level_nodes(&self) -> impl Iterator<Item = &Node> {
         self.nodes().filter(|n| n.node_level == NodeLevel::Low)
     }
 
-    /// Returns an iterator over functional centroid (V^H) nodes.
-    ///
-    /// V^H nodes are high-level functional abstractions created
-    /// during the functional abstraction phase.
     pub fn functional_centroids(&self) -> impl Iterator<Item = &Node> {
         self.nodes().filter(|n| n.node_level == NodeLevel::High)
     }
 
-    /// Ground a functional centroid by aggregating metadata from its V^L children.
-    ///
-    /// Per the paper: "populate the missing metadata m for nodes in V^H through
-    /// bottom-up propagation, utilizing a Lowest Common Ancestor (LCA) mechanism."
-    ///
-    /// Returns the grounded centroid node if successful.
+    pub fn high_level_nodes(&self) -> impl Iterator<Item = &Node> {
+        self.functional_centroids()
+    }
+
+    pub fn add_functional_centroid(
+        &mut self,
+        name: impl Into<String>,
+        description: impl Into<String>,
+    ) -> NodeId {
+        let node = Node::new(
+            NodeId::new(0),
+            NodeCategory::Module,
+            "functional_centroid",
+            "",
+            name,
+        )
+        .with_node_level(NodeLevel::High)
+        .with_description(description);
+        self.add_node(node)
+    }
+
+    pub fn centroid_members(&self, centroid_id: NodeId) -> Vec<&Node> {
+        self.graph
+            .edges_directed(
+                *self
+                    .node_id_map
+                    .get(&centroid_id)
+                    .unwrap_or(&NodeIndex::end()),
+                petgraph::Direction::Incoming,
+            )
+            .filter(|e| e.weight().edge_type == EdgeType::BelongsToFeature)
+            .filter_map(|e| self.graph.node_weight(e.source()))
+            .collect()
+    }
+
     pub fn ground_centroid(&mut self, centroid_id: NodeId) -> Option<&Node> {
         let &centroid_idx = self.node_id_map.get(&centroid_id)?;
 
-        // Collect V^L nodes that belong to this centroid via BelongsToFeature edges
         let mut children_paths: Vec<PathBuf> = Vec::new();
         let mut children_features: Vec<String> = Vec::new();
 
@@ -246,16 +259,12 @@ impl RpgGraph {
             return None;
         }
 
-        // Update the centroid with aggregated info
         if let Some(centroid) = self.get_node_mut(centroid_id) {
-            // Derive path from common ancestor of children
             if centroid.path.is_none() && !children_paths.is_empty() {
-                // Find common directory prefix
                 let common_path = find_common_ancestor(&children_paths);
                 centroid.path = Some(common_path);
             }
 
-            // Aggregate semantic features
             if !children_features.is_empty() {
                 centroid.semantic_feature = Some(children_features.join("; "));
             }
@@ -285,15 +294,9 @@ impl RpgGraph {
             .collect()
     }
 
-    pub fn to_petgraph(&self) -> DiGraph<Node, Edge> {
-        self.graph.clone()
-    }
-
     pub fn remove_node(&mut self, id: NodeId) -> Option<Node> {
         let idx = self.node_id_map.remove(&id)?;
         let node = self.graph.remove_node(idx)?;
-        self.edge_id_map
-            .retain(|_, &mut eidx| self.graph.edge_endpoints(eidx).is_some());
         Some(node)
     }
 
@@ -374,35 +377,29 @@ impl RpgGraph {
             self.graph.remove_edge(eidx);
         }
 
-        self.edge_id_map.clear();
-        for eidx in self.graph.edge_indices() {
-            self.edge_id_map.insert(EdgeId::new(eidx.index()), eidx);
-        }
-
         original_count - self.graph.edge_count()
     }
 
-    pub fn edges_involving(&self, node_id: NodeId) -> Vec<(EdgeId, NodeId, NodeId, EdgeType)> {
+    pub fn edges_involving(&self, node_id: NodeId) -> Vec<(NodeId, NodeId, EdgeType)> {
         let Some(&idx) = self.node_id_map.get(&node_id) else {
             return Vec::new();
         };
 
         let mut results = Vec::new();
+        let mut seen: std::collections::HashSet<petgraph::graph::EdgeIndex> =
+            std::collections::HashSet::new();
 
-        for eidx in self.graph.edge_indices() {
-            if let Some((source, target)) = self.graph.edge_endpoints(eidx) {
-                if source == idx || target == idx {
-                    if let (Some(source_node), Some(target_node), Some(edge)) = (
-                        self.graph.node_weight(source),
-                        self.graph.node_weight(target),
-                        self.graph.edge_weight(eidx),
+        for dir in [petgraph::Direction::Outgoing, petgraph::Direction::Incoming] {
+            for edge_ref in self.graph.edges_directed(idx, dir) {
+                let eid = edge_ref.id();
+                if seen.insert(eid) {
+                    let source_idx = edge_ref.source();
+                    let target_idx = edge_ref.target();
+                    if let (Some(source_node), Some(target_node)) = (
+                        self.graph.node_weight(source_idx),
+                        self.graph.node_weight(target_idx),
                     ) {
-                        results.push((
-                            EdgeId::new(eidx.index()),
-                            source_node.id,
-                            target_node.id,
-                            edge.edge_type,
-                        ));
+                        results.push((source_node.id, target_node.id, edge_ref.weight().edge_type));
                     }
                 }
             }
@@ -417,10 +414,6 @@ impl RpgGraph {
             .and_then(|&idx| self.graph.node_weight(idx))
             .map(|n| !n.name.is_empty())
             .unwrap_or(false)
-    }
-
-    pub fn nodes_mut(&mut self) -> impl Iterator<Item = &mut Node> {
-        self.graph.node_weights_mut()
     }
 
     pub fn retain_edges<F>(&mut self, mut f: F)
@@ -446,11 +439,6 @@ impl RpgGraph {
 
         for eidx in edges_to_remove {
             self.graph.remove_edge(eidx);
-        }
-
-        self.edge_id_map.clear();
-        for eidx in self.graph.edge_indices() {
-            self.edge_id_map.insert(EdgeId::new(eidx.index()), eidx);
         }
     }
 
@@ -499,9 +487,6 @@ impl RpgGraph {
             .map(|e| e.weight())
     }
 
-    /// Remove the edge between two nodes, if any.
-    ///
-    /// Returns true if an edge was removed, false otherwise.
     pub fn remove_edge_between(&mut self, source: NodeId, target: NodeId) -> bool {
         let (sidx, tidx) = match (
             self.node_id_map.get(&source).copied(),
@@ -511,20 +496,12 @@ impl RpgGraph {
             _ => return false,
         };
 
-        // Find the edge index
         let eidx = match self.graph.edges_connecting(sidx, tidx).next() {
             Some(e) => e.id(),
             None => return false,
         };
 
-        // Remove the edge
         self.graph.remove_edge(eidx);
-
-        // Rebuild edge_id_map since indices may have changed
-        self.edge_id_map.clear();
-        for eidx in self.graph.edge_indices() {
-            self.edge_id_map.insert(EdgeId::new(eidx.index()), eidx);
-        }
 
         true
     }
@@ -558,14 +535,6 @@ impl RpgGraph {
             })
             .collect()
     }
-
-    pub fn as_petgraph(&self) -> &DiGraph<Node, Edge> {
-        &self.graph
-    }
-
-    pub fn into_petgraph(self) -> DiGraph<Node, Edge> {
-        self.graph
-    }
 }
 
 fn find_common_ancestor(paths: &[PathBuf]) -> PathBuf {
@@ -580,10 +549,8 @@ fn find_common_ancestor(paths: &[PathBuf]) -> PathBuf {
             .unwrap_or_default();
     }
 
-    // Start with the first path's components
     let mut common: Vec<&std::ffi::OsStr> = paths[0].iter().collect();
 
-    // Intersect with each subsequent path
     for path in &paths[1..] {
         let components: Vec<&std::ffi::OsStr> = path.iter().collect();
         let new_len = common.len().min(components.len());
@@ -597,7 +564,6 @@ fn find_common_ancestor(paths: &[PathBuf]) -> PathBuf {
         }
     }
 
-    // If we have components, return as path; otherwise return empty
     if common.is_empty() {
         PathBuf::new()
     } else {
@@ -687,7 +653,8 @@ mod tests {
             "func2",
         ));
 
-        let _eid = graph.add_typed_edge(n1, n2, EdgeType::Calls);
+        let result = graph.add_typed_edge(n1, n2, EdgeType::Calls);
+        assert!(result);
 
         assert_eq!(graph.edge_count(), 1);
         let edges: Vec<_> = graph.edges().collect();
@@ -830,15 +797,6 @@ mod tests {
     }
 
     #[test]
-    fn test_to_petgraph() {
-        let graph = create_test_graph();
-        let pg = graph.to_petgraph();
-
-        assert_eq!(pg.node_count(), 3);
-        assert_eq!(pg.edge_count(), 2);
-    }
-
-    #[test]
     fn test_neighbors() {
         let mut graph = RpgGraph::new();
 
@@ -968,13 +926,6 @@ mod tests {
 
         assert_eq!(deserialized.node_count(), graph.node_count());
         assert_eq!(deserialized.edge_count(), graph.edge_count());
-    }
-
-    #[test]
-    fn test_as_petgraph() {
-        let graph = create_test_graph();
-        let pg_ref = graph.as_petgraph();
-        assert_eq!(pg_ref.node_count(), 3);
     }
 
     #[test]

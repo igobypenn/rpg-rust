@@ -18,9 +18,6 @@ pub enum TraversalDirection {
 
 /// Filter for exploration operations.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
-#[must_use = "ExploreFilter should be used"]
-pub struct ExploreFilter {
-#[derive(Debug, Clone, Default)]
 pub struct ExploreFilter {
     /// Filter by edge view (Functional/Dependency).
     pub edge_view: Option<EdgeView>,
@@ -80,9 +77,6 @@ impl ExploreFilter {
 
 /// Result of an exploration operation.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[must_use = "ExploreResult should be used"]
-pub struct ExploreResult {
-#[derive(Debug, Clone)]
 pub struct ExploreResult {
     /// Starting node.
     pub start: NodeId,
@@ -107,11 +101,6 @@ impl<'a> ExploreRPG<'a> {
     }
 
     /// Explore from a starting node.
-    ///
-    /// # Arguments
-    /// * `start` - Starting node ID
-    /// * `direction` - Traversal direction
-    /// * `filter` - Filter configuration
     pub fn explore(
         &self,
         start: NodeId,
@@ -123,14 +112,12 @@ impl<'a> ExploreRPG<'a> {
         let mut edges = Vec::new();
         let mut depth_reached = 0;
 
-        // BFS traversal
         let mut queue: std::collections::VecDeque<(NodeId, usize)> =
             std::collections::VecDeque::new();
         queue.push_back((start, 0));
         visited.insert(start);
 
         while let Some((current_id, depth)) = queue.pop_front() {
-            // Check depth limit
             if let Some(max_depth) = filter.max_depth {
                 if depth > max_depth {
                     continue;
@@ -139,9 +126,7 @@ impl<'a> ExploreRPG<'a> {
 
             depth_reached = depth_reached.max(depth);
 
-            // Get current node
             if let Some(current_node) = self.graph.get_node(current_id) {
-                // Apply node filters
                 if !self.node_matches_filter(current_node, filter) {
                     continue;
                 }
@@ -149,14 +134,12 @@ impl<'a> ExploreRPG<'a> {
                 nodes.push(current_node.clone());
             }
 
-            // Check limit
             if let Some(limit) = filter.limit {
                 if nodes.len() >= limit {
                     break;
                 }
             }
 
-            // Explore neighbors based on direction
             let neighbors: Vec<(NodeId, EdgeType, bool)> = match direction {
                 TraversalDirection::Outgoing => self
                     .graph
@@ -183,7 +166,6 @@ impl<'a> ExploreRPG<'a> {
             };
 
             for (neighbor_id, edge_type, _is_incoming) in neighbors {
-                // Apply edge filters
                 if !self.edge_matches_filter(&edge_type, filter) {
                     continue;
                 }
@@ -205,10 +187,7 @@ impl<'a> ExploreRPG<'a> {
     }
 
     /// Explore the functional hierarchy from a node.
-    ///
-    /// Returns all nodes in the same functional centroid(s).
     pub fn explore_functional_area(&self, start: NodeId) -> ExploreResult {
-        // Find the functional centroid(s) for this node
         let centroids: Vec<NodeId> = self
             .graph
             .edges_from(start)
@@ -222,8 +201,7 @@ impl<'a> ExploreRPG<'a> {
         let mut visited = std::collections::HashSet::new();
 
         for centroid_id in centroids {
-            // Get all members of this centroid
-            for member in self.graph.get_centroid_members(centroid_id) {
+            for member in self.graph.centroid_members(centroid_id) {
                 if !visited.contains(&member.id) {
                     visited.insert(member.id);
                     all_nodes.push(member.clone());
@@ -240,8 +218,6 @@ impl<'a> ExploreRPG<'a> {
     }
 
     /// Explore dependency chain from a node.
-    ///
-    /// Returns all nodes that this node depends on (outgoing Calls/Imports).
     pub fn explore_dependencies(&self, start: NodeId, max_depth: Option<usize>) -> ExploreResult {
         let filter = ExploreFilter {
             edge_view: Some(EdgeView::Dependency),
@@ -258,8 +234,6 @@ impl<'a> ExploreRPG<'a> {
     }
 
     /// Explore dependents of a node.
-    ///
-    /// Returns all nodes that depend on this node (incoming Calls/Imports).
     pub fn explore_dependents(&self, start: NodeId, max_depth: Option<usize>) -> ExploreResult {
         let filter = ExploreFilter {
             edge_view: Some(EdgeView::Dependency),
@@ -276,8 +250,6 @@ impl<'a> ExploreRPG<'a> {
     }
 
     /// Explore the containment hierarchy.
-    ///
-    /// Returns all parent/child nodes via Contains edges.
     pub fn explore_containment(
         &self,
         start: NodeId,
@@ -318,14 +290,12 @@ impl<'a> ExploreRPG<'a> {
     }
 
     fn edge_matches_filter(&self, edge_type: &EdgeType, filter: &ExploreFilter) -> bool {
-        // Check edge view filter
         if let Some(ref view) = filter.edge_view {
             if edge_type.view() != *view {
                 return false;
             }
         }
 
-        // Check edge type filter
         if let Some(ref types) = filter.edge_types {
             if !types.contains(edge_type) {
                 return false;
@@ -344,11 +314,10 @@ mod tests {
     fn create_test_graph() -> RpgGraph {
         let mut graph = RpgGraph::new();
 
-        // Add file
         let file_id = graph.add_node(
             crate::core::Node::new(
                 crate::core::NodeId::new(0),
-                crate::core::NodeCategory::File,
+                NodeCategory::File,
                 "file",
                 "rust",
                 "main.rs",
@@ -356,11 +325,10 @@ mod tests {
             .with_path(PathBuf::from("src/main.rs")),
         );
 
-        // Add functions
         let main_id = graph.add_node(
             crate::core::Node::new(
                 crate::core::NodeId::new(1),
-                crate::core::NodeCategory::Function,
+                NodeCategory::Function,
                 "function",
                 "rust",
                 "main",
@@ -372,7 +340,7 @@ mod tests {
         let helper_id = graph.add_node(
             crate::core::Node::new(
                 crate::core::NodeId::new(2),
-                crate::core::NodeCategory::Function,
+                NodeCategory::Function,
                 "function",
                 "rust",
                 "helper",
@@ -381,17 +349,12 @@ mod tests {
             .with_node_level(NodeLevel::Low),
         );
 
-        // Add Contains edges
         graph.add_typed_edge(file_id, main_id, EdgeType::Contains);
         graph.add_typed_edge(file_id, helper_id, EdgeType::Contains);
-
-        // Add Calls edge
         graph.add_typed_edge(main_id, helper_id, EdgeType::Calls);
 
-        // Add functional centroid
         let centroid_id = graph.add_functional_centroid("Main", "Main entry point functionality");
 
-        // Link to centroid
         graph.add_typed_edge(main_id, centroid_id, EdgeType::BelongsToFeature);
         graph.add_typed_edge(helper_id, centroid_id, EdgeType::BelongsToFeature);
 
@@ -426,7 +389,6 @@ mod tests {
 
         let result = explore.explore_functional_area(NodeId::new(1));
 
-        // Should include both functions in the same centroid
         assert!(result.nodes.len() >= 1);
     }
 
@@ -438,7 +400,6 @@ mod tests {
         let filter = ExploreFilter::default().with_max_depth(0);
         let result = explore.explore(NodeId::new(1), TraversalDirection::Outgoing, &filter);
 
-        // Should only include the start node
         assert!(result.nodes.len() <= 1);
     }
 

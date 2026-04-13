@@ -15,7 +15,6 @@ pub use walker::FileWalker;
 // Functional abstraction types for forward path (generator)
 pub use functional::{
     AbstractionResult, CollectedFeature, FunctionalAbstraction, FunctionalCentroid,
-    FunctionalConfig,
 };
 
 use std::path::{Path, PathBuf};
@@ -161,7 +160,7 @@ impl RpgEncoder {
 
         let mut parse_errors = Vec::new();
         let mut files_processed = 0;
-        let mut files_skipped = 1;
+        let mut files_skipped = 0;
 
         for file_path in files {
             let source = match std::fs::read_to_string(&file_path) {

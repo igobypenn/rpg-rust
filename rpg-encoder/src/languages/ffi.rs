@@ -1011,7 +1011,7 @@ impl FfiDetector {
         for (line_idx, line) in lines.iter().enumerate() {
             let trimmed = line.trim();
 
-            if trimmed.contains("ffi.cdef[[") || trimmed.contains("ffi.cdef[[") {
+            if trimmed.contains("ffi.cdef[[") || trimmed.contains("ffi.cdef(") {
                 in_cdef = true;
             }
 

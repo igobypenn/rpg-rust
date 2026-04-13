@@ -1,7 +1,5 @@
 //! Error types for the RPG Generator.
 
-#![allow(clippy::result_large_err)]
-
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use thiserror::Error;

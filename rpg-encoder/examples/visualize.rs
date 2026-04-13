@@ -377,16 +377,6 @@ fn graph_to_dot(graph: &rpg_encoder::RpgGraph, config: &DotConfig) -> String {
                 attrs.push("style=\"solid\"".to_string());
                 attrs.push("color=\"#673AB7\"".to_string());
             }
-            #[cfg(feature = "semantic")]
-            EdgeType::RequiresFeature | EdgeType::EnablesFeature => {
-                attrs.push("style=\"dashed\"".to_string());
-                attrs.push("color=\"#00BCD4\"".to_string());
-            }
-            #[cfg(feature = "semantic")]
-            EdgeType::RelatedFeature => {
-                attrs.push("style=\"dotted\"".to_string());
-                attrs.push("color=\"#8BC34A\"".to_string());
-            }
         }
 
         if !attrs.is_empty() {

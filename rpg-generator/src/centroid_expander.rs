@@ -11,7 +11,7 @@ use std::collections::HashMap;
 
 use rpg_encoder::encoder::{CollectedFeature, FunctionalCentroid};
 use rpg_encoder::{
-    EdgeType, FeatureNode, FeatureTree, Node, NodeCategory, NodeId, NodeLevel, RpgGraph,
+    EdgeType, FeatureNode, FeatureTree, Node, NodeCategory, NodeId, NodeLevel, RpgGraph, UnitKind,
 };
 
 use crate::error::{GeneratorError, Result};
@@ -252,11 +252,15 @@ impl<'a> CentroidExpander<'a> {
     /// Create a graph node for an inferred unit.
     fn create_node_for_unit(&self, unit: &InferredUnit, centroid: &FunctionalCentroid) -> Node {
         let category = match unit.kind {
-            UnitKind::Function => NodeCategory::Function,
-            UnitKind::Struct => NodeCategory::Type,
-            UnitKind::Enum => NodeCategory::Type,
-            UnitKind::Trait => NodeCategory::Type,
+            UnitKind::Function | UnitKind::Method => NodeCategory::Function,
+            UnitKind::Struct
+            | UnitKind::Enum
+            | UnitKind::Trait
+            | UnitKind::Class
+            | UnitKind::Interface => NodeCategory::Type,
             UnitKind::Module => NodeCategory::Module,
+            UnitKind::Constant => NodeCategory::Constant,
+            UnitKind::Variable => NodeCategory::Variable,
         };
 
         let full_name = format!(
@@ -328,30 +332,6 @@ struct InferredUnit {
     name: String,
     kind: UnitKind,
     description: String,
-}
-
-/// Kind of implementation unit.
-/// TODO: Enum/Trait/Module variants reserved for future expansion
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[allow(dead_code)]
-enum UnitKind {
-    Function,
-    Struct,
-    Enum,
-    Trait,
-    Module,
-}
-
-impl UnitKind {
-    fn as_str(&self) -> &'static str {
-        match self {
-            Self::Function => "function",
-            Self::Struct => "struct",
-            Self::Enum => "enum",
-            Self::Trait => "trait",
-            Self::Module => "module",
-        }
-    }
 }
 
 /// Create a planned RpgGraph from a FeatureTree.

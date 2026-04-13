@@ -3,28 +3,20 @@ use std::path::Path;
 
 use tree_sitter::Parser;
 
+use crate::define_parser;
 use crate::error::{Result, RpgError};
 use crate::languages::builtins;
 use crate::languages::ffi::FfiDetector;
 use crate::parser::{
-    base::{collect_types, CachedParser, TreeSitterParser},
+    base::{collect_types, TreeSitterParser},
     docs::extract_documentation,
     helpers::TsNodeExt,
-    CallInfo, CallKind, DefinitionInfo, ImportInfo, LanguageParser, ParseResult, TypeRefInfo,
-    TypeRefKind,
+    CallInfo, CallKind, DefinitionInfo, ImportInfo, ParseResult, TypeRefInfo, TypeRefKind,
 };
 
-pub struct PythonParser {
-    cached: CachedParser,
-}
+define_parser!(PythonParser, "python", &["py", "pyi"]);
 
 impl PythonParser {
-    pub fn new() -> Result<Self> {
-        Ok(Self {
-            cached: CachedParser::new::<Self>()?,
-        })
-    }
-
     fn extract_decorators(node: &tree_sitter::Node, source: &[u8]) -> Vec<String> {
         let mut decorators = Vec::new();
         let mut cursor = node.walk();
@@ -525,19 +517,5 @@ impl TreeSitterParser for PythonParser {
         result.ffi_bindings = ffi_bindings;
 
         Ok(result)
-    }
-}
-
-impl LanguageParser for PythonParser {
-    fn language_name(&self) -> &str {
-        "python"
-    }
-
-    fn file_extensions(&self) -> &[&str] {
-        &["py", "pyi"]
-    }
-
-    fn parse(&self, source: &str, path: &Path) -> Result<ParseResult> {
-        self.cached.parse::<Self>(source, path)
     }
 }

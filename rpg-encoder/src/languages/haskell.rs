@@ -2,41 +2,17 @@ use std::path::Path;
 
 use tree_sitter::Parser;
 
+use crate::define_parser;
 use crate::error::{Result, RpgError};
 use crate::languages::ffi::FfiDetector;
 use crate::parser::{
-    base::{CachedParser, TreeSitterParser},
-    docs::extract_documentation,
-    helpers::TsNodeExt,
-    CallInfo, CallKind, DefinitionInfo, ImportInfo, LanguageParser, ParseResult,
+    base::TreeSitterParser, docs::extract_documentation, helpers::TsNodeExt, CallInfo, CallKind,
+    DefinitionInfo, ImportInfo, ParseResult,
 };
 
-pub struct HaskellParser {
-    cached: CachedParser,
-}
+define_parser!(HaskellParser, "haskell", &["hs", "lhs"]);
 
 impl HaskellParser {
-    pub fn new() -> Result<Self> {
-        Ok(Self {
-            cached: CachedParser::new::<Self>()?,
-        })
-    }
-
-    fn _extract_module(node: &tree_sitter::Node, source: &[u8]) -> Option<String> {
-        if node.kind() != "module" {
-            return None;
-        }
-
-        let mut cursor = node.walk();
-        for child in node.children(&mut cursor) {
-            if child.kind() == "module_name" || child.kind() == "qualified_module_name" {
-                return Some(child.text(source).to_string());
-            }
-        }
-
-        None
-    }
-
     fn extract_import(node: &tree_sitter::Node, source: &[u8], file: &Path) -> Option<ImportInfo> {
         if node.kind() != "import" {
             return None;
@@ -233,27 +209,7 @@ impl HaskellParser {
         Some(def)
     }
 
-    fn extract_class(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        file: &Path,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "class" {
-            return None;
-        }
-
-        let name = node.child_by_field_name("name").map(|n| n.text(source))?;
-
-        let mut def = DefinitionInfo::new("class", name);
-        def.location = Some(node.to_location(file));
-        def.is_public = true;
-
-        if let Some(doc) = extract_documentation(node, source, "haskell") {
-            def.doc = Some(doc);
-        }
-
-        Some(def)
-    }
+    crate::simple_definition_public!(extract_class, "class", "class", "haskell");
 
     fn extract_instance(
         node: &tree_sitter::Node,
@@ -426,19 +382,5 @@ impl TreeSitterParser for HaskellParser {
         result.ffi_bindings = ffi_bindings;
 
         Ok(result)
-    }
-}
-
-impl LanguageParser for HaskellParser {
-    fn language_name(&self) -> &str {
-        "haskell"
-    }
-
-    fn file_extensions(&self) -> &[&str] {
-        &["hs", "lhs"]
-    }
-
-    fn parse(&self, source: &str, path: &Path) -> Result<ParseResult> {
-        self.cached.parse::<Self>(source, path)
     }
 }

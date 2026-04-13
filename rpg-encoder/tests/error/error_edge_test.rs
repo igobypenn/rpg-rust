@@ -39,14 +39,6 @@ fn test_error_display_tree_sitter() {
 }
 
 #[test]
-fn test_error_display_language_not_supported() {
-    let err = RpgError::LanguageNotSupported("brainfuck".to_string());
-    let msg = format!("{}", err);
-    assert!(msg.contains("brainfuck"));
-    assert!(msg.contains("not supported"));
-}
-
-#[test]
 fn test_error_display_no_parser() {
     let err = RpgError::NoParser("unknown.xyz".to_string());
     let msg = format!("{}", err);

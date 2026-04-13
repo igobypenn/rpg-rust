@@ -11,6 +11,7 @@ use std::collections::HashMap;
 use crate::error::Result;
 
 use crate::core::{EdgeType, Node, NodeCategory, NodeId, NodeLevel, RpgGraph};
+use crate::utils::to_title_case;
 
 #[cfg(feature = "llm")]
 use crate::llm::OpenAIClient;
@@ -96,24 +97,6 @@ impl<'a> LlmOptions<'a> {
     }
 }
 
-/// Configuration for functional abstraction.
-#[derive(Debug, Clone)]
-pub struct FunctionalConfig {
-    pub batch_size: usize,
-    pub similarity_threshold: f32,
-    pub max_depth: usize,
-}
-
-impl Default for FunctionalConfig {
-    fn default() -> Self {
-        Self {
-            batch_size: 100,
-            similarity_threshold: 0.7,
-            max_depth: 3,
-        }
-    }
-}
-
 /// A collected semantic feature from a V^L node.
 #[derive(Debug, Clone)]
 pub struct CollectedFeature {
@@ -144,20 +127,11 @@ pub struct AbstractionResult {
 /// Functional Abstraction Engine.
 pub struct FunctionalAbstraction<'a> {
     graph: &'a mut RpgGraph,
-    #[allow(dead_code)]
-    config: FunctionalConfig,
 }
 
 impl<'a> FunctionalAbstraction<'a> {
     pub fn new(graph: &'a mut RpgGraph) -> Self {
-        Self {
-            graph,
-            config: FunctionalConfig::default(),
-        }
-    }
-
-    pub fn with_config(graph: &'a mut RpgGraph, config: FunctionalConfig) -> Self {
-        Self { graph, config }
+        Self { graph }
     }
 
     /// Phase 2.1: Collect semantic features from V^L nodes.
@@ -598,22 +572,6 @@ impl<'a> FunctionalAbstraction<'a> {
     }
 }
 
-fn to_title_case(s: &str) -> String {
-    s.split(['_', '-', '/'])
-        .map(|word| {
-            let mut chars = word.chars();
-            match chars.next() {
-                None => String::new(),
-                Some(first) => {
-                    first.to_uppercase().collect::<String>()
-                        + chars.as_str().to_lowercase().as_str()
-                }
-            }
-        })
-        .collect::<Vec<_>>()
-        .join(" ")
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -700,9 +658,6 @@ mod tests {
         assert!(result.nodes_linked > 0);
         assert!(result.edges_created > 0);
     }
-
-    #[test]
-    fn test_to_title_case() {}
 
     #[test]
     fn test_ground_centroids() {

@@ -3,6 +3,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 use crate::llm::{LlmConfig, LlmError, OpenAIClient};
+use crate::utils::to_pascal_case;
 
 const FEATURE_EXTRACTION_PROMPT: &str = r#"You are a senior software analyst, tasked with extracting high-level semantic features from code.
 
@@ -353,17 +354,61 @@ impl ComponentOrganizer {
     }
 }
 
-fn to_pascal_case(s: &str) -> String {
-    s.split(['_', '-', '/'])
-        .map(|word| {
-            let mut chars = word.chars();
-            match chars.next() {
-                None => String::new(),
-                Some(first) => {
-                    first.to_uppercase().collect::<String>()
-                        + chars.as_str().to_lowercase().as_str()
-                }
-            }
-        })
-        .collect()
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::Path;
+
+    fn make_extractor() -> FeatureExtractor {
+        let config = SemanticConfig::new(LlmConfig::openai_compatible(
+            "http://localhost:11434/v1",
+            "test-model",
+        ));
+        FeatureExtractor::new(config).expect("failed to create extractor")
+    }
+
+    #[test]
+    fn test_organize_by_path_groups_by_functional_area() {
+        let extractor = make_extractor();
+        let features = vec![
+            ExtractedFeature {
+                entity_name: "Parser".to_string(),
+                features: vec!["parse code".to_string()],
+                description: "parses source".to_string(),
+            },
+            ExtractedFeature {
+                entity_name: "Validator".to_string(),
+                features: vec!["validate input".to_string()],
+                description: "validates data".to_string(),
+            },
+        ];
+
+        let file_path = Path::new("src/parsing/parser.rs");
+        let organized = extractor.organize_by_path(&features, file_path);
+
+        assert_eq!(organized.len(), 2);
+
+        for of in &organized {
+            assert_eq!(of.functional_area, "Parsing");
+            assert!(
+                of.feature_path.starts_with("Parsing/"),
+                "feature_path should start with Parsing/ but got: {}",
+                of.feature_path
+            );
+        }
+
+        assert_eq!(organized[0].entity_name, "Parser");
+        assert_eq!(organized[1].entity_name, "Validator");
+    }
+
+    #[test]
+    fn test_organize_by_path_empty_features() {
+        let extractor = make_extractor();
+        let features: Vec<ExtractedFeature> = vec![];
+
+        let file_path = Path::new("src/main.rs");
+        let organized = extractor.organize_by_path(&features, file_path);
+
+        assert!(organized.is_empty());
+    }
 }

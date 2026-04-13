@@ -13,6 +13,8 @@ pub use go::GoParser;
 mod ruby;
 pub use ruby::RubyParser;
 
+mod c_shared;
+
 mod cpp;
 pub use cpp::CppParser;
 
@@ -21,6 +23,8 @@ pub use c::CParser;
 
 mod javascript;
 pub use javascript::JavaScriptParser;
+
+mod js_shared;
 
 mod typescript;
 pub use typescript::TypeScriptParser;

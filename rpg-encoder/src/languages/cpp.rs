@@ -3,94 +3,25 @@ use std::path::Path;
 
 use tree_sitter::Parser;
 
+use super::c_shared;
+use crate::define_parser;
 use crate::error::{Result, RpgError};
 use crate::languages::builtins;
 use crate::languages::ffi::FfiDetector;
 use crate::parser::{
-    base::{collect_types, CachedParser, TreeSitterParser},
+    base::{collect_types, TreeSitterParser},
+    docs::extract_documentation,
     helpers::TsNodeExt,
-    CallInfo, CallKind, DefinitionInfo, ImportInfo, LanguageParser, ParseResult, TypeRefInfo,
-    TypeRefKind,
+    CallInfo, CallKind, DefinitionInfo, ParseResult, TypeRefInfo, TypeRefKind,
 };
 
-pub struct CppParser {
-    cached: CachedParser,
-}
+define_parser!(
+    CppParser,
+    "cpp",
+    &["cpp", "cc", "cxx", "hpp", "hh", "hxx", "h"]
+);
 
 impl CppParser {
-    pub fn new() -> Result<Self> {
-        Ok(Self {
-            cached: CachedParser::new::<Self>()?,
-        })
-    }
-
-    fn extract_include(node: &tree_sitter::Node, source: &[u8], file: &Path) -> Option<ImportInfo> {
-        if node.kind() != "preproc_include" {
-            return None;
-        }
-
-        let path_node = node.child_by_field_name("path")?;
-        let path_text = path_node.text(source);
-
-        let (module_path, is_system) = if path_text.starts_with('"') {
-            (path_text.trim_matches('"').to_string(), false)
-        } else if path_text.starts_with('<') {
-            (
-                path_text
-                    .trim_start_matches('<')
-                    .trim_end_matches('>')
-                    .to_string(),
-                true,
-            )
-        } else {
-            (path_text.to_string(), false)
-        };
-
-        let mut import = ImportInfo::new(&module_path);
-        import.location = Some(node.to_location(file));
-        import.imported_names = vec![module_path.clone()];
-        import.is_glob = true;
-
-        import
-            .metadata
-            .insert("system".to_string(), serde_json::Value::Bool(is_system));
-
-        Some(import)
-    }
-
-    fn extract_function(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        file: &Path,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "function_definition" {
-            return None;
-        }
-
-        let decl = node.child_by_field_name("declarator")?;
-
-        let name = Self::extract_fn_name_from_declarator(&decl, source)?;
-
-        let mut def = DefinitionInfo::new("fn", &name);
-        def.location = Some(node.to_location(file));
-
-        if let Some(type_node) = node.child_by_field_name("type") {
-            let return_type = type_node.text(source);
-            let params_text = Self::extract_params_text(&decl, source);
-            def.signature = Some(format!("{} {}{}", return_type, name, params_text));
-        }
-
-        let body = node.child_by_field_name("body");
-        def.metadata.insert(
-            "has_body".to_string(),
-            serde_json::Value::Bool(body.is_some()),
-        );
-
-        def.is_public = true;
-
-        Some(def)
-    }
-
     fn extract_fn_name_from_declarator(node: &tree_sitter::Node, source: &[u8]) -> Option<String> {
         match node.kind() {
             "identifier" => Some(node.text(source).to_string()),
@@ -110,15 +41,6 @@ impl CppParser {
         }
     }
 
-    fn extract_params_text(node: &tree_sitter::Node, source: &[u8]) -> String {
-        if node.kind() == "function_declarator" {
-            if let Some(params) = node.child_by_field_name("parameters") {
-                return params.text(source).to_string();
-            }
-        }
-        String::new()
-    }
-
     fn extract_class(
         node: &tree_sitter::Node,
         source: &[u8],
@@ -132,6 +54,9 @@ impl CppParser {
 
         let mut def = DefinitionInfo::new("class", name);
         def.location = Some(node.to_location(file));
+        if let Some(doc) = extract_documentation(node, source, "cpp") {
+            def.doc = Some(doc);
+        }
         def.is_public = true;
 
         let mut cursor = node.walk();
@@ -165,6 +90,9 @@ impl CppParser {
 
         let mut def = DefinitionInfo::new("struct", name);
         def.location = Some(node.to_location(file));
+        if let Some(doc) = extract_documentation(node, source, "cpp") {
+            def.doc = Some(doc);
+        }
         def.is_public = true;
 
         let mut cursor = node.walk();
@@ -203,23 +131,12 @@ impl CppParser {
         bases
     }
 
-    fn extract_namespace(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        file: &Path,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "namespace_definition" {
-            return None;
-        }
-
-        let name = node.child_by_field_name("name").map(|n| n.text(source))?;
-
-        let mut def = DefinitionInfo::new("namespace", name);
-        def.location = Some(node.to_location(file));
-        def.is_public = true;
-
-        Some(def)
-    }
+    crate::simple_definition_public!(
+        extract_namespace,
+        "namespace_definition",
+        "namespace",
+        "cpp"
+    );
 
     fn extract_template(
         node: &tree_sitter::Node,
@@ -234,7 +151,13 @@ impl CppParser {
         for child in node.children(&mut cursor) {
             match child.kind() {
                 "function_definition" => {
-                    if let Some(mut def) = Self::extract_function(&child, source, file) {
+                    if let Some(mut def) = child
+                        .child_by_field_name("declarator")
+                        .and_then(|decl| Self::extract_fn_name_from_declarator(&decl, source))
+                        .and_then(|name| {
+                            c_shared::extract_function(&child, source, file, &name, "cpp")
+                        })
+                    {
                         def.kind = "template_fn".to_string();
 
                         if let Some(params) = node.child_by_field_name("parameters") {
@@ -426,7 +349,7 @@ impl CppParser {
         }
 
         if let Some(decl) = node.child_by_field_name("declarator") {
-            if let Some(func_decl) = Self::find_function_declarator(&decl) {
+            if let Some(func_decl) = c_shared::find_function_declarator(&decl) {
                 if let Some(params) = func_decl.child_by_field_name("parameters") {
                     let mut cursor = params.walk();
                     for param in params.children(&mut cursor) {
@@ -462,23 +385,6 @@ impl CppParser {
         }
     }
 
-    fn find_function_declarator<'a>(node: &tree_sitter::Node<'a>) -> Option<tree_sitter::Node<'a>> {
-        if node.kind() == "function_declarator" {
-            return Some(*node);
-        }
-
-        let mut cursor = node.walk();
-        for child in node.children(&mut cursor) {
-            if child.is_named() {
-                if let Some(found) = Self::find_function_declarator(&child) {
-                    return Some(found);
-                }
-            }
-        }
-
-        None
-    }
-
     fn walk_and_extract(
         node: &tree_sitter::Node,
         source: &[u8],
@@ -489,12 +395,16 @@ impl CppParser {
     ) {
         match node.kind() {
             "preproc_include" => {
-                if let Some(import) = Self::extract_include(node, source, file) {
+                if let Some(import) = c_shared::extract_include(node, source, file) {
                     result.imports.push(import);
                 }
             }
             "function_definition" => {
-                if let Some(mut def) = Self::extract_function(node, source, file) {
+                if let Some(mut def) = node
+                    .child_by_field_name("declarator")
+                    .and_then(|decl| Self::extract_fn_name_from_declarator(&decl, source))
+                    .and_then(|name| c_shared::extract_function(node, source, file, &name, "cpp"))
+                {
                     let fn_name = def.name.clone();
                     Self::extract_type_refs_from_func(node, source, &fn_name, result);
 
@@ -658,19 +568,5 @@ impl TreeSitterParser for CppParser {
         result.ffi_bindings = ffi_bindings;
 
         Ok(result)
-    }
-}
-
-impl LanguageParser for CppParser {
-    fn language_name(&self) -> &str {
-        "cpp"
-    }
-
-    fn file_extensions(&self) -> &[&str] {
-        &["cpp", "cc", "cxx", "hpp", "hh", "hxx", "h"]
-    }
-
-    fn parse(&self, source: &str, path: &Path) -> Result<ParseResult> {
-        self.cached.parse::<Self>(source, path)
     }
 }

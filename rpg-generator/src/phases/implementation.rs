@@ -276,3 +276,306 @@ impl ImplementationLevelBuilder {
         task
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::types::TargetLanguage;
+    use std::collections::HashMap;
+
+    fn create_builder() -> ImplementationLevelBuilder {
+        let config = crate::llm::LlmConfig::new("test-key");
+        let client = OpenAIClient::new(config).unwrap();
+        ImplementationLevelBuilder::new(client)
+    }
+
+    fn create_test_plan() -> GenerationPlan {
+        use crate::ComponentPlan;
+        use crate::FeatureTree;
+        use crate::GenerationRequest;
+
+        let mut tree = FeatureTree::new("test");
+        tree.root.add_feature("feature1");
+
+        let mut component = rpg_encoder::Component::new("gameplay.core", "Core gameplay logic");
+        component.subtree.add_feature("feature1");
+
+        GenerationPlan::new(
+            GenerationRequest::new("Test project", TargetLanguage::Rust),
+            tree,
+            ComponentPlan::new(vec![component]),
+        )
+    }
+
+    #[test]
+    fn test_parse_unit_kind_function() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("function"), UnitKind::Function);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_fn() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("fn"), UnitKind::Function);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_method() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("method"), UnitKind::Method);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_class() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("class"), UnitKind::Class);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_struct() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("struct"), UnitKind::Struct);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_enum() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("enum"), UnitKind::Enum);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_interface() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("interface"), UnitKind::Interface);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_trait() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("trait"), UnitKind::Interface);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_module() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("module"), UnitKind::Module);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_constant() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("constant"), UnitKind::Constant);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_const() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("const"), UnitKind::Constant);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_case_insensitive() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("FUNCTION"), UnitKind::Function);
+        assert_eq!(builder.parse_unit_kind("Struct"), UnitKind::Struct);
+        assert_eq!(builder.parse_unit_kind("ENUM"), UnitKind::Enum);
+    }
+
+    #[test]
+    fn test_parse_unit_kind_default() {
+        let builder = create_builder();
+        assert_eq!(builder.parse_unit_kind("unknown"), UnitKind::Function);
+        assert_eq!(builder.parse_unit_kind(""), UnitKind::Function);
+        assert_eq!(builder.parse_unit_kind("variable"), UnitKind::Function);
+    }
+
+    #[test]
+    fn test_find_component_for_file_matches_component() {
+        let builder = create_builder();
+        let plan = create_test_plan();
+        let path = std::path::Path::new("src/gameplay/core/mod.rs");
+        assert_eq!(
+            builder.find_component_for_file(path, &plan),
+            "gameplay.core"
+        );
+    }
+
+    #[test]
+    fn test_find_component_for_file_returns_shared_when_no_match() {
+        let builder = create_builder();
+        let plan = create_test_plan();
+        let path = std::path::Path::new("src/utils/helpers.rs");
+        assert_eq!(builder.find_component_for_file(path, &plan), "shared");
+    }
+
+    #[test]
+    fn test_find_features_for_component_found() {
+        let builder = create_builder();
+        let plan = create_test_plan();
+        let features = builder.find_features_for_component("gameplay.core", &plan);
+        assert_eq!(features, vec!["feature1"]);
+    }
+
+    #[test]
+    fn test_find_features_for_component_not_found() {
+        let builder = create_builder();
+        let plan = create_test_plan();
+        let features = builder.find_features_for_component("nonexistent", &plan);
+        assert!(features.is_empty());
+    }
+
+    #[test]
+    fn test_response_to_skeleton() {
+        let builder = create_builder();
+        let response = SkeletonResponse {
+            directories: vec!["src".to_string()],
+            files: vec![
+                FileResponse {
+                    path: "src/main.rs".to_string(),
+                    purpose: "entry point".to_string(),
+                    component: "core".to_string(),
+                },
+                FileResponse {
+                    path: "src/lib.rs".to_string(),
+                    purpose: "library root".to_string(),
+                    component: "core".to_string(),
+                },
+            ],
+            entry_point: Some("src/main.rs".to_string()),
+        };
+        let language = TargetLanguage::Rust;
+        let skeleton = builder.response_to_skeleton(response, &language);
+        assert_eq!(skeleton.files.len(), 2);
+        assert_eq!(skeleton.files[0].path, PathBuf::from("src/main.rs"));
+        assert_eq!(skeleton.files[1].path, PathBuf::from("src/lib.rs"));
+    }
+
+    #[test]
+    fn test_response_to_interface() {
+        let builder = create_builder();
+        let response = InterfaceResponse {
+            imports: vec!["std::collections::HashMap".to_string()],
+            units: vec![
+                UnitResponse {
+                    name: "process".to_string(),
+                    kind: "function".to_string(),
+                    signature: "fn process(input: &str) -> Result<usize>".to_string(),
+                    docstring: Some("Processes the input".to_string()),
+                    features: vec!["feature1".to_string()],
+                },
+                UnitResponse {
+                    name: "Handler".to_string(),
+                    kind: "struct".to_string(),
+                    signature: "pub struct Handler { count: usize }".to_string(),
+                    docstring: None,
+                    features: vec![],
+                },
+            ],
+        };
+        let path = PathBuf::from("src/main.rs");
+        let interface = builder.response_to_interface(path.clone(), response);
+
+        assert_eq!(interface.path, path);
+        assert_eq!(interface.imports, vec!["std::collections::HashMap"]);
+        assert_eq!(interface.units.len(), 2);
+        assert_eq!(interface.units[0].name, "process");
+        assert_eq!(interface.units[0].kind, UnitKind::Function);
+        assert_eq!(
+            interface.units[0].signature.as_deref(),
+            Some("fn process(input: &str) -> Result<usize>")
+        );
+        assert_eq!(
+            interface.units[0].docstring.as_deref(),
+            Some("Processes the input")
+        );
+        assert_eq!(interface.units[0].features, vec!["feature1"]);
+        assert_eq!(interface.units[1].name, "Handler");
+        assert_eq!(interface.units[1].kind, UnitKind::Struct);
+        assert!(interface.units[1].docstring.is_none());
+    }
+
+    #[test]
+    fn test_plan_tasks() {
+        let builder = create_builder();
+        let plan = create_test_plan();
+
+        let mut skeleton = RepoSkeleton::new(PathBuf::from("."), "rust");
+        skeleton.add_file(SkeletonFile::new(
+            PathBuf::from("src/gameplay/core/mod.rs"),
+            "rust",
+        ));
+        skeleton.add_file(SkeletonFile::new(
+            PathBuf::from("src/gameplay/core/player.rs"),
+            "rust",
+        ));
+
+        let mut interfaces = HashMap::new();
+        let file_path1 = PathBuf::from("src/gameplay/core/mod.rs");
+        interfaces.insert(
+            file_path1.clone(),
+            FileInterface {
+                path: file_path1,
+                units: vec![UnitInterface {
+                    name: "init".to_string(),
+                    kind: UnitKind::Function,
+                    signature: Some("fn init()".to_string()),
+                    docstring: None,
+                    features: vec!["feature1".to_string()],
+                }],
+                imports: vec![],
+            },
+        );
+
+        let task_plan = builder.plan_tasks(&skeleton, &interfaces, &plan);
+        assert!(task_plan.batches.contains_key("gameplay.core"));
+        let tasks = task_plan.tasks_for_component("gameplay.core");
+        assert_eq!(tasks.len(), 2);
+    }
+
+    #[test]
+    fn test_create_task_for_file_with_interface() {
+        let builder = create_builder();
+        let path = std::path::Path::new("src/gameplay/core/mod.rs");
+        let interface = FileInterface {
+            path: path.to_path_buf(),
+            units: vec![
+                UnitInterface {
+                    name: "init".to_string(),
+                    kind: UnitKind::Function,
+                    signature: Some("fn init() -> bool".to_string()),
+                    docstring: None,
+                    features: vec!["feature1".to_string()],
+                },
+                UnitInterface {
+                    name: "update".to_string(),
+                    kind: UnitKind::Method,
+                    signature: None,
+                    docstring: Some("Updates state".to_string()),
+                    features: vec![],
+                },
+            ],
+            imports: vec![],
+        };
+
+        let task = builder.create_task_for_file(path, Some(&interface), "gameplay.core");
+        assert_eq!(task.units.len(), 2);
+        assert!(task.units.contains(&"init".to_string()));
+        assert!(task.units.contains(&"update".to_string()));
+        assert_eq!(task.unit_code.get("init").unwrap(), "fn init() -> bool");
+        assert_eq!(task.unit_code.get("update").unwrap(), "");
+        assert_eq!(
+            task.unit_features.get("init").unwrap(),
+            &vec!["feature1".to_string()]
+        );
+        assert!(task.unit_features.get("update").unwrap().is_empty());
+    }
+
+    #[test]
+    fn test_create_task_for_file_without_interface() {
+        let builder = create_builder();
+        let path = std::path::Path::new("src/utils/helpers.rs");
+        let task = builder.create_task_for_file(path, None, "shared");
+        assert!(task.units.is_empty());
+        assert_eq!(task.subtree, "shared");
+    }
+}

@@ -40,8 +40,14 @@ fn test_snapshot_large_unit_cache() {
             i + 1,
         );
         let path = PathBuf::from(format!("src/file_{}.rs", i % 10));
-        snapshot.unit_cache.entry(path).or_default().push(unit);
+        snapshot
+            .unit_cache
+            .entry(path.clone())
+            .or_default()
+            .push(unit);
     }
+
+    snapshot.rebuild_node_id_index();
 
     assert_eq!(snapshot.unit_cache.len(), 10);
 

@@ -85,3 +85,46 @@ macro_rules! register_parsers {
         )*
     };
 }
+
+/// Defines a language parser struct with CachedParser, new(), and LanguageParser impl.
+///
+/// Usage: `define_parser!(RustParser, "rust", &["rs"]);`
+///
+/// This generates:
+/// - `pub struct Name { cached: CachedParser }`
+/// - `impl Name { pub fn new() -> Result<Self> { ... } }`
+/// - `impl LanguageParser for Name { language_name, file_extensions, parse }`
+#[macro_export]
+macro_rules! define_parser {
+    ($name:ident, $lang:literal, $exts:expr) => {
+        pub struct $name {
+            cached: $crate::parser::base::CachedParser,
+        }
+
+        impl $name {
+            pub fn new() -> $crate::error::Result<Self> {
+                Ok(Self {
+                    cached: $crate::parser::base::CachedParser::new::<Self>()?,
+                })
+            }
+        }
+
+        impl $crate::parser::LanguageParser for $name {
+            fn language_name(&self) -> &str {
+                $lang
+            }
+
+            fn file_extensions(&self) -> &[&str] {
+                $exts
+            }
+
+            fn parse(
+                &self,
+                source: &str,
+                path: &std::path::Path,
+            ) -> $crate::error::Result<$crate::parser::ParseResult> {
+                self.cached.parse::<Self>(source, path)
+            }
+        }
+    };
+}

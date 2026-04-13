@@ -210,15 +210,6 @@ fn test_graph_node_exists_removed() {
 }
 
 #[test]
-fn test_graph_to_petgraph_empty() {
-    let graph = RpgGraph::new();
-    let petgraph = graph.to_petgraph();
-
-    assert_eq!(petgraph.node_count(), 0);
-    assert_eq!(petgraph.edge_count(), 0);
-}
-
-#[test]
 fn test_graph_find_node_in_file_not_found() {
     let mut graph = RpgGraph::new();
 

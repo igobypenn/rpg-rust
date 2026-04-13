@@ -3,28 +3,20 @@ use std::path::Path;
 
 use tree_sitter::Parser;
 
+use crate::define_parser;
 use crate::error::{Result, RpgError};
 use crate::languages::builtins;
 use crate::languages::ffi::FfiDetector;
 use crate::parser::{
-    base::{collect_types_with_scoped, CachedParser, TreeSitterParser},
+    base::{collect_types_with_scoped, TreeSitterParser},
     docs::extract_documentation,
     helpers::TsNodeExt,
-    CallInfo, CallKind, DefinitionInfo, ImportInfo, LanguageParser, ParseResult, TypeRefInfo,
-    TypeRefKind,
+    CallInfo, CallKind, DefinitionInfo, ImportInfo, ParseResult, TypeRefInfo, TypeRefKind,
 };
 
-pub struct JavaParser {
-    cached: CachedParser,
-}
+define_parser!(JavaParser, "java", &["java"]);
 
 impl JavaParser {
-    pub fn new() -> Result<Self> {
-        Ok(Self {
-            cached: CachedParser::new::<Self>()?,
-        })
-    }
-
     fn extract_modifiers(node: &tree_sitter::Node, source: &[u8]) -> (bool, bool) {
         let mut is_public = false;
         let mut is_native = false;
@@ -580,19 +572,5 @@ impl TreeSitterParser for JavaParser {
         result.ffi_bindings = ffi_bindings;
 
         Ok(result)
-    }
-}
-
-impl LanguageParser for JavaParser {
-    fn language_name(&self) -> &str {
-        "java"
-    }
-
-    fn file_extensions(&self) -> &[&str] {
-        &["java"]
-    }
-
-    fn parse(&self, source: &str, path: &Path) -> Result<ParseResult> {
-        self.cached.parse::<Self>(source, path)
     }
 }

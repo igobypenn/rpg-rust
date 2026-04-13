@@ -170,4 +170,146 @@ mod tests {
         let plan = create_test_plan();
         assert!(!plan.feature_tree.all_features().is_empty());
     }
+
+    fn create_builder() -> PropertyLevelBuilder {
+        let config = crate::llm::LlmConfig::new("test-key");
+        let client = OpenAIClient::new(config).unwrap();
+        PropertyLevelBuilder::new(client)
+    }
+
+    #[test]
+    fn test_response_to_feature_tree_with_categories() {
+        let builder = create_builder();
+        let response = FeatureExtractionResponse {
+            root_name: "game engine".to_string(),
+            categories: vec![
+                CategoryResponse {
+                    name: "rendering".to_string(),
+                    description: Some("Graphics rendering".to_string()),
+                    features: vec!["shading".to_string(), "lighting".to_string()],
+                    subcategories: vec![],
+                },
+                CategoryResponse {
+                    name: "physics".to_string(),
+                    description: None,
+                    features: vec!["collision".to_string()],
+                    subcategories: vec![],
+                },
+            ],
+        };
+
+        let tree = builder.response_to_feature_tree(response);
+        assert_eq!(tree.root.name, "game engine");
+        assert_eq!(tree.root.children.len(), 2);
+
+        let rendering = &tree.root.children[0];
+        assert_eq!(rendering.name, "rendering");
+        assert_eq!(rendering.description.as_deref(), Some("Graphics rendering"));
+        assert_eq!(rendering.features, vec!["shading", "lighting"]);
+
+        let physics = &tree.root.children[1];
+        assert_eq!(physics.name, "physics");
+        assert!(physics.description.is_none());
+        assert_eq!(physics.features, vec!["collision"]);
+
+        let all_features = tree.all_features();
+        assert!(all_features.contains(&"shading"));
+        assert!(all_features.contains(&"lighting"));
+        assert!(all_features.contains(&"collision"));
+    }
+
+    #[test]
+    fn test_response_to_feature_tree_with_subcategories() {
+        let builder = create_builder();
+        let response = FeatureExtractionResponse {
+            root_name: "app".to_string(),
+            categories: vec![CategoryResponse {
+                name: "networking".to_string(),
+                description: None,
+                features: vec!["http_client".to_string()],
+                subcategories: vec![
+                    SubcategoryResponse {
+                        name: "tcp".to_string(),
+                        features: vec!["connection_pool".to_string()],
+                    },
+                    SubcategoryResponse {
+                        name: "tls".to_string(),
+                        features: vec![],
+                    },
+                ],
+            }],
+        };
+
+        let tree = builder.response_to_feature_tree(response);
+        let networking = &tree.root.children[0];
+        assert_eq!(networking.children.len(), 2);
+        assert_eq!(networking.children[0].name, "tcp");
+        assert_eq!(networking.children[0].features, vec!["connection_pool"]);
+        assert_eq!(networking.children[1].name, "tls");
+        assert!(networking.children[1].features.is_empty());
+
+        let all_features = tree.all_features();
+        assert!(all_features.contains(&"http_client"));
+        assert!(all_features.contains(&"connection_pool"));
+    }
+
+    #[test]
+    fn test_response_to_feature_tree_empty_categories() {
+        let builder = create_builder();
+        let response = FeatureExtractionResponse {
+            root_name: "empty".to_string(),
+            categories: vec![],
+        };
+
+        let tree = builder.response_to_feature_tree(response);
+        assert_eq!(tree.root.name, "empty");
+        assert!(tree.root.children.is_empty());
+        assert!(tree.all_features().is_empty());
+    }
+
+    #[test]
+    fn test_response_to_component_plan_single() {
+        let builder = create_builder();
+        let response = RefactoringResponse {
+            components: vec![ComponentResponse {
+                name: "renderer".to_string(),
+                description: "Handles rendering".to_string(),
+                features: vec!["shading".to_string(), "lighting".to_string()],
+            }],
+        };
+
+        let plan = builder.response_to_component_plan(response);
+        assert_eq!(plan.components.len(), 1);
+        assert_eq!(plan.components[0].name, "renderer");
+        assert_eq!(plan.components[0].description, "Handles rendering");
+        assert_eq!(plan.components[0].all_features().len(), 2);
+        assert!(plan.components[0].all_features().contains(&"shading"));
+        assert!(plan.components[0].all_features().contains(&"lighting"));
+    }
+
+    #[test]
+    fn test_response_to_component_plan_multiple() {
+        let builder = create_builder();
+        let response = RefactoringResponse {
+            components: vec![
+                ComponentResponse {
+                    name: "physics".to_string(),
+                    description: "Physics simulation".to_string(),
+                    features: vec!["collision".to_string()],
+                },
+                ComponentResponse {
+                    name: "audio".to_string(),
+                    description: "Audio playback".to_string(),
+                    features: vec!["sound_effects".to_string(), "music".to_string()],
+                },
+            ],
+        };
+
+        let plan = builder.response_to_component_plan(response);
+        assert_eq!(plan.components.len(), 2);
+        assert_eq!(plan.components[0].name, "physics");
+        assert_eq!(plan.components[0].all_features().len(), 1);
+        assert_eq!(plan.components[1].name, "audio");
+        assert_eq!(plan.components[1].all_features().len(), 2);
+    }
 }

@@ -1,29 +1,19 @@
-use std::collections::HashSet;
 use std::path::Path;
 
 use tree_sitter::Parser;
 
+use crate::define_parser;
 use crate::error::{Result, RpgError};
-use crate::languages::builtins;
 use crate::languages::ffi::FfiDetector;
-use crate::parser::{
-    base::{collect_types, CachedParser, TreeSitterParser},
-    docs::extract_documentation,
-    helpers::TsNodeExt,
-    CallInfo, CallKind, DefinitionInfo, ImportInfo, LanguageParser, ParseResult, TypeRefInfo,
-};
+use crate::languages::js_shared;
+use crate::parser::helpers::TsNodeExt;
+use crate::parser::{ParseResult, TreeSitterParser};
 
-pub struct TypeScriptParser {
-    cached: CachedParser,
-}
+define_parser!(TypeScriptParser, "typescript", &["ts", "tsx"]);
+
+const LANG: &str = "typescript";
 
 impl TypeScriptParser {
-    pub fn new() -> Result<Self> {
-        Ok(Self {
-            cached: CachedParser::new::<Self>()?,
-        })
-    }
-
     fn extract_decorators(node: &tree_sitter::Node, source: &[u8]) -> Vec<String> {
         let mut decorators = Vec::new();
         let mut cursor = node.walk();
@@ -39,143 +29,12 @@ impl TypeScriptParser {
         decorators
     }
 
-    fn extract_import(node: &tree_sitter::Node, source: &[u8], file: &Path) -> Option<ImportInfo> {
-        match node.kind() {
-            "import_statement" => {
-                let source_node = node.child_by_field_name("source")?;
-                let module_path = source_node
-                    .text(source)
-                    .trim_matches('"')
-                    .trim_matches('\'')
-                    .to_string();
-
-                let mut import = ImportInfo::new(&module_path);
-                import.location = Some(node.to_location(file));
-
-                let mut names = Vec::new();
-                let mut cursor = node.walk();
-                for child in node.children(&mut cursor) {
-                    if child.kind() == "import_clause" {
-                        let mut clause_cursor = child.walk();
-                        for clause_child in child.children(&mut clause_cursor) {
-                            match clause_child.kind() {
-                                "identifier" => {
-                                    names.push(clause_child.text(source).to_string());
-                                }
-                                "named_imports" => {
-                                    let mut spec_cursor = clause_child.walk();
-                                    for spec in clause_child.children(&mut spec_cursor) {
-                                        if spec.kind() == "import_specifier" {
-                                            if let Some(name) = spec.child_by_field_name("name") {
-                                                let name_text = name.text(source);
-                                                if let Some(alias) =
-                                                    spec.child_by_field_name("alias")
-                                                {
-                                                    names.push(format!(
-                                                        "{} as {}",
-                                                        name_text,
-                                                        alias.text(source)
-                                                    ));
-                                                } else {
-                                                    names.push(name_text.to_string());
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                "namespace_import" => {
-                                    if let Some(name) = clause_child.child_by_field_name("name") {
-                                        names.push(format!("* as {}", name.text(source)));
-                                        import.is_glob = true;
-                                    }
-                                }
-                                _ => {}
-                            }
-                        }
-                    }
-                }
-
-                import.imported_names = names;
-                Some(import)
-            }
-            "export_statement" => Self::extract_reexport(node, source, file),
-            _ => None,
-        }
-    }
-
-    fn extract_reexport(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        file: &Path,
-    ) -> Option<ImportInfo> {
-        let source_node = node.child_by_field_name("source")?;
-        let module_path = source_node
-            .text(source)
-            .trim_matches('"')
-            .trim_matches('\'')
-            .to_string();
-
-        let mut import = ImportInfo::new(&module_path);
-        import.location = Some(node.to_location(file));
-        import.is_glob = true;
-
-        Some(import)
-    }
-
-    fn extract_require_call(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        file: &Path,
-    ) -> Option<ImportInfo> {
-        if node.kind() != "call_expression" {
-            return None;
-        }
-
-        let func = node.child_by_field_name("function")?;
-        if func.kind() != "identifier" || func.text(source) != "require" {
-            return None;
-        }
-
-        let args = node.child_by_field_name("arguments")?;
-        let mut cursor = args.walk();
-        let first_arg = args.children(&mut cursor).find(|c| c.is_named())?;
-
-        if first_arg.kind() == "string" || first_arg.kind() == "template_string" {
-            let arg_text = first_arg.text(source);
-            let module_path = arg_text.trim_matches('"').trim_matches('\'').to_string();
-
-            let mut import = ImportInfo::new(&module_path);
-            import.location = Some(node.to_location(file));
-
-            let parent = node.parent();
-            if let Some(p) = parent {
-                if p.kind() == "variable_declarator" {
-                    if let Some(name) = p.child_by_field_name("name") {
-                        import.imported_names = vec![name.text(source).to_string()];
-                    }
-                }
-            }
-
-            return Some(import);
-        }
-
-        None
-    }
-
     fn extract_function(
         node: &tree_sitter::Node,
         source: &[u8],
         file: &Path,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "function_declaration" {
-            return None;
-        }
-
-        let name = node.child_by_field_name("name").map(|n| n.text(source))?;
-
-        let mut def = DefinitionInfo::new("function", name);
-        def.location = Some(node.to_location(file));
-        def.is_public = true;
+    ) -> Option<crate::parser::DefinitionInfo> {
+        let mut def = js_shared::extract_function(node, source, file, LANG)?;
 
         if let Some(params) = node.child_by_field_name("parameters") {
             let params_text = params.text(source);
@@ -183,7 +42,7 @@ impl TypeScriptParser {
                 .child_by_field_name("return_type")
                 .map(|r| r.text(source))
                 .unwrap_or_default();
-            def.signature = Some(format!("{}{}{}", name, params_text, return_type));
+            def.signature = Some(format!("{}{}{}", def.name, params_text, return_type));
         }
 
         let decorators = Self::extract_decorators(node, source);
@@ -199,10 +58,6 @@ impl TypeScriptParser {
             );
         }
 
-        if let Some(doc) = extract_documentation(node, source, "typescript") {
-            def.doc = Some(doc);
-        }
-
         Some(def)
     }
 
@@ -210,23 +65,8 @@ impl TypeScriptParser {
         node: &tree_sitter::Node,
         source: &[u8],
         file: &Path,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "arrow_function" {
-            return None;
-        }
-
-        let parent = node.parent()?;
-        let name = match parent.kind() {
-            "variable_declarator" => parent.child_by_field_name("name").map(|n| n.text(source))?,
-            "assignment_expression" => {
-                parent.child_by_field_name("left").map(|n| n.text(source))?
-            }
-            _ => return None,
-        };
-
-        let mut def = DefinitionInfo::new("arrow", name);
-        def.location = Some(node.to_location(file));
-        def.is_public = true;
+    ) -> Option<crate::parser::DefinitionInfo> {
+        let mut def = js_shared::extract_arrow_function(node, source, file)?;
 
         if let Some(params) = node.child_by_field_name("parameters") {
             let params_text = params.text(source);
@@ -234,7 +74,7 @@ impl TypeScriptParser {
                 .child_by_field_name("return_type")
                 .map(|r| r.text(source))
                 .unwrap_or_default();
-            def.signature = Some(format!("{}{}{}", name, params_text, return_type));
+            def.signature = Some(format!("{}{}{}", def.name, params_text, return_type));
         }
 
         Some(def)
@@ -244,24 +84,8 @@ impl TypeScriptParser {
         node: &tree_sitter::Node,
         source: &[u8],
         file: &Path,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "class_declaration" {
-            return None;
-        }
-
-        let name = node.child_by_field_name("name").map(|n| n.text(source))?;
-
-        let mut def = DefinitionInfo::new("class", name);
-        def.location = Some(node.to_location(file));
-        def.is_public = true;
-
-        if let Some(parent) = node.child_by_field_name("parent_class") {
-            let parent_name = parent.text(source);
-            def.metadata.insert(
-                "extends".to_string(),
-                serde_json::Value::String(parent_name.to_string()),
-            );
-        }
+    ) -> Option<crate::parser::DefinitionInfo> {
+        let mut def = js_shared::extract_class(node, source, file, LANG)?;
 
         let mut cursor = node.walk();
         for child in node.children(&mut cursor) {
@@ -288,7 +112,18 @@ impl TypeScriptParser {
 
         let body = node.child_by_field_name("body");
         if let Some(body) = body {
-            let methods = Self::extract_class_methods(&body, source);
+            let mut methods = js_shared::extract_class_methods(&body, source);
+            let mut body_cursor = body.walk();
+            for child in body.children(&mut body_cursor) {
+                if child.kind() == "public_field_definition" {
+                    if let Some(name) = child.child_by_field_name("name") {
+                        let name_text = name.text(source).to_string();
+                        if !methods.contains(&name_text) {
+                            methods.push(name_text);
+                        }
+                    }
+                }
+            }
             if !methods.is_empty() {
                 def.metadata.insert(
                     "methods".to_string(),
@@ -312,10 +147,6 @@ impl TypeScriptParser {
             );
         }
 
-        if let Some(doc) = extract_documentation(node, source, "typescript") {
-            def.doc = Some(doc);
-        }
-
         Some(def)
     }
 
@@ -323,14 +154,14 @@ impl TypeScriptParser {
         node: &tree_sitter::Node,
         source: &[u8],
         file: &Path,
-    ) -> Option<DefinitionInfo> {
+    ) -> Option<crate::parser::DefinitionInfo> {
         if node.kind() != "interface_declaration" {
             return None;
         }
 
         let name = node.child_by_field_name("name").map(|n| n.text(source))?;
 
-        let mut def = DefinitionInfo::new("interface", name);
+        let mut def = crate::parser::DefinitionInfo::new("interface", name);
         def.location = Some(node.to_location(file));
         def.is_public = true;
 
@@ -354,88 +185,29 @@ impl TypeScriptParser {
             }
         }
 
-        if let Some(doc) = extract_documentation(node, source, "typescript") {
+        if let Some(doc) = crate::parser::docs::extract_documentation(node, source, "typescript") {
             def.doc = Some(doc);
         }
 
         Some(def)
     }
 
-    fn extract_type_alias(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        file: &Path,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "type_alias_declaration" {
-            return None;
-        }
+    crate::simple_definition_public!(
+        extract_type_alias,
+        "type_alias_declaration",
+        "type",
+        "typescript"
+    );
 
-        let name = node.child_by_field_name("name").map(|n| n.text(source))?;
-
-        let mut def = DefinitionInfo::new("type", name);
-        def.location = Some(node.to_location(file));
-        def.is_public = true;
-
-        if let Some(doc) = extract_documentation(node, source, "typescript") {
-            def.doc = Some(doc);
-        }
-
-        Some(def)
-    }
-
-    fn extract_enum(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        file: &Path,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "enum_declaration" {
-            return None;
-        }
-
-        let name = node.child_by_field_name("name").map(|n| n.text(source))?;
-
-        let mut def = DefinitionInfo::new("enum", name);
-        def.location = Some(node.to_location(file));
-        def.is_public = true;
-
-        if let Some(doc) = extract_documentation(node, source, "typescript") {
-            def.doc = Some(doc);
-        }
-
-        Some(def)
-    }
-
-    fn extract_class_methods(body: &tree_sitter::Node, source: &[u8]) -> Vec<String> {
-        let mut methods = Vec::new();
-        let mut cursor = body.walk();
-
-        for child in body.children(&mut cursor) {
-            if child.kind() == "method_definition" || child.kind() == "public_field_definition" {
-                if let Some(name) = child.child_by_field_name("name") {
-                    methods.push(name.text(source).to_string());
-                }
-            }
-        }
-
-        methods
-    }
+    crate::simple_definition_public!(extract_enum, "enum_declaration", "enum", "typescript");
 
     fn extract_method(
         node: &tree_sitter::Node,
         source: &[u8],
         file: &Path,
         enclosing_class: &str,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "method_definition" {
-            return None;
-        }
-
-        let name = node.child_by_field_name("name").map(|n| n.text(source))?;
-
-        let mut def = DefinitionInfo::new("method", name);
-        def.location = Some(node.to_location(file));
-        def.parent = Some(enclosing_class.to_string());
-        def.is_public = name != "constructor";
+    ) -> Option<crate::parser::DefinitionInfo> {
+        let mut def = js_shared::extract_method(node, source, file, enclosing_class, LANG)?;
 
         if let Some(params) = node.child_by_field_name("parameters") {
             let params_text = params.text(source);
@@ -443,143 +215,10 @@ impl TypeScriptParser {
                 .child_by_field_name("return_type")
                 .map(|r| r.text(source))
                 .unwrap_or_default();
-            def.signature = Some(format!("{}{}{}", name, params_text, return_type));
-        }
-
-        if let Some(doc) = extract_documentation(node, source, "typescript") {
-            def.doc = Some(doc);
+            def.signature = Some(format!("{}{}{}", def.name, params_text, return_type));
         }
 
         Some(def)
-    }
-
-    fn extract_call(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        file: &Path,
-        enclosing_fn: &str,
-    ) -> Option<CallInfo> {
-        if node.kind() != "call_expression" {
-            return None;
-        }
-
-        let func = node.child_by_field_name("function")?;
-
-        let location = node.to_location(file);
-
-        let (callee, receiver, call_kind) = match func.kind() {
-            "identifier" => {
-                let name = func.text(source);
-                if name == "require" {
-                    return None;
-                }
-                (name.to_string(), None, CallKind::Direct)
-            }
-            "member_expression" => {
-                let obj = func.child_by_field_name("object");
-                let prop = func.child_by_field_name("property");
-
-                let receiver = obj.map(|o| o.text(source).to_string()).unwrap_or_default();
-                let method = prop.map(|p| p.text(source).to_string()).unwrap_or_default();
-
-                (method, Some(receiver), CallKind::Method)
-            }
-            _ => {
-                return None;
-            }
-        };
-
-        if callee.is_empty() {
-            return None;
-        }
-
-        let call = CallInfo::new(enclosing_fn, callee)
-            .with_kind(call_kind)
-            .with_location(location);
-
-        Some(if let Some(rec) = receiver {
-            call.with_receiver(rec)
-        } else {
-            call
-        })
-    }
-
-    fn extract_type_refs(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        fn_name: &str,
-        result: &mut ParseResult,
-    ) {
-        let mut seen = HashSet::new();
-        let mut types = Vec::new();
-
-        if let Some(params) = node.child_by_field_name("parameters") {
-            let mut cursor = params.walk();
-            for param in params.children(&mut cursor) {
-                if param.kind() == "required_parameter"
-                    || param.kind() == "optional_parameter"
-                    || param.kind() == "rest_parameter"
-                {
-                    if let Some(pattern) = param.child_by_field_name("pattern") {
-                        if let Some(type_node) = pattern.child_by_field_name("type") {
-                            seen.clear();
-                            types.clear();
-                            collect_types(
-                                &type_node,
-                                source,
-                                &mut seen,
-                                &mut types,
-                                builtins::typescript::is_builtin,
-                                &["type_identifier"],
-                                &[],
-                            );
-                            for type_name in &types {
-                                result
-                                    .type_refs
-                                    .push(TypeRefInfo::param(fn_name, type_name.clone()));
-                            }
-                        }
-                    }
-                    if let Some(type_node) = param.child_by_field_name("type") {
-                        seen.clear();
-                        types.clear();
-                        collect_types(
-                            &type_node,
-                            source,
-                            &mut seen,
-                            &mut types,
-                            builtins::typescript::is_builtin,
-                            &["type_identifier"],
-                            &[],
-                        );
-                        for type_name in &types {
-                            result
-                                .type_refs
-                                .push(TypeRefInfo::param(fn_name, type_name.clone()));
-                        }
-                    }
-                }
-            }
-        }
-
-        if let Some(return_type) = node.child_by_field_name("return_type") {
-            seen.clear();
-            types.clear();
-            collect_types(
-                &return_type,
-                source,
-                &mut seen,
-                &mut types,
-                builtins::typescript::is_builtin,
-                &["type_identifier"],
-                &[],
-            );
-            for type_name in &types {
-                result
-                    .type_refs
-                    .push(TypeRefInfo::param(fn_name, type_name.clone()));
-            }
-        }
     }
 
     fn walk_and_extract(
@@ -592,40 +231,39 @@ impl TypeScriptParser {
     ) {
         match node.kind() {
             "import_statement" | "export_statement" => {
-                if let Some(import) = Self::extract_import(node, source, file) {
+                if let Some(import) = js_shared::extract_import(node, source, file, LANG) {
                     result.imports.push(import);
                 }
             }
             "call_expression" => {
-                if let Some(import) = Self::extract_require_call(node, source, file) {
+                if let Some(import) = js_shared::extract_require_call(node, source, file) {
                     result.imports.push(import);
-                } else if let Some(call) = Self::extract_call(node, source, file, enclosing_fn) {
+                } else if let Some(call) = js_shared::extract_call(node, source, file, enclosing_fn)
+                {
                     result.calls.push(call);
                 }
             }
             "function_declaration" => {
                 if let Some(def) = Self::extract_function(node, source, file) {
                     let fn_name = def.name.clone();
-                    Self::extract_type_refs(node, source, &fn_name, result);
+                    js_shared::extract_type_refs(node, source, &fn_name, result);
                     result.definitions.push(def);
 
                     let prev_fn = enclosing_fn.clone();
                     *enclosing_fn = fn_name;
 
                     if let Some(body) = node.child_by_field_name("body") {
-                        let mut cursor = body.walk();
-                        for child in body.children(&mut cursor) {
-                            if child.is_named() {
-                                Self::walk_and_extract(
-                                    &child,
-                                    source,
-                                    file,
-                                    enclosing_fn,
-                                    enclosing_class,
-                                    result,
-                                );
-                            }
-                        }
+                        let mut walk = |child: &tree_sitter::Node, src: &[u8], f: &Path| {
+                            Self::walk_and_extract(
+                                child,
+                                src,
+                                f,
+                                enclosing_fn,
+                                enclosing_class,
+                                result,
+                            );
+                        };
+                        js_shared::for_each_named_child(body, source, file, &mut walk);
                     }
 
                     *enclosing_fn = prev_fn;
@@ -642,19 +280,17 @@ impl TypeScriptParser {
 
                     if let Some(body) = node.child_by_field_name("body") {
                         if body.kind() == "statement_block" {
-                            let mut cursor = body.walk();
-                            for child in body.children(&mut cursor) {
-                                if child.is_named() {
-                                    Self::walk_and_extract(
-                                        &child,
-                                        source,
-                                        file,
-                                        enclosing_fn,
-                                        enclosing_class,
-                                        result,
-                                    );
-                                }
-                            }
+                            let mut walk = |child: &tree_sitter::Node, src: &[u8], f: &Path| {
+                                Self::walk_and_extract(
+                                    child,
+                                    src,
+                                    f,
+                                    enclosing_fn,
+                                    enclosing_class,
+                                    result,
+                                );
+                            };
+                            js_shared::for_each_named_child(body, source, file, &mut walk);
                         }
                     }
 
@@ -670,19 +306,17 @@ impl TypeScriptParser {
                     *enclosing_class = Some(class_name);
 
                     if let Some(body) = node.child_by_field_name("body") {
-                        let mut cursor = body.walk();
-                        for child in body.children(&mut cursor) {
-                            if child.is_named() {
-                                Self::walk_and_extract(
-                                    &child,
-                                    source,
-                                    file,
-                                    enclosing_fn,
-                                    enclosing_class,
-                                    result,
-                                );
-                            }
-                        }
+                        let mut walk = |child: &tree_sitter::Node, src: &[u8], f: &Path| {
+                            Self::walk_and_extract(
+                                child,
+                                src,
+                                f,
+                                enclosing_fn,
+                                enclosing_class,
+                                result,
+                            );
+                        };
+                        js_shared::for_each_named_child(body, source, file, &mut walk);
                     }
 
                     *enclosing_class = prev_class;
@@ -714,19 +348,17 @@ impl TypeScriptParser {
                         *enclosing_fn = fn_name;
 
                         if let Some(body) = node.child_by_field_name("body") {
-                            let mut cursor = body.walk();
-                            for child in body.children(&mut cursor) {
-                                if child.is_named() {
-                                    Self::walk_and_extract(
-                                        &child,
-                                        source,
-                                        file,
-                                        enclosing_fn,
-                                        enclosing_class,
-                                        result,
-                                    );
-                                }
-                            }
+                            let mut walk = |child: &tree_sitter::Node, src: &[u8], f: &Path| {
+                                Self::walk_and_extract(
+                                    child,
+                                    src,
+                                    f,
+                                    enclosing_fn,
+                                    enclosing_class,
+                                    result,
+                                );
+                            };
+                            js_shared::for_each_named_child(body, source, file, &mut walk);
                         }
 
                         *enclosing_fn = prev_fn;
@@ -737,12 +369,10 @@ impl TypeScriptParser {
             _ => {}
         }
 
-        let mut cursor = node.walk();
-        for child in node.children(&mut cursor) {
-            if child.is_named() {
-                Self::walk_and_extract(&child, source, file, enclosing_fn, enclosing_class, result);
-            }
-        }
+        let mut walk = |child: &tree_sitter::Node, src: &[u8], f: &Path| {
+            Self::walk_and_extract(child, src, f, enclosing_fn, enclosing_class, result);
+        };
+        js_shared::for_each_named_child(*node, source, file, &mut walk);
     }
 }
 
@@ -783,19 +413,5 @@ impl TreeSitterParser for TypeScriptParser {
         result.ffi_bindings = ffi_bindings;
 
         Ok(result)
-    }
-}
-
-impl LanguageParser for TypeScriptParser {
-    fn language_name(&self) -> &str {
-        "typescript"
-    }
-
-    fn file_extensions(&self) -> &[&str] {
-        &["ts", "tsx"]
-    }
-
-    fn parse(&self, source: &str, path: &Path) -> Result<ParseResult> {
-        self.cached.parse::<Self>(source, path)
     }
 }

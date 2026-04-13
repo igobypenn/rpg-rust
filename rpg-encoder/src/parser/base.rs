@@ -125,3 +125,53 @@ pub fn collect_types_with_scoped<'a>(
         }
     }
 }
+
+/// Macro for simple definition extraction functions that follow the common pattern:
+/// check node kind, extract name, set location, optionally extract docs.
+#[macro_export]
+macro_rules! simple_definition {
+    ($fn_name:ident, $node_kind:expr, $def_kind:expr, $lang:literal) => {
+        fn $fn_name(
+            node: &tree_sitter::Node,
+            source: &[u8],
+            file: &std::path::Path,
+        ) -> Option<$crate::parser::DefinitionInfo> {
+            if node.kind() != $node_kind {
+                return None;
+            }
+            use $crate::parser::helpers::TsNodeExt;
+            let name = node.child_by_field_name("name")?.utf8_text(source).ok()?;
+            let mut def = $crate::parser::DefinitionInfo::new($def_kind, name);
+            def.location = Some(node.to_location(file));
+            if let Some(doc) = $crate::parser::docs::extract_documentation(node, source, $lang) {
+                def.doc = Some(doc);
+            }
+            Some(def)
+        }
+    };
+}
+
+/// Variant that also sets is_public = true.
+#[macro_export]
+macro_rules! simple_definition_public {
+    ($fn_name:ident, $node_kind:expr, $def_kind:expr, $lang:literal) => {
+        fn $fn_name(
+            node: &tree_sitter::Node,
+            source: &[u8],
+            file: &std::path::Path,
+        ) -> Option<$crate::parser::DefinitionInfo> {
+            if node.kind() != $node_kind {
+                return None;
+            }
+            use $crate::parser::helpers::TsNodeExt;
+            let name = node.child_by_field_name("name")?.utf8_text(source).ok()?;
+            let mut def = $crate::parser::DefinitionInfo::new($def_kind, name);
+            def.location = Some(node.to_location(file));
+            def.is_public = true;
+            if let Some(doc) = $crate::parser::docs::extract_documentation(node, source, $lang) {
+                def.doc = Some(doc);
+            }
+            Some(def)
+        }
+    };
+}

@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use super::hash::{compute_file_hash, compute_hash};
@@ -191,14 +191,8 @@ fn parse_units_from_source(
     let mut units = Vec::new();
 
     for def in &parse_result.definitions {
-        let unit_type = match def.kind.as_str() {
-            "function" => UnitType::Function,
-            "struct" => UnitType::Struct,
-            "enum" => UnitType::Enum,
-            "trait" => UnitType::Trait,
-            "impl" => UnitType::Impl,
-            "module" => UnitType::Module,
-            _ => continue,
+        let Some(unit_type) = UnitType::from_kind(def.kind.as_str()) else {
+            continue;
         };
 
         let (start_line, end_line) = def
@@ -223,7 +217,7 @@ fn parse_units_from_source(
     Ok(units)
 }
 
-fn extract_unit_content(source: &str, start_line: usize, end_line: usize) -> String {
+pub(super) fn extract_unit_content(source: &str, start_line: usize, end_line: usize) -> String {
     let lines: Vec<&str> = source.lines().collect();
     let start = start_line.saturating_sub(1);
     let end = end_line.min(lines.len());
@@ -247,21 +241,30 @@ fn match_units(old: &[CachedUnit], new: &[CodeUnit]) -> UnitMatchResult {
     };
 
     let mut old_matched: HashSet<usize> = HashSet::new();
+    let mut old_index: HashMap<(String, UnitType), Vec<usize>> = HashMap::new();
+
+    for (i, old_unit) in old.iter().enumerate() {
+        old_index
+            .entry((old_unit.name.clone(), old_unit.unit_type))
+            .or_default()
+            .push(i);
+    }
 
     for new_unit in new {
+        let key = (new_unit.name.clone(), new_unit.unit_type);
         let mut found_match = false;
 
-        for (i, old_unit) in old.iter().enumerate() {
-            if old_matched.contains(&i) {
-                continue;
-            }
+        if let Some(indices) = old_index.get(&key) {
+            for &i in indices {
+                if old_matched.contains(&i) {
+                    continue;
+                }
 
-            if old_unit.name == new_unit.name && old_unit.unit_type == new_unit.unit_type {
                 old_matched.insert(i);
                 found_match = true;
 
-                if old_unit.content_hash == new_unit.content_hash {
-                    result.unchanged.push((old_unit.clone(), new_unit.clone()));
+                if old[i].content_hash == new_unit.content_hash {
+                    result.unchanged.push((old[i].clone(), new_unit.clone()));
                 } else {
                     result.changed.push(new_unit.clone());
                 }
@@ -299,5 +302,101 @@ mod tests {
         assert_eq!(stats.files_added, 0);
         assert_eq!(stats.files_deleted, 0);
         assert_eq!(stats.files_modified, 0);
+    }
+
+    #[test]
+    fn test_match_units_identical() {
+        let old = vec![CachedUnit::new(
+            "foo".to_string(),
+            UnitType::Function,
+            "hash_a".to_string(),
+            1,
+            5,
+        )];
+        let new = vec![CodeUnit {
+            name: "foo".to_string(),
+            unit_type: UnitType::Function,
+            start_line: 1,
+            end_line: 5,
+            content: "fn foo() {}".to_string(),
+            content_hash: "hash_a".to_string(),
+        }];
+
+        let result = match_units(&old, &new);
+        assert_eq!(result.unchanged.len(), 1);
+        assert!(result.added.is_empty());
+        assert!(result.changed.is_empty());
+        assert!(result.deleted.is_empty());
+    }
+
+    #[test]
+    fn test_match_units_added() {
+        let old: Vec<CachedUnit> = vec![];
+        let new = vec![CodeUnit {
+            name: "bar".to_string(),
+            unit_type: UnitType::Function,
+            start_line: 1,
+            end_line: 3,
+            content: "fn bar() {}".to_string(),
+            content_hash: "hash_b".to_string(),
+        }];
+
+        let result = match_units(&old, &new);
+        assert_eq!(result.added.len(), 1);
+        assert_eq!(result.added[0].name, "bar");
+        assert!(result.unchanged.is_empty());
+        assert!(result.changed.is_empty());
+        assert!(result.deleted.is_empty());
+    }
+
+    #[test]
+    fn test_match_units_removed() {
+        let old = vec![CachedUnit::new(
+            "old_fn".to_string(),
+            UnitType::Function,
+            "hash_old".to_string(),
+            1,
+            4,
+        )];
+        let new: Vec<CodeUnit> = vec![];
+
+        let result = match_units(&old, &new);
+        assert_eq!(result.deleted.len(), 1);
+        assert_eq!(result.deleted[0].name, "old_fn");
+        assert!(result.added.is_empty());
+        assert!(result.unchanged.is_empty());
+    }
+
+    #[test]
+    fn test_match_units_changed() {
+        let old = vec![CachedUnit::new(
+            "func".to_string(),
+            UnitType::Function,
+            "hash_old".to_string(),
+            1,
+            5,
+        )];
+        let new = vec![CodeUnit {
+            name: "func".to_string(),
+            unit_type: UnitType::Function,
+            start_line: 1,
+            end_line: 10,
+            content: "fn func() { /* changed */ }".to_string(),
+            content_hash: "hash_new".to_string(),
+        }];
+
+        let result = match_units(&old, &new);
+        assert_eq!(result.changed.len(), 1);
+        assert_eq!(result.changed[0].name, "func");
+        assert!(result.unchanged.is_empty());
+        assert!(result.added.is_empty());
+        assert!(result.deleted.is_empty());
+    }
+
+    #[test]
+    fn test_extract_unit_content() {
+        let source = "line1\nline2\nline3\nline4";
+        let content = extract_unit_content(source, 2, 3);
+        assert_eq!(content, "line2\nline3");
     }
 }

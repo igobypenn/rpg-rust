@@ -5,10 +5,10 @@
 //! - `FetchNode`: Retrieve detailed node information
 //! - `ExploreRPG`: Graph traversal with filtering
 
-mod search;
-mod fetch;
 mod explore;
+mod fetch;
+mod search;
 
-pub use search::{SearchNode, SearchResult, SearchConfig};
+pub use explore::{ExploreFilter, ExploreRPG, ExploreResult, TraversalDirection};
 pub use fetch::{FetchNode, FetchResult, NodeDetail};
-pub use explore::{ExploreRPG, ExploreResult, ExploreFilter, TraversalDirection};
+pub use search::{SearchConfig, SearchNode, SearchResult};

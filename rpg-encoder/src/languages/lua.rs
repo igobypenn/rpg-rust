@@ -2,26 +2,17 @@ use std::path::Path;
 
 use tree_sitter::Parser;
 
+use crate::define_parser;
 use crate::error::{Result, RpgError};
 use crate::languages::ffi::FfiDetector;
 use crate::parser::{
-    base::{CachedParser, TreeSitterParser},
-    docs::extract_documentation,
-    helpers::TsNodeExt,
-    CallInfo, CallKind, DefinitionInfo, ImportInfo, LanguageParser, ParseResult,
+    base::TreeSitterParser, docs::extract_documentation, helpers::TsNodeExt, CallInfo, CallKind,
+    DefinitionInfo, ImportInfo, ParseResult,
 };
 
-pub struct LuaParser {
-    cached: CachedParser,
-}
+define_parser!(LuaParser, "lua", &["lua"]);
 
 impl LuaParser {
-    pub fn new() -> Result<Self> {
-        Ok(Self {
-            cached: CachedParser::new::<Self>()?,
-        })
-    }
-
     fn extract_require(node: &tree_sitter::Node, source: &[u8], file: &Path) -> Option<ImportInfo> {
         if node.kind() != "function_call" {
             return None;
@@ -312,19 +303,5 @@ impl TreeSitterParser for LuaParser {
         result.ffi_bindings = ffi_bindings;
 
         Ok(result)
-    }
-}
-
-impl LanguageParser for LuaParser {
-    fn language_name(&self) -> &str {
-        "lua"
-    }
-
-    fn file_extensions(&self) -> &[&str] {
-        &["lua"]
-    }
-
-    fn parse(&self, source: &str, path: &Path) -> Result<ParseResult> {
-        self.cached.parse::<Self>(source, path)
     }
 }

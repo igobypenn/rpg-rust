@@ -16,16 +16,6 @@ pub enum Phase {
     Completed,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-#[non_exhaustive]
-pub enum PhaseType {
-    Initialization,
-    FeaturePlanning,
-    ArchitectureDesign,
-    CodeGeneration,
-}
-
 impl Phase {
     pub fn next(&self) -> Self {
         match self {
@@ -44,15 +34,6 @@ impl Phase {
             Self::ArchitectureDesign => Some(Self::FeaturePlanning),
             Self::CodeGeneration => Some(Self::ArchitectureDesign),
             Self::Completed => Some(Self::CodeGeneration),
-        }
-    }
-
-    pub fn phase_type(&self) -> PhaseType {
-        match self {
-            Self::Initialization => PhaseType::Initialization,
-            Self::FeaturePlanning => PhaseType::FeaturePlanning,
-            Self::ArchitectureDesign => PhaseType::ArchitectureDesign,
-            Self::CodeGeneration | Self::Completed => PhaseType::CodeGeneration,
         }
     }
 

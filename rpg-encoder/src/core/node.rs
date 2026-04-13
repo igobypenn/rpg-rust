@@ -82,7 +82,7 @@ pub enum NodeLevel {
 }
 
 /// Source location reference (line-based).
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SourceRef {
     /// Starting line number (1-based).
     pub start_line: usize,
@@ -114,7 +114,7 @@ pub struct SourceRef {
 /// assert_eq!(node.category, NodeCategory::Function);
 /// assert!(node.documentation.is_some());
 /// ```
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Node {
     /// Unique identifier for this node.
     pub id: NodeId,

@@ -2,12 +2,8 @@
 .env.*
 !.env.example
 target/
-.ruff_cache/
-*.pdf
 .opencode/
-.env
-.env.*
-!.env.example
-target/
-.ruff_cache/
 *.pdf
+*.rs.bk
+graph.dot
+llm_debug.txt

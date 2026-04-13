@@ -3,28 +3,20 @@ use std::path::Path;
 
 use tree_sitter::Parser;
 
+use crate::define_parser;
 use crate::error::{Result, RpgError};
 use crate::languages::builtins;
 use crate::languages::ffi::FfiDetector;
 use crate::parser::{
-    base::{collect_types_with_scoped, CachedParser, TreeSitterParser},
+    base::{collect_types_with_scoped, TreeSitterParser},
     docs::extract_documentation,
     helpers::TsNodeExt,
-    CallInfo, CallKind, DefinitionInfo, ImportInfo, LanguageParser, ParseResult, TypeRefInfo,
-    TypeRefKind,
+    CallInfo, CallKind, DefinitionInfo, ImportInfo, ParseResult, TypeRefInfo, TypeRefKind,
 };
 
-pub struct ScalaParser {
-    cached: CachedParser,
-}
+define_parser!(ScalaParser, "scala", &["scala", "sc"]);
 
 impl ScalaParser {
-    pub fn new() -> Result<Self> {
-        Ok(Self {
-            cached: CachedParser::new::<Self>()?,
-        })
-    }
-
     fn extract_package(node: &tree_sitter::Node, source: &[u8]) -> Option<String> {
         if node.kind() != "package_clause" {
             return None;
@@ -660,19 +652,5 @@ impl TreeSitterParser for ScalaParser {
         result.ffi_bindings = ffi_bindings;
 
         Ok(result)
-    }
-}
-
-impl LanguageParser for ScalaParser {
-    fn language_name(&self) -> &str {
-        "scala"
-    }
-
-    fn file_extensions(&self) -> &[&str] {
-        &["scala", "sc"]
-    }
-
-    fn parse(&self, source: &str, path: &Path) -> Result<ParseResult> {
-        self.cached.parse::<Self>(source, path)
     }
 }

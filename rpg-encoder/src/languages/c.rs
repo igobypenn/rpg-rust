@@ -3,92 +3,20 @@ use std::path::Path;
 
 use tree_sitter::Parser;
 
+use super::c_shared;
+use crate::define_parser;
 use crate::error::{Result, RpgError};
 use crate::languages::builtins;
 use crate::parser::{
-    base::{collect_types, CachedParser, TreeSitterParser},
+    base::{collect_types, TreeSitterParser},
+    docs::extract_documentation,
     helpers::TsNodeExt,
-    CallInfo, CallKind, DefinitionInfo, ImportInfo, LanguageParser, ParseResult, TypeRefInfo,
+    CallInfo, CallKind, DefinitionInfo, ParseResult, TypeRefInfo,
 };
 
-pub struct CParser {
-    cached: CachedParser,
-}
+define_parser!(CParser, "c", &["c", "h"]);
 
 impl CParser {
-    pub fn new() -> Result<Self> {
-        Ok(Self {
-            cached: CachedParser::new::<Self>()?,
-        })
-    }
-
-    fn extract_include(node: &tree_sitter::Node, source: &[u8], file: &Path) -> Option<ImportInfo> {
-        if node.kind() != "preproc_include" {
-            return None;
-        }
-
-        let path_node = node.child_by_field_name("path")?;
-        let path_text = path_node.text(source);
-
-        let (module_path, is_system) = if path_text.starts_with('"') {
-            (path_text.trim_matches('"').to_string(), false)
-        } else if path_text.starts_with('<') {
-            (
-                path_text
-                    .trim_start_matches('<')
-                    .trim_end_matches('>')
-                    .to_string(),
-                true,
-            )
-        } else {
-            (path_text.to_string(), false)
-        };
-
-        let mut import = ImportInfo::new(&module_path);
-        import.location = Some(node.to_location(file));
-        import.imported_names = vec![module_path.clone()];
-        import.is_glob = true;
-
-        import
-            .metadata
-            .insert("system".to_string(), serde_json::Value::Bool(is_system));
-
-        Some(import)
-    }
-
-    fn extract_function(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        file: &Path,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "function_definition" {
-            return None;
-        }
-
-        let decl = node.child_by_field_name("declarator")?;
-
-        let name = Self::extract_fn_name_from_declarator(&decl, source)?;
-
-        let mut def = DefinitionInfo::new("fn", &name);
-        def.location = Some(node.to_location(file));
-
-        if let Some(type_node) = node.child_by_field_name("type") {
-            let return_type = type_node.text(source);
-            let params_text = Self::extract_params_text(&decl, source);
-            def.signature = Some(format!("{} {}{}", return_type, name, params_text));
-        }
-
-        let body = node.child_by_field_name("body");
-        def.metadata.insert(
-            "has_body".to_string(),
-            serde_json::Value::Bool(body.is_some()),
-        );
-
-        def.is_public = true;
-
-        Some(def)
-    }
-
     fn extract_declaration(
         node: &tree_sitter::Node,
         source: &[u8],
@@ -116,6 +44,9 @@ impl CParser {
 
                 let mut def = DefinitionInfo::new("var", name.clone());
                 def.location = Some(node.to_location(file));
+                if let Some(doc) = extract_documentation(node, source, "c") {
+                    def.doc = Some(doc);
+                }
                 def.signature = Some(format!("{} {}", type_text, name));
                 def.is_public = true;
 
@@ -141,6 +72,9 @@ impl CParser {
 
         let mut def = DefinitionInfo::new("typedef", &name);
         def.location = Some(node.to_location(file));
+        if let Some(doc) = extract_documentation(node, source, "c") {
+            def.doc = Some(doc);
+        }
 
         if let Some(type_node) = node.child_by_field_name("type") {
             let alias_type = type_node.text(source);
@@ -165,6 +99,9 @@ impl CParser {
 
         let mut def = DefinitionInfo::new("struct", name);
         def.location = Some(node.to_location(file));
+        if let Some(doc) = extract_documentation(node, source, "c") {
+            def.doc = Some(doc);
+        }
         def.is_public = true;
 
         let fields = Self::extract_struct_fields(node, source);
@@ -180,41 +117,9 @@ impl CParser {
         Some(def)
     }
 
-    fn extract_union(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        file: &Path,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "union_specifier" {
-            return None;
-        }
+    crate::simple_definition_public!(extract_union, "union_specifier", "union", "c");
 
-        let name = node.child_by_field_name("name").map(|n| n.text(source))?;
-
-        let mut def = DefinitionInfo::new("union", name);
-        def.location = Some(node.to_location(file));
-        def.is_public = true;
-
-        Some(def)
-    }
-
-    fn extract_enum(
-        node: &tree_sitter::Node,
-        source: &[u8],
-        file: &Path,
-    ) -> Option<DefinitionInfo> {
-        if node.kind() != "enum_specifier" {
-            return None;
-        }
-
-        let name = node.child_by_field_name("name").map(|n| n.text(source))?;
-
-        let mut def = DefinitionInfo::new("enum", name);
-        def.location = Some(node.to_location(file));
-        def.is_public = true;
-
-        Some(def)
-    }
+    crate::simple_definition_public!(extract_enum, "enum_specifier", "enum", "c");
 
     fn extract_fn_name_from_declarator(node: &tree_sitter::Node, source: &[u8]) -> Option<String> {
         match node.kind() {
@@ -247,15 +152,6 @@ impl CParser {
         }
     }
 
-    fn extract_params_text(node: &tree_sitter::Node, source: &[u8]) -> String {
-        if node.kind() == "function_declarator" {
-            if let Some(params) = node.child_by_field_name("parameters") {
-                return params.text(source).to_string();
-            }
-        }
-        String::new()
-    }
-
     fn is_function_pointer(node: &tree_sitter::Node) -> bool {
         if node.kind() == "pointer_declarator" {
             if let Some(inner) = node.child(0) {
@@ -282,6 +178,9 @@ impl CParser {
 
         let mut def = DefinitionInfo::new("fn_ptr", &name);
         def.location = Some(node.to_location(file));
+        if let Some(doc) = extract_documentation(node, source, "c") {
+            def.doc = Some(doc);
+        }
 
         if let Some(type_node) = node.child_by_field_name("type") {
             let return_type = type_node.text(source);
@@ -407,7 +306,7 @@ impl CParser {
         }
 
         if let Some(decl) = node.child_by_field_name("declarator") {
-            if let Some(func_decl) = Self::find_function_declarator(&decl) {
+            if let Some(func_decl) = c_shared::find_function_declarator(&decl) {
                 if let Some(params) = func_decl.child_by_field_name("parameters") {
                     let mut cursor = params.walk();
                     for param in params.children(&mut cursor) {
@@ -437,23 +336,6 @@ impl CParser {
         }
     }
 
-    fn find_function_declarator<'a>(node: &tree_sitter::Node<'a>) -> Option<tree_sitter::Node<'a>> {
-        if node.kind() == "function_declarator" {
-            return Some(*node);
-        }
-
-        let mut cursor = node.walk();
-        for child in node.children(&mut cursor) {
-            if child.is_named() {
-                if let Some(found) = Self::find_function_declarator(&child) {
-                    return Some(found);
-                }
-            }
-        }
-
-        None
-    }
-
     fn walk_and_extract(
         node: &tree_sitter::Node,
         source: &[u8],
@@ -463,12 +345,16 @@ impl CParser {
     ) {
         match node.kind() {
             "preproc_include" => {
-                if let Some(import) = Self::extract_include(node, source, file) {
+                if let Some(import) = c_shared::extract_include(node, source, file) {
                     result.imports.push(import);
                 }
             }
             "function_definition" => {
-                if let Some(def) = Self::extract_function(node, source, file) {
+                if let Some(def) = node
+                    .child_by_field_name("declarator")
+                    .and_then(|decl| Self::extract_fn_name_from_declarator(&decl, source))
+                    .and_then(|name| c_shared::extract_function(node, source, file, &name, "c"))
+                {
                     let fn_name = def.name.clone();
                     Self::extract_type_refs_from_func(node, source, &fn_name, result);
                     result.definitions.push(def);
@@ -557,19 +443,5 @@ impl TreeSitterParser for CParser {
         }
 
         Ok(result)
-    }
-}
-
-impl LanguageParser for CParser {
-    fn language_name(&self) -> &str {
-        "c"
-    }
-
-    fn file_extensions(&self) -> &[&str] {
-        &["c", "h"]
-    }
-
-    fn parse(&self, source: &str, path: &Path) -> Result<ParseResult> {
-        self.cached.parse::<Self>(source, path)
     }
 }

@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use super::diff::{FileDiff, ModifiedFile};
+use super::diff::{self, FileDiff, ModifiedFile};
 use super::hash::compute_hash;
 use super::snapshot::{CachedUnit, RpgSnapshot, UnitType};
 use crate::core::{EdgeType, Node, NodeCategory, NodeId};
@@ -40,16 +40,29 @@ pub struct RpgEvolution<'a> {
     registry: &'a ParserRegistry,
 }
 
+fn create_file_node(file_path: &Path, language: &str) -> Node {
+    Node::new(
+        NodeId::new(0),
+        NodeCategory::File,
+        "file",
+        language,
+        file_path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or("unknown"),
+    )
+    .with_path(file_path.to_path_buf())
+}
+
 impl<'a> RpgEvolution<'a> {
     pub fn new(snapshot: &'a mut RpgSnapshot, registry: &'a ParserRegistry) -> Self {
         Self { snapshot, registry }
     }
 
-    #[cfg(feature = "llm")]
     pub async fn process_diff(
         &mut self,
         diff: FileDiff,
-        config: Option<&SemanticConfig>,
+        #[cfg(feature = "llm")] config: Option<&SemanticConfig>,
     ) -> Result<EvolutionSummary> {
         let mut summary = EvolutionSummary {
             files_deleted: diff.deleted.len(),
@@ -62,18 +75,33 @@ impl<'a> RpgEvolution<'a> {
         summary.nodes_removed = deleted_result.nodes_removed.len();
         summary.edges_rebuilt += deleted_result.edges_removed;
 
+        #[cfg(feature = "llm")]
         let added_result = self.process_added_files(&diff.added, config).await?;
-        summary.nodes_created = added_result.nodes_created.len();
-        summary.llm_calls += added_result.llm_calls;
+        #[cfg(not(feature = "llm"))]
+        let added_result = self.process_added_files(&diff.added).await?;
 
+        summary.nodes_created = added_result.nodes_created.len();
+        #[cfg(feature = "llm")]
+        {
+            summary.llm_calls += added_result.llm_calls;
+        }
+
+        #[cfg(feature = "llm")]
         let modified_result = self.process_modified_files(&diff.modified, config).await?;
+        #[cfg(not(feature = "llm"))]
+        let modified_result = self.process_modified_files(&diff.modified).await?;
+
         summary.units_added += modified_result.units_added;
         summary.units_changed += modified_result.units_changed;
         summary.units_deleted += modified_result.units_deleted;
         summary.nodes_created += modified_result.nodes_created.len();
         summary.nodes_removed += modified_result.nodes_removed;
-        summary.llm_calls += modified_result.llm_calls;
         summary.cache_hits += modified_result.cache_hits;
+        #[cfg(feature = "llm")]
+        {
+            summary.llm_calls += modified_result.llm_calls;
+        }
+
         // === V^H Centroid Invalidation ===
         // Collect all changed nodes for centroid invalidation
         let mut all_changed_nodes = Vec::new();
@@ -92,51 +120,6 @@ impl<'a> RpgEvolution<'a> {
         {
             summary.centroids_recomputed = self.recompute_centroids().await?;
         }
-
-        // Re-link V^L nodes to appropriate V^H centroids
-        summary.feature_edges_relinked = self.relink_feature_edges(&all_changed_nodes);
-
-        self.snapshot.build_reverse_deps();
-        self.snapshot.compute_file_hashes()?;
-        self.snapshot.update_timestamp();
-
-        Ok(summary)
-    }
-    #[cfg(not(feature = "llm"))]
-    pub fn process_diff(&mut self, diff: FileDiff) -> Result<EvolutionSummary> {
-        let mut summary = EvolutionSummary {
-            files_deleted: diff.deleted.len(),
-            files_added: diff.added.len(),
-            files_modified: diff.modified.len(),
-            ..Default::default()
-        };
-        let deleted_result = self.process_deleted_files(&diff.deleted)?;
-        summary.nodes_removed = deleted_result.nodes_removed.len();
-        summary.edges_rebuilt += deleted_result.edges_removed;
-
-        let added_result = self.process_added_files(&diff.added)?;
-        summary.nodes_created = added_result.nodes_created.len();
-
-        let modified_result = self.process_modified_files(&diff.modified)?;
-        summary.units_added += modified_result.units_added;
-        summary.units_changed += modified_result.units_changed;
-        summary.units_deleted += modified_result.units_deleted;
-        summary.nodes_created += modified_result.nodes_created.len();
-        summary.nodes_removed += modified_result.nodes_removed;
-        summary.cache_hits += modified_result.cache_hits;
-
-        // === V^H Centroid and Edge Invalidation ===
-        // Collect all changed nodes for invalidation
-        let mut all_changed_nodes = Vec::new();
-        all_changed_nodes.extend(deleted_result.nodes_removed.clone());
-        all_changed_nodes.extend(added_result.nodes_created.clone());
-        all_changed_nodes.extend(modified_result.nodes_created.clone());
-
-        // Invalidate stale BelongsToFeature edges from changed V^L nodes
-        summary.feature_edges_invalidated = self.invalidate_stale_feature_edges(&all_changed_nodes);
-
-        // Invalidate affected V^H centroids
-        summary.centroids_invalidated = self.invalidate_stale_centroids(&all_changed_nodes);
 
         // Re-link V^L nodes to appropriate V^H centroids
         summary.feature_edges_relinked = self.relink_feature_edges(&all_changed_nodes);
@@ -172,11 +155,10 @@ impl<'a> RpgEvolution<'a> {
         Ok(result)
     }
 
-    #[cfg(feature = "llm")]
     async fn process_added_files(
         &mut self,
         files: &[PathBuf],
-        config: Option<&SemanticConfig>,
+        #[cfg(feature = "llm")] config: Option<&SemanticConfig>,
     ) -> Result<AddResult> {
         let mut result = AddResult::default();
 
@@ -198,59 +180,33 @@ impl<'a> RpgEvolution<'a> {
                 .file_hashes
                 .insert(file_path.clone(), file_hash);
 
-            if let Some(config) = config {
-                match self
-                    .process_file_with_llm(file_path, &source, parser, config)
-                    .await
-                {
-                    Ok(units) => {
-                        result.llm_calls += 1;
-                        for unit in &units {
-                            if let Some(node_id) = unit.node_id {
-                                result.nodes_created.push(node_id);
+            #[cfg(feature = "llm")]
+            {
+                if let Some(config) = config {
+                    match self
+                        .process_file_with_llm(file_path, &source, parser, config)
+                        .await
+                    {
+                        Ok(units) => {
+                            result.llm_calls += 1;
+                            for unit in &units {
+                                if let Some(node_id) = unit.node_id {
+                                    result.nodes_created.push(node_id);
+                                }
                             }
+                            self.snapshot.insert_units(file_path.clone(), units);
                         }
-                        self.snapshot.unit_cache.insert(file_path.clone(), units);
+                        Err(e) => {
+                            tracing::warn!(
+                                "LLM processing failed for {}: {}",
+                                file_path.display(),
+                                e
+                            );
+                        }
                     }
-                    Err(e) => {
-                        tracing::warn!("LLM processing failed for {}: {}", file_path.display(), e);
-                    }
+                    continue;
                 }
-            } else {
-                let units = self.process_file_structural(file_path, &source, parser)?;
-                for unit in &units {
-                    if let Some(node_id) = unit.node_id {
-                        result.nodes_created.push(node_id);
-                    }
-                }
-                self.snapshot.unit_cache.insert(file_path.clone(), units);
             }
-        }
-
-        Ok(result)
-    }
-
-    #[cfg(not(feature = "llm"))]
-    fn process_added_files(&mut self, files: &[PathBuf]) -> Result<AddResult> {
-        let mut result = AddResult::default();
-
-        for file_path in files {
-            let full_path = self.snapshot.repo_dir.join(file_path);
-
-            if !full_path.exists() {
-                continue;
-            }
-
-            let parser = match self.registry.get_parser(&full_path) {
-                Some(p) => p,
-                None => continue,
-            };
-
-            let source = std::fs::read_to_string(&full_path)?;
-            let file_hash = compute_hash(&source);
-            self.snapshot
-                .file_hashes
-                .insert(file_path.clone(), file_hash);
 
             let units = self.process_file_structural(file_path, &source, parser)?;
             for unit in &units {
@@ -258,7 +214,7 @@ impl<'a> RpgEvolution<'a> {
                     result.nodes_created.push(node_id);
                 }
             }
-            self.snapshot.unit_cache.insert(file_path.clone(), units);
+            self.snapshot.insert_units(file_path.clone(), units);
         }
 
         Ok(result)
@@ -273,29 +229,12 @@ impl<'a> RpgEvolution<'a> {
         let parse_result = parser.parse(source, file_path)?;
         let mut units = Vec::new();
 
-        let file_node = Node::new(
-            NodeId::new(0),
-            NodeCategory::File,
-            "file",
-            parser.language_name(),
-            file_path
-                .file_name()
-                .and_then(|n| n.to_str())
-                .unwrap_or("unknown"),
-        )
-        .with_path(file_path.to_path_buf());
-
+        let file_node = create_file_node(file_path, parser.language_name());
         let file_node_id = self.snapshot.graph.add_node(file_node);
 
         for def in &parse_result.definitions {
-            let unit_type = match def.kind.as_str() {
-                "function" => UnitType::Function,
-                "struct" => UnitType::Struct,
-                "enum" => UnitType::Enum,
-                "trait" => UnitType::Trait,
-                "impl" => UnitType::Impl,
-                "module" => UnitType::Module,
-                _ => continue,
+            let Some(unit_type) = UnitType::from_kind(def.kind.as_str()) else {
+                continue;
             };
 
             let (start_line, end_line) = def
@@ -304,12 +243,7 @@ impl<'a> RpgEvolution<'a> {
                 .map(|l| (l.start_line, l.end_line))
                 .unwrap_or((1, 1));
 
-            let lines: Vec<&str> = source.lines().collect();
-            let content = lines
-                .get(start_line.saturating_sub(1)..end_line.min(lines.len()))
-                .map(|s| s.join("\n"))
-                .unwrap_or_default();
-
+            let content = diff::extract_unit_content(source, start_line, end_line);
             let content_hash = compute_hash(&content);
 
             let node = Node::new(
@@ -366,29 +300,12 @@ impl<'a> RpgEvolution<'a> {
         let mut units = Vec::new();
         let parse_result = parser.parse(source, file_path)?;
 
-        let file_node = Node::new(
-            NodeId::new(0),
-            NodeCategory::File,
-            "file",
-            parser.language_name(),
-            file_path
-                .file_name()
-                .and_then(|n| n.to_str())
-                .unwrap_or("unknown"),
-        )
-        .with_path(file_path.to_path_buf());
-
+        let file_node = create_file_node(file_path, parser.language_name());
         let file_node_id = self.snapshot.graph.add_node(file_node);
 
         for def in &parse_result.definitions {
-            let unit_type = match def.kind.as_str() {
-                "function" => UnitType::Function,
-                "struct" => UnitType::Struct,
-                "enum" => UnitType::Enum,
-                "trait" => UnitType::Trait,
-                "impl" => UnitType::Impl,
-                "module" => UnitType::Module,
-                _ => continue,
+            let Some(unit_type) = UnitType::from_kind(def.kind.as_str()) else {
+                continue;
             };
 
             let (start_line, end_line) = def
@@ -397,12 +314,7 @@ impl<'a> RpgEvolution<'a> {
                 .map(|l| (l.start_line, l.end_line))
                 .unwrap_or((1, 1));
 
-            let lines: Vec<&str> = source.lines().collect();
-            let content = lines
-                .get(start_line.saturating_sub(1)..end_line.min(lines.len()))
-                .map(|s| s.join("\n"))
-                .unwrap_or_default();
-
+            let content = diff::extract_unit_content(source, start_line, end_line);
             let content_hash = compute_hash(&content);
 
             let org_feature = organized.iter().find(|o| o.entity_name == def.name);
@@ -457,11 +369,10 @@ impl<'a> RpgEvolution<'a> {
         Ok(units)
     }
 
-    #[cfg(feature = "llm")]
     async fn process_modified_files(
         &mut self,
         files: &[ModifiedFile],
-        config: Option<&SemanticConfig>,
+        #[cfg(feature = "llm")] config: Option<&SemanticConfig>,
     ) -> Result<UpdateResult> {
         let mut result = UpdateResult::default();
 
@@ -481,14 +392,37 @@ impl<'a> RpgEvolution<'a> {
 
             let source = std::fs::read_to_string(&full_path)?;
 
-            if let Some(config) = config {
-                let units = self
-                    .process_file_with_llm(&modified.path, &source, parser, config)
-                    .await?;
-                result.llm_calls += 1;
+            #[cfg(feature = "llm")]
+            {
+                if let Some(config) = config {
+                    let units = self
+                        .process_file_with_llm(&modified.path, &source, parser, config)
+                        .await?;
+                    result.llm_calls += 1;
+                    result.units_added += modified.added_units.len();
+                    result.units_changed += modified.changed_units.len();
+                    result.units_deleted += modified.deleted_units.len();
+
+                    for unit in &units {
+                        if let Some(node_id) = unit.node_id {
+                            result.nodes_created.push(node_id);
+                        }
+                    }
+                    self.snapshot
+                        .unit_cache
+                        .insert(modified.path.clone(), units);
+                } else {
+                    result.cache_hits += modified.unchanged_units.len();
+                }
+            }
+
+            #[cfg(not(feature = "llm"))]
+            {
+                let units = self.process_file_structural(&modified.path, &source, parser)?;
                 result.units_added += modified.added_units.len();
                 result.units_changed += modified.changed_units.len();
                 result.units_deleted += modified.deleted_units.len();
+                result.cache_hits += modified.unchanged_units.len();
 
                 for unit in &units {
                     if let Some(node_id) = unit.node_id {
@@ -498,52 +432,8 @@ impl<'a> RpgEvolution<'a> {
                 self.snapshot
                     .unit_cache
                     .insert(modified.path.clone(), units);
-            } else {
-                result.cache_hits += modified.unchanged_units.len();
             }
 
-            self.snapshot
-                .file_hashes
-                .insert(modified.path.clone(), modified.new_hash.clone());
-        }
-
-        Ok(result)
-    }
-
-    #[cfg(not(feature = "llm"))]
-    fn process_modified_files(&mut self, files: &[ModifiedFile]) -> Result<UpdateResult> {
-        let mut result = UpdateResult::default();
-
-        for modified in files {
-            self.process_deleted_files(std::slice::from_ref(&modified.path))?;
-
-            let full_path = self.snapshot.repo_dir.join(&modified.path);
-
-            if !full_path.exists() {
-                continue;
-            }
-
-            let parser = match self.registry.get_parser(&full_path) {
-                Some(p) => p,
-                None => continue,
-            };
-
-            let source = std::fs::read_to_string(&full_path)?;
-
-            let units = self.process_file_structural(&modified.path, &source, parser)?;
-            result.units_added += modified.added_units.len();
-            result.units_changed += modified.changed_units.len();
-            result.units_deleted += modified.deleted_units.len();
-            result.cache_hits += modified.unchanged_units.len();
-
-            for unit in &units {
-                if let Some(node_id) = unit.node_id {
-                    result.nodes_created.push(node_id);
-                }
-            }
-            self.snapshot
-                .unit_cache
-                .insert(modified.path.clone(), units);
             self.snapshot
                 .file_hashes
                 .insert(modified.path.clone(), modified.new_hash.clone());
@@ -872,4 +762,210 @@ struct UpdateResult {
     #[cfg(feature = "llm")]
     llm_calls: usize,
     cache_hits: usize,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::{EdgeType, Node, NodeCategory, NodeId, NodeLevel};
+
+    fn make_snapshot() -> RpgSnapshot {
+        RpgSnapshot::new("test-repo", Path::new("/tmp/test-evolution"))
+    }
+
+    fn make_registry() -> ParserRegistry {
+        ParserRegistry::new()
+    }
+
+    #[test]
+    fn test_evolution_new() {
+        let mut snapshot = make_snapshot();
+        let registry = make_registry();
+        let _evo = RpgEvolution::new(&mut snapshot, &registry);
+    }
+
+    #[test]
+    fn test_evolution_summary_default() {
+        let s = EvolutionSummary::default();
+        assert_eq!(s.files_added, 0);
+        assert_eq!(s.files_deleted, 0);
+        assert_eq!(s.files_modified, 0);
+        assert_eq!(s.units_added, 0);
+        assert_eq!(s.units_changed, 0);
+        assert_eq!(s.units_deleted, 0);
+        assert_eq!(s.nodes_created, 0);
+        assert_eq!(s.nodes_removed, 0);
+        assert_eq!(s.nodes_updated, 0);
+        assert_eq!(s.edges_rebuilt, 0);
+        assert_eq!(s.llm_calls, 0);
+        assert_eq!(s.cache_hits, 0);
+        assert_eq!(s.centroids_invalidated, 0);
+        assert_eq!(s.centroids_recomputed, 0);
+        assert_eq!(s.feature_edges_invalidated, 0);
+        assert_eq!(s.feature_edges_relinked, 0);
+    }
+
+    #[test]
+    fn test_invalidate_stale_centroids_no_changes() {
+        let mut snapshot = make_snapshot();
+        let registry = make_registry();
+        let mut evo = RpgEvolution::new(&mut snapshot, &registry);
+
+        let count = evo.invalidate_stale_centroids(&[]);
+        assert_eq!(count, 0);
+    }
+
+    #[test]
+    fn test_invalidate_stale_centroids_with_vl_node() {
+        let mut snapshot = make_snapshot();
+        let registry = make_registry();
+
+        let centroid_id = snapshot.graph.add_node(
+            Node::new(
+                NodeId::new(0),
+                NodeCategory::FunctionalCentroid,
+                "functional_centroid",
+                "abstract",
+                "Auth",
+            )
+            .with_node_level(NodeLevel::High)
+            .with_semantic_feature("authentication"),
+        );
+
+        let vl_id = snapshot.graph.add_node(
+            Node::new(
+                NodeId::new(0),
+                NodeCategory::Function,
+                "fn",
+                "rust",
+                "login",
+            )
+            .with_node_level(NodeLevel::Low),
+        );
+
+        snapshot
+            .graph
+            .add_typed_edge(centroid_id, vl_id, EdgeType::Contains);
+
+        let mut evo = RpgEvolution::new(&mut snapshot, &registry);
+        let count = evo.invalidate_stale_centroids(&[vl_id]);
+        assert_eq!(count, 1);
+
+        let centroid = snapshot
+            .graph
+            .get_node(centroid_id)
+            .expect("centroid exists");
+        assert!(centroid.semantic_feature.is_none());
+    }
+
+    #[test]
+    fn test_invalidate_stale_feature_edges() {
+        let mut snapshot = make_snapshot();
+        let registry = make_registry();
+
+        let centroid_id = snapshot.graph.add_node(
+            Node::new(
+                NodeId::new(0),
+                NodeCategory::FunctionalCentroid,
+                "functional_centroid",
+                "abstract",
+                "Auth",
+            )
+            .with_node_level(NodeLevel::High),
+        );
+
+        let vl_id = snapshot.graph.add_node(
+            Node::new(
+                NodeId::new(0),
+                NodeCategory::Function,
+                "fn",
+                "rust",
+                "login",
+            )
+            .with_node_level(NodeLevel::Low),
+        );
+
+        snapshot
+            .graph
+            .add_typed_edge(vl_id, centroid_id, EdgeType::BelongsToFeature);
+        assert_eq!(snapshot.graph.edge_count(), 1);
+
+        let mut evo = RpgEvolution::new(&mut snapshot, &registry);
+        let removed = evo.invalidate_stale_feature_edges(&[vl_id]);
+        assert_eq!(removed, 1);
+        assert_eq!(snapshot.graph.edge_count(), 0);
+    }
+
+    #[test]
+    fn test_relink_feature_edges() {
+        let mut snapshot = make_snapshot();
+        let registry = make_registry();
+
+        let _centroid_id = snapshot.graph.add_node(
+            Node::new(
+                NodeId::new(0),
+                NodeCategory::FunctionalCentroid,
+                "functional_centroid",
+                "abstract",
+                "Auth",
+            )
+            .with_node_level(NodeLevel::High)
+            .with_semantic_feature("authentication"),
+        );
+
+        let vl_id = snapshot.graph.add_node(
+            Node::new(
+                NodeId::new(0),
+                NodeCategory::Function,
+                "fn",
+                "rust",
+                "login",
+            )
+            .with_node_level(NodeLevel::Low)
+            .with_semantic_feature("authentication login"),
+        );
+
+        let mut evo = RpgEvolution::new(&mut snapshot, &registry);
+        let linked = evo.relink_feature_edges(&[vl_id]);
+        assert_eq!(linked, 1);
+        assert_eq!(snapshot.graph.edge_count(), 1);
+    }
+
+    #[test]
+    fn test_process_deleted_files() {
+        let mut snapshot = make_snapshot();
+        let registry = make_registry();
+
+        let file_path = PathBuf::from("src/deleted.rs");
+        let file_node = snapshot.graph.add_node(
+            Node::new(
+                NodeId::new(0),
+                NodeCategory::File,
+                "file",
+                "rust",
+                "deleted.rs",
+            )
+            .with_path(file_path.clone()),
+        );
+
+        snapshot.build_reverse_deps();
+
+        let mut evo = RpgEvolution::new(&mut snapshot, &registry);
+        let result = evo.process_deleted_files(&[file_path]).expect("ok");
+
+        assert!(result.nodes_removed.contains(&file_node));
+        assert_eq!(snapshot.graph.node_count(), 0);
+    }
+
+    #[test]
+    fn test_evolution_summary_clone_debug() {
+        let mut s = EvolutionSummary::default();
+        s.files_added = 1;
+        s.centroids_invalidated = 2;
+
+        let cloned = s.clone();
+        assert_eq!(cloned.files_added, 1);
+        assert_eq!(cloned.centroids_invalidated, 2);
+        assert!(format!("{:?}", s).contains("files_added"));
+    }
 }

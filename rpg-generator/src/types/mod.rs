@@ -4,7 +4,7 @@ mod phase;
 pub mod plan;
 mod request;
 
-pub use phase::{Phase, PhaseStatus, PhaseType};
+pub use phase::{Phase, PhaseStatus};
 pub use plan::{
     ArchitectureDesign, ExecutionResult, GenerationPlan, TaskOutcome, TestError, TestResult,
 };

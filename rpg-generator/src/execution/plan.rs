@@ -8,7 +8,6 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 
 use crate::checkpoint::CheckpointManager;
-use crate::contract::ContractVerifier;
 use crate::error::{GeneratorError, Result};
 use crate::test_runner::{ShellTestRunner, TestConfig, TestRunner};
 use crate::types::{
@@ -26,8 +25,6 @@ pub struct ExecutionPlan {
     #[cfg(not(feature = "opencode"))]
     client: crate::llm::OpenAIClient,
     test_runner: ShellTestRunner,
-    #[allow(dead_code)]
-    verifier: ContractVerifier,
     checkpoint: Option<Arc<RwLock<CheckpointManager>>>,
     max_iterations: usize,
 }
@@ -58,7 +55,6 @@ impl ExecutionPlan {
             design,
             agent,
             test_runner,
-            verifier: ContractVerifier::new(),
             checkpoint: None,
             max_iterations: 5,
         }
@@ -76,15 +72,13 @@ impl ExecutionPlan {
     #[cfg(not(feature = "opencode"))]
     pub fn new_with_client(design: ArchitectureDesign, client: crate::llm::OpenAIClient) -> Self {
         let language = design.skeleton.language.clone();
-        let test_runner = ShellTestRunner::new(
-            TargetLanguage::from_str(&language).unwrap_or(TargetLanguage::Rust),
-        );
+        let test_runner =
+            ShellTestRunner::new(TargetLanguage::parse(&language).unwrap_or(TargetLanguage::Rust));
 
         Self {
             design,
             client,
             test_runner,
-            verifier: ContractVerifier::new(),
             checkpoint: None,
             max_iterations: 5,
         }
@@ -119,7 +113,9 @@ impl ExecutionPlan {
 
             if let Some(ref checkpoint) = self.checkpoint {
                 let mut mgr = checkpoint.write().await;
-                let _ = mgr.set_execution_result(result.clone());
+                if let Err(e) = mgr.set_execution_result(result.clone()) {
+                    tracing::warn!("checkpoint: failed to save execution result: {}", e);
+                }
                 mgr.save()?;
             }
         }
@@ -285,44 +281,6 @@ impl ExecutionPlan {
             test_pass_rate: last_test_pass_rate,
             generated_at: Utc::now(),
         }
-    }
-
-    /// Generate code using agent (opencode feature).
-    #[cfg(feature = "opencode")]
-    #[allow(dead_code)]
-    async fn generate_code(&self, ctx: &TaskContext) -> Result<CodeGenerationResponse> {
-        let interface = ctx
-            .interface
-            .clone()
-            .unwrap_or_else(|| crate::types::FileInterface {
-                path: ctx.file_path.clone(),
-                units: vec![],
-                imports: vec![],
-            });
-
-        let task =
-            crate::ImplementationTask::new(&ctx.task_id, ctx.file_path.clone(), &ctx.component);
-
-        let code_gen_ctx = CodeGenContext {
-            task,
-            interface,
-            feedback: Feedback::new(),
-        };
-
-        let prompt = code_gen_ctx.compile(&self.agent.capabilities());
-        let output = self.agent.execute(&prompt).await?;
-
-        // Parse JSON response from agent output
-        let json_str = output
-            .as_json()
-            .map(|v| v.to_string())
-            .unwrap_or_else(|| output.to_text());
-
-        let response: CodeGenerationResponse = serde_json::from_str(&json_str).map_err(|e| {
-            GeneratorError::ParseFailed(format!("Failed to parse code response: {}", e))
-        })?;
-
-        Ok(response)
     }
 
     /// Generate code using agent with feedback from previous iterations (opencode feature).

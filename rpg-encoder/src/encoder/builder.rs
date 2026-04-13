@@ -89,7 +89,13 @@ impl GraphBuilder {
     }
 
     pub fn add_parsed_file(mut self, result: &ParseResult, language: &str) -> Self {
-        let _ = self.add_parsed_file_internal(result, language);
+        if let Err(e) = self.add_parsed_file_internal(result, language) {
+            tracing::warn!(
+                "add_parsed_file failed for {}: {}",
+                result.file_path.display(),
+                e
+            );
+        }
         self
     }
 
@@ -204,7 +210,7 @@ impl GraphBuilder {
                     NodeCategory::Type | NodeCategory::Function | NodeCategory::Module
                 )
             })
-            .map(|n| (format!("{}:{}", n.language, n.name), n.id))
+            .map(|n| (n.name.clone(), n.id))
             .collect();
 
         let edges_to_add: Vec<(NodeId, NodeId)> = self

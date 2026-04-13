@@ -7,10 +7,6 @@ use crate::core::{EdgeType, Node, NodeCategory, NodeId, RpgGraph};
 
 /// Summary of a related node.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[must_use = "NodeSummary should be used"]
-pub struct NodeSummary {
-#[derive(Debug, Clone)]
-#[must_use = "NodeSummary should be used"]
 pub struct NodeSummary {
     pub id: NodeId,
     pub name: String,
@@ -43,7 +39,6 @@ pub enum EdgeDirection {
 
 /// Information about an edge.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[must_use = "EdgeInfo should be used"]
 pub struct EdgeInfo {
     pub edge_type: EdgeType,
     pub other_node: NodeSummary,
@@ -52,7 +47,6 @@ pub struct EdgeInfo {
 
 /// Detailed node information.
 #[derive(Debug, Clone)]
-#[must_use = "NodeDetail should be used after fetching"]
 pub struct NodeDetail {
     /// The node itself.
     pub node: Node,
@@ -72,7 +66,6 @@ pub struct NodeDetail {
 
 /// Result of a fetch operation.
 #[derive(Debug, Clone)]
-#[must_use = "FetchResult should be used"]
 pub struct FetchResult {
     pub detail: Option<NodeDetail>,
     pub error: Option<String>,
@@ -174,7 +167,6 @@ impl<'a> FetchNode<'a> {
             .predecessors(node_id)
             .into_iter()
             .filter(|n| {
-                // Only include container relationships
                 self.graph
                     .edge_between(n.id, node_id)
                     .map(|e| e.edge_type == EdgeType::Contains)
@@ -193,7 +185,6 @@ impl<'a> FetchNode<'a> {
     }
 
     fn get_functional_centroid(&self, node_id: NodeId) -> Option<NodeSummary> {
-        // Find BelongsToFeature edge from this node
         self.graph
             .edges_from(node_id)
             .into_iter()
@@ -207,7 +198,7 @@ impl<'a> FetchNode<'a> {
 
     fn get_centroid_members(&self, node_id: NodeId) -> Vec<NodeSummary> {
         self.graph
-            .get_centroid_members(node_id)
+            .centroid_members(node_id)
             .into_iter()
             .map(NodeSummary::from)
             .collect()
@@ -222,11 +213,10 @@ mod tests {
     fn create_test_graph() -> RpgGraph {
         let mut graph = RpgGraph::new();
 
-        // Add a file
         let file_id = graph.add_node(
             crate::core::Node::new(
                 crate::core::NodeId::new(0),
-                crate::core::NodeCategory::File,
+                NodeCategory::File,
                 "file",
                 "rust",
                 "auth.rs",
@@ -234,11 +224,10 @@ mod tests {
             .with_path(PathBuf::from("src/auth.rs")),
         );
 
-        // Add a function
         let func_id = graph.add_node(
             crate::core::Node::new(
                 crate::core::NodeId::new(1),
-                crate::core::NodeCategory::Function,
+                NodeCategory::Function,
                 "function",
                 "rust",
                 "login",
@@ -248,13 +237,10 @@ mod tests {
             .with_description("Authenticates a user"),
         );
 
-        // Add Contains edge
         graph.add_typed_edge(file_id, func_id, EdgeType::Contains);
 
-        // Add a functional centroid
         let centroid_id = graph.add_functional_centroid("Auth", "Authentication functionality");
 
-        // Link function to centroid
         graph.add_typed_edge(func_id, centroid_id, EdgeType::BelongsToFeature);
 
         graph
@@ -324,7 +310,7 @@ mod tests {
     fn test_node_summary_from_node() {
         let node = crate::core::Node::new(
             crate::core::NodeId::new(42),
-            crate::core::NodeCategory::Function,
+            NodeCategory::Function,
             "function",
             "rust",
             "test_func",

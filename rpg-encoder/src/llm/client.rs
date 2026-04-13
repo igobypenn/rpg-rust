@@ -298,7 +298,9 @@ impl OpenAIClient {
                 .append(true)
                 .open(debug_file)
             {
-                let _ = file.write_all(debug_output.as_bytes());
+                if let Err(e) = file.write_all(debug_output.as_bytes()) {
+                    tracing::warn!("failed to write debug output: {}", e);
+                }
             }
         }
 

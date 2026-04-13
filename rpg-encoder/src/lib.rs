@@ -12,30 +12,18 @@
 //!
 //! ### Core Features (always available)
 //!
-//! - **Multi-language support**: Rust (default), Python, Go, C/C++, Java, JavaScript/TypeScript, and more via feature flags
+//! - **Multi-language support**: Rust, Python, Go, C/C++, Java, JavaScript/TypeScript, Ruby, Swift, Lua, Haskell, C#, Scala (always compiled)
 //! - **Incremental processing**: Snapshot-based diff system for fast re-parsing
 //! - **FFI detection**: Automatic foreign function interface discovery
 //!
 //! ### Feature Flags
 //!
+//! All tree-sitter language parsers are unconditional dependencies — no feature flags needed.
+//!
 //! | Feature | Description |
 //! |---------|-------------|
-//! | *(default)* | Rust only |
-//! | `python` | Python (.py) |
-//! | `go` | Go (.go) |
-//! | `c` | C (.c) |
-//! | `cpp` | C++ (.cpp, .hpp, .cc) |
-//! | `javascript` | JavaScript (.js) |
-//! | `typescript` | TypeScript (.ts, .tsx) |
-//! | `java` | Java (.java) |
-//! | `ruby` | Ruby (.rb) |
-//! | `swift` | Swift (.swift) |
-//! | `lua` | Lua (.lua) |
-//! | `haskell` | Haskell (.hs) |
-//! | `csharp` | C# (.cs) |
-//! | `scala` | Scala (.scala) |
-//! | `scala` | Scala (.scala) |
 //! | `llm` | LLM integration for code analysis |
+//! | `integration` | Integration tests with full tooling (implies `llm`) |
 //!
 //! ## Quick Start
 //!
@@ -187,6 +175,7 @@ pub mod encoder;
 pub mod error;
 pub mod incremental;
 pub mod languages;
+pub mod ops;
 pub mod parser;
 
 pub mod components;

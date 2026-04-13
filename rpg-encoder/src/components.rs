@@ -162,7 +162,6 @@ pub enum ValidationIssue {
     VagueComponentName(String),
     EmptyComponent(String),
     TooManyComponents(usize),
-    TooFewComponents(usize),
 }
 
 impl ValidationIssue {
@@ -195,9 +194,6 @@ impl ValidationIssue {
             Self::EmptyComponent(name) => format!("Component '{}' has no features", name),
             Self::TooManyComponents(n) => {
                 format!("Too many components ({}), consider consolidating", n)
-            }
-            Self::TooFewComponents(n) => {
-                format!("Too few components ({}), may be too coarse-grained", n)
             }
         }
     }

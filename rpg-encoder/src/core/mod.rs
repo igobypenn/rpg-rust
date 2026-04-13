@@ -6,6 +6,6 @@ mod node;
 
 pub use edge::{Edge, EdgeType, EdgeView};
 pub use graph::RpgGraph;
-pub use id::{EdgeId, NodeId};
+pub use id::NodeId;
 pub use location::SourceLocation;
 pub use node::{Node, NodeCategory, NodeLevel, SourceRef};

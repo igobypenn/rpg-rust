@@ -474,291 +474,106 @@ mod tests {
         assert!(report.contains("PASSED"));
         assert!(report.contains("feature1"));
     }
-}
 
-/// Multi-dimensional verification result combining all dimensions.
-#[derive(Debug, Clone, Default)]
-pub struct MultiDimensionalResult {
-    /// Overall similarity score (0.0 to 1.0)
-    pub similarity: f32,
-    /// Whether verification passed overall
-    pub passed: bool,
-    /// Structural similarity
-    pub structural_similarity: f32,
-    /// Feature/centroid similarity
-    pub feature_similarity: f32,
-    /// Interface similarity
-    pub interface_similarity: f32,
-    /// Dependency similarity
-    pub dependency_similarity: f32,
-}
+    #[test]
+    fn test_verify_with_graph() {
+        let dir = tempfile::tempdir().expect("tempdir");
+        let src_dir = dir.path().join("src");
+        std::fs::create_dir_all(&src_dir).expect("mkdir");
+        std::fs::write(src_dir.join("main.rs"), "fn main() {}\n").expect("write file");
 
-/// Structural verification result.
-#[derive(Debug, Clone, Default)]
-pub struct StructureVerificationResult {
-    /// Edge type match ratio (0.0 to 1.0)
-    pub edge_match_ratio: f32,
-    /// Hierarchy depth matches
-    pub hierarchy_depth_match: bool,
-    /// Graph is fully connected
-    pub connectivity_complete: bool,
-    /// Node degree similarity
-    pub degree_similarity: f32,
-}
+        let planned = RpgGraph::new();
 
-/// Feature verification result.
-#[derive(Debug, Clone, Default)]
-pub struct FeatureVerificationResult {
-    /// Centroid coverage (0.0 to 1.0)
-    pub centroid_coverage: f32,
-    /// Missing centroids in generated
-    pub missing_centroids: Vec<String>,
-    /// Extra centroids in generated
-    pub extra_centroids: Vec<String>,
-}
+        let mut verifier = GraphVerifier::new()
+            .expect("Failed to create")
+            .with_threshold(0.0);
 
-/// Interface verification result.
-#[derive(Debug, Clone, Default)]
-pub struct InterfaceVerificationResult {
-    /// Matching function signatures
-    pub matching_signatures: usize,
-    /// Missing signatures in generated
-    pub missing_signatures: Vec<String>,
-    /// Extra signatures in generated
-    pub extra_signatures: Vec<String>,
-}
+        let result = verifier.verify(dir.path(), &planned);
+        assert!(result.is_ok());
+        let vr = result.unwrap();
+        assert!(vr.similarity >= 0.0);
+        assert_eq!(vr.planned_centroids, 0);
+    }
 
-/// Dependency verification result.
-#[derive(Debug, Clone, Default)]
-pub struct DependencyVerificationResult {
-    /// Import coverage (0.0 to 1.0)
-    pub import_coverage: f32,
-    /// Missing imports in generated
-    pub missing_imports: Vec<String>,
-    /// Extra imports in generated
-    pub extra_imports: Vec<String>,
-}
+    #[test]
+    fn test_verify_with_centroids() {
+        let dir = tempfile::tempdir().expect("tempdir");
+        let src_dir = dir.path().join("src");
+        std::fs::create_dir_all(&src_dir).expect("mkdir");
+        std::fs::write(src_dir.join("main.rs"), "fn main() {}\n").expect("write file");
 
-impl GraphVerifier {
-    /// Verify structural integrity between planned and generated graphs.
-    pub fn verify_structure(
-        &self,
-        planned: &RpgGraph,
-        generated: &RpgGraph,
-    ) -> StructureVerificationResult {
-        // Compare node counts by category
-        let mut planned_counts: std::collections::HashMap<NodeCategory, usize> =
-            std::collections::HashMap::new();
-        let mut generated_counts: std::collections::HashMap<NodeCategory, usize> =
-            std::collections::HashMap::new();
+        let mut planned = RpgGraph::new();
+        planned.add_node(
+            Node::new(
+                NodeId::new(0),
+                NodeCategory::FunctionalCentroid,
+                "functional_centroid",
+                "abstract",
+                "MainEntry",
+            )
+            .with_node_level(NodeLevel::High)
+            .with_semantic_feature("entry point"),
+        );
 
-        for node in planned.nodes() {
-            *planned_counts.entry(node.category).or_insert(0) += 1;
-        }
-        for node in generated.nodes() {
-            *generated_counts.entry(node.category).or_insert(0) += 1;
-        }
+        let mut verifier = GraphVerifier::new()
+            .expect("Failed to create")
+            .with_threshold(0.0)
+            .with_semantic_matching(true);
 
-        // Calculate similarity per category
-        let mut total_similarity = 0.0;
-        let mut category_count = 0;
+        let result = verifier.verify(dir.path(), &planned).expect("verify ok");
+        assert_eq!(result.planned_centroids, 1);
+        assert!(result.centroid_coverage <= 1.0);
+    }
 
-        for cat in planned_counts.keys() {
-            let planned_count = *planned_counts.get(cat).unwrap_or(&0) as f32;
-            let generated_count = *generated_counts.get(cat).unwrap_or(&0) as f32;
-            let max_count = planned_count.max(generated_count);
-            if max_count > 0.0 {
-                total_similarity += 1.0 - (planned_count - generated_count).abs() / max_count;
-                category_count += 1;
-            }
-        }
-
-        // Check categories in generated but not in planned
-        for cat in generated_counts.keys() {
-            if !planned_counts.contains_key(cat) {
-                category_count += 1;
-                // No similarity for extra categories
-            }
-        }
-
-        let edge_match_ratio = if category_count == 0 {
-            1.0
-        } else {
-            total_similarity / category_count as f32
+    #[test]
+    fn test_verification_result_passes() {
+        let result = VerificationResult {
+            similarity: 0.9,
+            passed: true,
+            ..Default::default()
         };
-
-        StructureVerificationResult {
-            edge_match_ratio,
-            hierarchy_depth_match: true,
-            connectivity_complete: true,
-            degree_similarity: edge_match_ratio,
-        }
+        assert!(result.passes(0.8));
+        assert!(!result.passes(0.95));
     }
 
-    /// Verify feature/centroid coverage.
-    pub fn verify_features(
-        &self,
-        planned: &RpgGraph,
-        generated: &RpgGraph,
-    ) -> FeatureVerificationResult {
-        let planned_centroids: Vec<_> = planned
-            .nodes()
-            .filter(|n| n.category == NodeCategory::FunctionalCentroid)
-            .collect();
-        let generated_centroids: Vec<_> = generated
-            .nodes()
-            .filter(|n| n.category == NodeCategory::FunctionalCentroid)
-            .collect();
+    #[test]
+    fn test_centroids_match_semantic() {
+        let verifier = GraphVerifier::new()
+            .expect("Failed to create")
+            .with_semantic_matching(true);
 
-        let planned_names: std::collections::HashSet<_> = planned_centroids
-            .iter()
-            .map(|n| n.name.to_lowercase())
-            .collect();
-        let generated_names: std::collections::HashSet<_> = generated_centroids
-            .iter()
-            .map(|n| n.name.to_lowercase())
-            .collect();
+        let n1 = Node::new(
+            NodeId::new(0),
+            NodeCategory::FunctionalCentroid,
+            "functional_centroid",
+            "abstract",
+            "Authentication",
+        )
+        .with_semantic_feature("user authentication login");
 
-        let missing: Vec<_> = planned_names
-            .difference(&generated_names)
-            .cloned()
-            .collect();
-        let extra: Vec<_> = generated_names
-            .difference(&planned_names)
-            .cloned()
-            .collect();
+        let n2 = Node::new(
+            NodeId::new(1),
+            NodeCategory::FunctionalCentroid,
+            "functional_centroid",
+            "abstract",
+            "AuthModule",
+        )
+        .with_semantic_feature("user login authentication");
 
-        let coverage = if planned_names.is_empty() {
-            1.0
-        } else {
-            (planned_names.len() - missing.len()) as f32 / planned_names.len() as f32
-        };
-
-        FeatureVerificationResult {
-            centroid_coverage: coverage,
-            missing_centroids: missing,
-            extra_centroids: extra,
-        }
+        assert!(verifier.centroids_match(&n1, &n2));
     }
 
-    /// Verify interface compatibility.
-    pub fn verify_interfaces(
-        &self,
-        planned: &RpgGraph,
-        generated: &RpgGraph,
-    ) -> InterfaceVerificationResult {
-        let planned_functions: Vec<_> = planned
-            .nodes()
-            .filter(|n| matches!(n.category, NodeCategory::Function))
-            .collect();
-        let generated_functions: Vec<_> = generated
-            .nodes()
-            .filter(|n| matches!(n.category, NodeCategory::Function))
-            .collect();
+    #[test]
+    fn test_compare_features() {
+        let verifier = GraphVerifier::new().expect("Failed to create");
 
-        let planned_names: std::collections::HashSet<_> = planned_functions
-            .iter()
-            .map(|n| n.name.to_lowercase())
-            .collect();
-        let generated_names: std::collections::HashSet<_> = generated_functions
-            .iter()
-            .map(|n| n.name.to_lowercase())
-            .collect();
+        let planned = vec!["auth".to_string(), "db".to_string()];
+        let generated = vec!["auth".to_string(), "api".to_string()];
 
-        let matching = planned_names.intersection(&generated_names).count();
-        let missing: Vec<_> = planned_names
-            .difference(&generated_names)
-            .cloned()
-            .collect();
-        let extra: Vec<_> = generated_names
-            .difference(&planned_names)
-            .cloned()
-            .collect();
+        let (missing, extra, similarity) = verifier.compare_features(&planned, &generated);
 
-        InterfaceVerificationResult {
-            matching_signatures: matching,
-            missing_signatures: missing,
-            extra_signatures: extra,
-        }
-    }
-
-    /// Verify dependency consistency.
-    pub fn verify_dependencies(
-        &self,
-        planned: &RpgGraph,
-        generated: &RpgGraph,
-    ) -> DependencyVerificationResult {
-        let planned_modules: Vec<_> = planned
-            .nodes()
-            .filter(|n| matches!(n.category, NodeCategory::Module | NodeCategory::File))
-            .collect();
-        let generated_modules: Vec<_> = generated
-            .nodes()
-            .filter(|n| matches!(n.category, NodeCategory::Module | NodeCategory::File))
-            .collect();
-
-        let planned_names: std::collections::HashSet<_> = planned_modules
-            .iter()
-            .filter_map(|n| n.path.as_ref())
-            .map(|p| p.to_string_lossy().to_lowercase())
-            .collect();
-        let generated_names: std::collections::HashSet<_> = generated_modules
-            .iter()
-            .filter_map(|n| n.path.as_ref())
-            .map(|p| p.to_string_lossy().to_lowercase())
-            .collect();
-
-        let missing: Vec<_> = planned_names
-            .difference(&generated_names)
-            .cloned()
-            .collect();
-        let extra: Vec<_> = generated_names
-            .difference(&planned_names)
-            .cloned()
-            .collect();
-
-        let coverage = if planned_names.is_empty() {
-            1.0
-        } else {
-            (planned_names.len() - missing.len()) as f32 / planned_names.len() as f32
-        };
-
-        DependencyVerificationResult {
-            import_coverage: coverage,
-            missing_imports: missing,
-            extra_imports: extra,
-        }
-    }
-
-    /// Perform comprehensive multi-dimensional verification.
-    pub fn verify_all_dimensions(
-        &self,
-        planned: &RpgGraph,
-        generated: &RpgGraph,
-    ) -> MultiDimensionalResult {
-        let structural = self.verify_structure(planned, generated);
-        let features = self.verify_features(planned, generated);
-        let interfaces = self.verify_interfaces(planned, generated);
-        let dependencies = self.verify_dependencies(planned, generated);
-
-        // Calculate weighted average
-        let similarity = structural.edge_match_ratio * 0.25
-            + features.centroid_coverage * 0.35
-            + (interfaces.matching_signatures as f32
-                / (interfaces.matching_signatures + interfaces.missing_signatures.len()).max(1)
-                    as f32)
-                * 0.25
-            + dependencies.import_coverage * 0.15;
-
-        MultiDimensionalResult {
-            similarity,
-            passed: similarity >= self.similarity_threshold,
-            structural_similarity: structural.edge_match_ratio,
-            feature_similarity: features.centroid_coverage,
-            interface_similarity: interfaces.matching_signatures as f32
-                / (interfaces.matching_signatures + interfaces.missing_signatures.len()).max(1)
-                    as f32,
-            dependency_similarity: dependencies.import_coverage,
-        }
+        assert!(missing.contains(&"db".to_string()));
+        assert!(extra.contains(&"api".to_string()));
+        assert!(similarity > 0.0 && similarity < 1.0);
     }
 }
