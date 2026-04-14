@@ -211,7 +211,7 @@ pub use parser::{LanguageParser, ParserRegistry};
 pub use components::{Component, ComponentPlan, ValidationIssue, ValidationResult};
 pub use features::{FeatureNode, FeatureTree, FlatFeature};
 pub use skeleton::{RepoSkeleton, SkeletonFile, UnitKind, UnitSkeleton, Visibility};
-pub use storage::{Manifest, BaseInfo, CompactionThreshold, FileEntry, PatchInfo};
+pub use storage::{BaseSnapshot, Manifest, BaseInfo, CompactionThreshold, FileEntry, PatchInfo, RpgStore};
 pub use tasks::{ImplementationTask, TaskPlan, TaskStatus};
 
 pub mod utils;

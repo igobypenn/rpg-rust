@@ -4,49 +4,55 @@ use std::path::PathBuf;
 
 use crate::encoder::{SerializedEdge, SerializedNode};
 
+/// An edge removed by a patch, identified by its endpoints and type.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RemovedEdge {
+    /// Source node ID (e.g. `"node_0"`).
     pub source: String,
+    /// Target node ID (e.g. `"node_5"`).
     pub target: String,
+    /// Edge type (e.g. `"calls"`, `"imports"`).
     #[serde(rename = "type")]
     pub edge_type: String,
 }
 
+/// Per-file changes within a patch: nodes and edges added/removed.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FilePatch {
+    /// Content hash before the change.
     pub old_hash: String,
+    /// Content hash after the change.
     pub new_hash: String,
+    /// Node IDs to remove from the graph.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub removed_node_ids: Vec<String>,
+    /// Full node data to add to the graph.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub added_nodes: Vec<SerializedNode>,
+    /// Edges to remove from the graph.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub removed_edges: Vec<RemovedEdge>,
+    /// Edges to add to the graph.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub added_edges: Vec<SerializedEdge>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Top-level change set for a single patch.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct PatchChanges {
+    /// Files added since the last base or patch.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub added_files: Vec<PathBuf>,
+    /// Files deleted since the last base or patch.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub deleted_files: Vec<PathBuf>,
+    /// Per-file node/edge diffs for modified files.
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub modified_files: HashMap<String, FilePatch>,
 }
 
-impl Default for PatchChanges {
-    fn default() -> Self {
-        Self {
-            added_files: Vec::new(),
-            deleted_files: Vec::new(),
-            modified_files: HashMap::new(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Counts of entities changed in a patch.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct PatchStats {
     #[serde(default)]
     pub files_added: usize,
@@ -64,30 +70,26 @@ pub struct PatchStats {
     pub edges_removed: usize,
 }
 
-impl Default for PatchStats {
-    fn default() -> Self {
-        Self {
-            files_added: 0,
-            files_deleted: 0,
-            files_modified: 0,
-            nodes_added: 0,
-            nodes_removed: 0,
-            edges_added: 0,
-            edges_removed: 0,
-        }
-    }
-}
-
+/// A single patch recording all graph changes from one update cycle.
+///
+/// Patches are global (cover all file changes) and form a chain via `parent_seq`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Patch {
+    /// Sequence number for this patch.
     pub seq: u32,
+    /// Unix timestamp when the patch was created.
     pub timestamp: u64,
+    /// Sequence number of the parent patch (0 for the first patch).
     pub parent_seq: u32,
+    /// The actual changes.
     pub changes: PatchChanges,
+    /// Summary counts.
     pub stats: PatchStats,
 }
 
 impl Patch {
+    /// Create a new patch with auto-set timestamp.
+    #[must_use]
     pub fn new(seq: u32, parent_seq: u32) -> Self {
         Self {
             seq,

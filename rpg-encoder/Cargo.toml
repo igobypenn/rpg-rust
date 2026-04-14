@@ -9,6 +9,7 @@ license = "Apache-2.0"
 default = []
 llm = ["reqwest", "tokio", "async-trait"]
 integration = ["llm"]
+compression = ["zstd"]
 
 [dependencies]
 petgraph = { workspace = true }
@@ -39,6 +40,9 @@ sha2 = "0.10"
 reqwest = { version = "0.12", features = ["json", "rustls-tls"], optional = true, default-features = false }
 tokio = { version = "1", features = ["rt-multi-thread", "macros"], optional = true }
 async-trait = { version = "0.1", optional = true }
+
+# Optional compression
+zstd = { version = "0.13", optional = true }
 
 [dev-dependencies]
 tempfile = "3"
@@ -243,6 +247,14 @@ path = "tests/incremental/evolution_test.rs"
 [[test]]
 name = "incremental_snapshot_edge"
 path = "tests/incremental/snapshot_edge_test.rs"
+
+[[test]]
+name = "storage_integration"
+path = "tests/storage/integration_test.rs"
+
+[[test]]
+name = "storage_prop"
+path = "tests/storage/prop_test.rs"
 
 [[example]]
 name = "llm_debug"

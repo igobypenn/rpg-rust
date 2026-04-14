@@ -296,7 +296,24 @@ impl RpgGraph {
 
     pub fn remove_node(&mut self, id: NodeId) -> Option<Node> {
         let idx = self.node_id_map.remove(&id)?;
+        let last_idx = if self.graph.node_count() > 1 {
+            self.graph.node_indices().max().unwrap_or(idx)
+        } else {
+            idx
+        };
+
+        let moved_node_id = if last_idx != idx {
+            self.graph.node_weight(last_idx).map(|n| n.id)
+        } else {
+            None
+        };
+
         let node = self.graph.remove_node(idx)?;
+
+        if let Some(moved_id) = moved_node_id {
+            self.node_id_map.insert(moved_id, idx);
+        }
+
         Some(node)
     }
 

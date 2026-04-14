@@ -23,6 +23,7 @@ use crate::core::RpgGraph;
 use crate::error::{Result, RpgError};
 use crate::parser::ParserRegistry;
 use crate::register_parsers;
+use crate::storage::RpgStore;
 
 pub use crate::error::ParseFailure;
 
@@ -74,6 +75,7 @@ pub struct RpgEncoder {
     registry: ParserRegistry,
     root: Option<PathBuf>,
     graph: Option<RpgGraph>,
+    store: Option<RpgStore>,
 }
 
 impl Default for RpgEncoder {
@@ -114,6 +116,7 @@ impl RpgEncoder {
             registry,
             root: None,
             graph: None,
+            store: None,
         })
     }
 
@@ -228,6 +231,30 @@ impl RpgEncoder {
     /// Consume the encoder and return the graph.
     pub fn into_graph(self) -> Option<RpgGraph> {
         self.graph
+    }
+
+    /// Get the RPG store (if initialized).
+    pub fn store(&self) -> Option<&RpgStore> {
+        self.store.as_ref()
+    }
+
+    /// Get a mutable reference to the RPG store.
+    pub fn store_mut(&mut self) -> Option<&mut RpgStore> {
+        self.store.as_mut()
+    }
+
+    /// Initialize the RPG store for the given repo path.
+    pub fn init_store(&mut self, repo_path: &Path) -> Result<&RpgStore> {
+        let store = RpgStore::init(repo_path)?;
+        self.store = Some(store);
+        Ok(self.store.as_ref().unwrap())
+    }
+
+    /// Open an existing RPG store.
+    pub fn open_store(&mut self, repo_path: &Path) -> Result<&RpgStore> {
+        let store = RpgStore::open(repo_path)?;
+        self.store = Some(store);
+        Ok(self.store.as_ref().unwrap())
     }
 
     /// Serialize the graph to JSON (pretty-printed).
