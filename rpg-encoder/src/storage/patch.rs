@@ -32,7 +32,7 @@ pub struct PatchChanges {
     pub added_files: Vec<PathBuf>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub deleted_files: Vec<PathBuf>,
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub modified_files: HashMap<String, FilePatch>,
 }
 
