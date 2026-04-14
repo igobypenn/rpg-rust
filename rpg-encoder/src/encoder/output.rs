@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::core::RpgGraph;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SerializedNode {
     pub id: String,
     pub category: String,
@@ -18,7 +18,7 @@ pub struct SerializedNode {
     pub metadata: HashMap<String, serde_json::Value>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SerializedLocation {
     pub file: String,
     pub start_line: usize,
@@ -27,7 +27,7 @@ pub struct SerializedLocation {
     pub end_column: usize,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SerializedEdge {
     pub source: String,
     pub target: String,

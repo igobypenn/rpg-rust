@@ -9,7 +9,7 @@ mod output;
 mod walker;
 
 pub use builder::GraphBuilder;
-pub use output::{serialize_graph, to_json, to_json_compact, SerializedGraph};
+pub use output::{serialize_graph, to_json, to_json_compact, SerializedEdge, SerializedGraph, SerializedNode};
 pub use walker::FileWalker;
 
 // Functional abstraction types for forward path (generator)
