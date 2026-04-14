@@ -175,6 +175,7 @@ pub mod encoder;
 pub mod error;
 pub mod incremental;
 pub mod languages;
+pub mod storage;
 pub mod ops;
 pub mod parser;
 
@@ -210,6 +211,7 @@ pub use parser::{LanguageParser, ParserRegistry};
 pub use components::{Component, ComponentPlan, ValidationIssue, ValidationResult};
 pub use features::{FeatureNode, FeatureTree, FlatFeature};
 pub use skeleton::{RepoSkeleton, SkeletonFile, UnitKind, UnitSkeleton, Visibility};
+pub use storage::{Manifest, BaseInfo, CompactionThreshold, FileEntry, PatchInfo};
 pub use tasks::{ImplementationTask, TaskPlan, TaskStatus};
 
 pub mod utils;
