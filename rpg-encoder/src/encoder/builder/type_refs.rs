@@ -1,5 +1,5 @@
-use crate::core::{Edge, EdgeType};
 use super::GraphBuilder;
+use crate::core::{Edge, EdgeType};
 
 impl GraphBuilder {
     pub fn link_type_refs(mut self) -> Self {
@@ -12,13 +12,16 @@ impl GraphBuilder {
 
             let import_match = self.find_via_imports(&source_file, &type_ref.type_name);
 
-            let bare_match = self.bare_name_defs.get(&type_ref.type_name).and_then(|entries| {
-                if entries.len() == 1 {
-                    Some(entries[0].1)
-                } else {
-                    None
-                }
-            });
+            let bare_match = self
+                .bare_name_defs
+                .get(&type_ref.type_name)
+                .and_then(|entries| {
+                    if entries.len() == 1 {
+                        Some(entries[0].1)
+                    } else {
+                        None
+                    }
+                });
 
             let type_id = same_file.copied().or(import_match).or(bare_match);
 

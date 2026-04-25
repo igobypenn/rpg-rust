@@ -1,5 +1,5 @@
-use rpg_encoder::RpgEncoder;
 use rpg_encoder::encoder::ValidationReport;
+use rpg_encoder::RpgEncoder;
 use std::path::Path;
 
 fn main() {
@@ -21,10 +21,18 @@ fn main() {
 
     let report = ValidationReport::from_graph(&result.graph);
 
-    println!("Nodes: {}  Edges: {}", report.total_nodes, report.total_edges);
-    println!("Import resolution: {:.1}%", report.import_resolution_rate * 100.0);
-    println!("Calls: {}  Implements: {}  FFI: {}",
-        report.call_edge_count, report.implements_edge_count, report.ffi_edge_count);
+    println!(
+        "Nodes: {}  Edges: {}",
+        report.total_nodes, report.total_edges
+    );
+    println!(
+        "Import resolution: {:.1}%",
+        report.import_resolution_rate * 100.0
+    );
+    println!(
+        "Calls: {}  Implements: {}  FFI: {}",
+        report.call_edge_count, report.implements_edge_count, report.ffi_edge_count
+    );
 
     if !result.parse_errors.is_empty() {
         println!("Parse errors: {}", result.parse_errors.len());

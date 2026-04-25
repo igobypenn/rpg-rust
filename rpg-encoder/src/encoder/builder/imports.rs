@@ -1,5 +1,5 @@
-use crate::core::{Edge, EdgeType, NodeCategory, NodeId};
 use super::GraphBuilder;
+use crate::core::{Edge, EdgeType, NodeCategory, NodeId};
 
 impl GraphBuilder {
     pub fn link_imports(mut self) -> Self {

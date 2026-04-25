@@ -1,5 +1,5 @@
-use crate::core::{Edge, EdgeType, NodeCategory, NodeId};
 use super::GraphBuilder;
+use crate::core::{Edge, EdgeType, NodeCategory, NodeId};
 use std::path::Path;
 
 impl GraphBuilder {
@@ -15,21 +15,24 @@ impl GraphBuilder {
 
             if let Some(ref receiver) = call.receiver {
                 if !receiver.is_empty() {
-                    let receiver_file = self.graph.nodes()
+                    let receiver_file = self
+                        .graph
+                        .nodes()
                         .filter(|n| n.name == *receiver && n.category == NodeCategory::Type)
                         .find_map(|n| n.path.clone());
 
                     if let Some(target_file) = receiver_file {
-                        let target_id = self.qualified_defs
+                        let target_id = self
+                            .qualified_defs
                             .get(&(target_file.clone(), call.callee.clone()))
                             .copied()
                             .or_else(|| {
-                                self.bare_name_defs.get(&call.callee)
-                                    .and_then(|entries| {
-                                        entries.iter()
-                                            .find(|(file, _)| *file == target_file)
-                                            .map(|(_, id)| *id)
-                                    })
+                                self.bare_name_defs.get(&call.callee).and_then(|entries| {
+                                    entries
+                                        .iter()
+                                        .find(|(file, _)| *file == target_file)
+                                        .map(|(_, id)| *id)
+                                })
                             });
 
                         if let Some(target_id) = target_id {
@@ -40,7 +43,9 @@ impl GraphBuilder {
                             );
                             edge.metadata.insert(
                                 "call_kind".to_string(),
-                                serde_json::Value::String(format!("{:?}", call.call_kind).to_lowercase()),
+                                serde_json::Value::String(
+                                    format!("{:?}", call.call_kind).to_lowercase(),
+                                ),
                             );
                             self.graph.add_edge(caller_id, target_id, edge);
                             resolved = true;
@@ -91,9 +96,7 @@ impl GraphBuilder {
         for import in imports {
             let parts: Vec<&str> = import.module_path.split("::").collect();
             if let Some(imported_name) = parts.last() {
-                if imported_name == &callee
-                    || import.imported_names.iter().any(|n| n == callee)
-                {
+                if imported_name == &callee || import.imported_names.iter().any(|n| n == callee) {
                     if let Some(entries) = self.bare_name_defs.get(callee) {
                         return Some(entries.first()?.1);
                     }

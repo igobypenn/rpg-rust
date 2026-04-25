@@ -32,10 +32,12 @@ impl ValidationReport {
         for (src, _tgt, edge) in graph.edges() {
             let et = format!("{:?}", edge.edge_type).to_lowercase();
             *edge_type_counts.entry(et.clone()).or_insert(0) += 1;
-            if edge.edge_type == EdgeType::References || edge.edge_type == EdgeType::Imports {
-                if graph.get_node(src).map(|n| n.category == NodeCategory::Import).unwrap_or(false) {
-                    resolved_imports += 1;
-                }
+            if (edge.edge_type == EdgeType::References || edge.edge_type == EdgeType::Imports)
+                && graph
+                    .get_node(src)
+                    .is_some_and(|n| n.category == NodeCategory::Import)
+            {
+                resolved_imports += 1;
             }
         }
 

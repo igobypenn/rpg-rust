@@ -1,11 +1,13 @@
 use std::collections::HashMap;
 
-use crate::core::{Edge, EdgeType, NodeCategory};
 use super::GraphBuilder;
+use crate::core::{Edge, EdgeType, NodeCategory};
 
 impl GraphBuilder {
     pub fn link_extends(mut self) -> Self {
-        let type_defs: HashMap<String, crate::core::NodeId> = self.graph.nodes()
+        let type_defs: HashMap<String, crate::core::NodeId> = self
+            .graph
+            .nodes()
             .filter(|n| n.category == NodeCategory::Type)
             .map(|n| (n.name.clone(), n.id))
             .collect();
@@ -31,7 +33,8 @@ impl GraphBuilder {
         }
 
         for (derived_id, base_id) in extends_to_add {
-            self.graph.add_edge(derived_id, base_id, Edge::new(EdgeType::Extends));
+            self.graph
+                .add_edge(derived_id, base_id, Edge::new(EdgeType::Extends));
         }
 
         self
