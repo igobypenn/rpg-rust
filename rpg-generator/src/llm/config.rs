@@ -8,6 +8,7 @@ pub struct LlmConfig {
     pub temperature: f32,
     pub max_tokens: usize,
     pub max_concurrent: usize,
+    pub reasoning: bool,
 }
 
 impl LlmConfig {
@@ -19,6 +20,7 @@ impl LlmConfig {
             temperature: 0.7,
             max_tokens: 4096,
             max_concurrent: 5,
+            reasoning: false,
         }
     }
 
@@ -47,6 +49,11 @@ impl LlmConfig {
         self
     }
 
+    pub fn with_reasoning(mut self, enabled: bool) -> Self {
+        self.reasoning = enabled;
+        self
+    }
+
     pub fn from_env() -> crate::Result<Self> {
         let api_key =
             std::env::var("OPENAI_API_KEY").map_err(|_| crate::GeneratorError::Environment {
@@ -64,6 +71,10 @@ impl LlmConfig {
             config.model = model;
         }
 
+        if let Ok(v) = std::env::var("OPENAI_REASONING") {
+            config.reasoning = v == "1" || v.to_lowercase() == "true";
+        }
+
         Ok(config)
     }
 }
@@ -77,6 +88,7 @@ impl Default for LlmConfig {
             temperature: 0.7,
             max_tokens: 4096,
             max_concurrent: 5,
+            reasoning: false,
         }
     }
 }

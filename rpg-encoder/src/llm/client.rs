@@ -38,6 +38,7 @@ pub struct LlmConfig {
     pub max_tokens: usize,
     pub temperature: f32,
     pub max_concurrent: usize,
+    pub reasoning: bool,
     pub debug_mode: bool,
     pub debug_file: Option<PathBuf>,
 }
@@ -52,6 +53,7 @@ impl Default for LlmConfig {
             max_tokens: 4096,
             temperature: 0.7,
             max_concurrent: 3,
+            reasoning: false,
             debug_mode: false,
             debug_file: None,
         }
@@ -72,6 +74,9 @@ impl LlmConfig {
             .map(|v| v == "1" || v.to_lowercase() == "true")
             .unwrap_or(false);
         let debug_file = env::var("RPG_DEBUG_FILE").ok().map(PathBuf::from);
+        let reasoning = env::var("OPENAI_REASONING")
+            .map(|v| v == "1" || v.to_lowercase() == "true")
+            .unwrap_or(false);
 
         let provider = if base_url.is_some() {
             LlmProvider::OpenAICompatible
@@ -87,6 +92,7 @@ impl LlmConfig {
             max_tokens: 4096,
             temperature: 0.7,
             max_concurrent,
+            reasoning,
             debug_mode,
             debug_file,
         })
@@ -101,6 +107,7 @@ impl LlmConfig {
             max_tokens: 4096,
             temperature: 0.7,
             max_concurrent: 3,
+            reasoning: false,
             debug_mode: false,
             debug_file: None,
         }
@@ -123,6 +130,11 @@ impl LlmConfig {
 
     pub fn with_max_concurrent(mut self, max: usize) -> Self {
         self.max_concurrent = max;
+        self
+    }
+
+    pub fn with_reasoning(mut self, enabled: bool) -> Self {
+        self.reasoning = enabled;
         self
     }
 
@@ -156,6 +168,8 @@ struct ChatRequest {
     messages: Vec<Message>,
     max_tokens: usize,
     temperature: f32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    reasoning_effort: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -220,6 +234,11 @@ impl OpenAIClient {
             ],
             max_tokens: self.config.max_tokens,
             temperature: self.config.temperature,
+            reasoning_effort: if self.config.reasoning {
+                Some("high".to_string())
+            } else {
+                None
+            },
         }
     }
 
@@ -251,6 +270,9 @@ impl OpenAIClient {
         debug_output.push_str(&format!("Model: {}\n", request.model));
         debug_output.push_str(&format!("Max Tokens: {}\n", request.max_tokens));
         debug_output.push_str(&format!("Temperature: {}\n", request.temperature));
+        if let Some(ref effort) = request.reasoning_effort {
+            debug_output.push_str(&format!("Reasoning Effort: {}\n", effort));
+        }
         debug_output.push_str("\nMessages:\n");
         for msg in &request.messages {
             let content_preview = if msg.content.len() > 200 {

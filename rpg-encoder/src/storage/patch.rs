@@ -118,6 +118,14 @@ mod tests {
             path: Some("src/main.rs".to_string()),
             location: None,
             metadata: HashMap::new(),
+            description: None,
+            features: vec![],
+            feature_path: None,
+            signature: None,
+            source_ref: None,
+            semantic_feature: None,
+            node_level: "low".to_string(),
+            documentation: None,
         }
     }
 

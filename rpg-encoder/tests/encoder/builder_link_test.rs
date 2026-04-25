@@ -23,7 +23,7 @@ fn make_parse_result(
 fn test_link_imports_creates_references_edge() {
     let result_a = make_parse_result(
         "src/lib.rs",
-        vec![DefinitionInfo::new("fn", "rust:utils")],
+        vec![DefinitionInfo::new("fn", "utils")],
         vec![],
         vec![],
         vec![],
@@ -59,7 +59,7 @@ fn test_link_imports_creates_references_edge() {
 fn test_link_imports_no_match() {
     let result_a = make_parse_result(
         "src/lib.rs",
-        vec![DefinitionInfo::new("fn", "rust:utils")],
+        vec![DefinitionInfo::new("fn", "utils")],
         vec![],
         vec![],
         vec![],
@@ -234,7 +234,7 @@ fn test_link_all_creates_all_edge_types() {
     let result_a = make_parse_result(
         "src/lib.rs",
         vec![
-            DefinitionInfo::new("fn", "rust:utils"),
+            DefinitionInfo::new("fn", "utils"),
             DefinitionInfo::new("fn", "helper"),
             DefinitionInfo::new("struct", "Config"),
         ],

@@ -21,6 +21,8 @@ struct ChatRequest {
     messages: Vec<Message>,
     temperature: f32,
     max_tokens: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    reasoning_effort: Option<String>,
 }
 #[derive(Serialize)]
 struct Message {
@@ -142,6 +144,11 @@ impl LlmClient for OpenAIClient {
             ],
             temperature: self.config.temperature,
             max_tokens: self.config.max_tokens,
+            reasoning_effort: if self.config.reasoning {
+                Some("high".to_string())
+            } else {
+                None
+            },
         };
 
         let url = format!("{}/chat/completions", self.base_url());

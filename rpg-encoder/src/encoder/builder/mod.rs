@@ -1,18 +1,29 @@
 use crate::core::{Edge, EdgeType, Node, NodeCategory, NodeId, RpgGraph, SourceLocation};
 use crate::error::Result;
-use crate::parser::ParseResult;
+use crate::parser::{ImportInfo, ParseResult};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
+mod calls;
+mod extends;
+mod ffi;
+mod impls;
+mod imports;
+mod type_refs;
+
 pub struct GraphBuilder {
-    graph: RpgGraph,
+    pub(crate) graph: RpgGraph,
     repo_name: Option<String>,
     repo_path: Option<PathBuf>,
-    file_nodes: HashMap<PathBuf, NodeId>,
+    pub(crate) file_nodes: HashMap<PathBuf, NodeId>,
     dir_nodes: HashMap<PathBuf, NodeId>,
-    unresolved_calls: Vec<(NodeId, crate::parser::CallInfo)>,
-    unresolved_type_refs: Vec<(NodeId, crate::parser::TypeRefInfo)>,
-    ffi_bindings: Vec<(NodeId, crate::languages::ffi::FfiBinding)>,
+    pub(crate) unresolved_calls: Vec<(NodeId, crate::parser::CallInfo, PathBuf)>,
+    pub(crate) unresolved_type_refs: Vec<(NodeId, crate::parser::TypeRefInfo, PathBuf)>,
+    pub(crate) unresolved_impls: Vec<(NodeId, String)>,
+    pub(crate) ffi_bindings: Vec<(NodeId, crate::languages::ffi::FfiBinding)>,
+    pub(crate) file_imports: HashMap<PathBuf, Vec<ImportInfo>>,
+    pub(crate) qualified_defs: HashMap<(PathBuf, String), NodeId>,
+    pub(crate) bare_name_defs: HashMap<String, Vec<(PathBuf, NodeId)>>,
 }
 
 impl Default for GraphBuilder {
@@ -32,7 +43,11 @@ impl GraphBuilder {
             dir_nodes: HashMap::new(),
             unresolved_calls: Vec::new(),
             unresolved_type_refs: Vec::new(),
+            unresolved_impls: Vec::new(),
             ffi_bindings: Vec::new(),
+            file_imports: HashMap::new(),
+            qualified_defs: HashMap::new(),
+            bare_name_defs: HashMap::new(),
         }
     }
 
@@ -135,6 +150,9 @@ impl GraphBuilder {
             id
         };
 
+        self.file_imports
+            .insert(result.file_path.clone(), result.imports.clone());
+
         for def in &result.definitions {
             let category = match def.kind.as_str() {
                 "fn" => NodeCategory::Function,
@@ -155,6 +173,8 @@ impl GraphBuilder {
             .with_signature(def.signature.clone().unwrap_or_default())
             .with_documentation(def.doc.clone().unwrap_or_default());
 
+            node.metadata = def.metadata.clone();
+
             if let Some(loc) = &def.location {
                 node.location = Some(SourceLocation {
                     file: result.file_path.clone(),
@@ -168,6 +188,22 @@ impl GraphBuilder {
             let node_id = self.graph.add_node(node);
             self.graph
                 .add_edge(file_id, node_id, Edge::new(EdgeType::Contains));
+
+            self.qualified_defs
+                .insert((result.file_path.clone(), def.name.clone()), node_id);
+            self.bare_name_defs
+                .entry(def.name.clone())
+                .or_default()
+                .push((result.file_path.clone(), node_id));
+
+            if def.kind == "impl_trait" {
+                if let Some(trait_val) = def.metadata.get("trait") {
+                    if let Some(trait_name) = trait_val.as_str() {
+                        self.unresolved_impls
+                            .push((node_id, trait_name.to_string()));
+                    }
+                }
+            }
         }
 
         for import in &result.imports {
@@ -186,11 +222,13 @@ impl GraphBuilder {
         }
 
         for call in &result.calls {
-            self.unresolved_calls.push((file_id, call.clone()));
+            self.unresolved_calls
+                .push((file_id, call.clone(), result.file_path.clone()));
         }
 
         for type_ref in &result.type_refs {
-            self.unresolved_type_refs.push((file_id, type_ref.clone()));
+            self.unresolved_type_refs
+                .push((file_id, type_ref.clone(), result.file_path.clone()));
         }
 
         for ffi in &result.ffi_bindings {
@@ -200,101 +238,13 @@ impl GraphBuilder {
         Ok(())
     }
 
-    pub fn link_imports(mut self) -> Self {
-        let definitions: HashMap<String, NodeId> = self
-            .graph
-            .nodes()
-            .filter(|n| {
-                matches!(
-                    n.category,
-                    NodeCategory::Type | NodeCategory::Function | NodeCategory::Module
-                )
-            })
-            .map(|n| (n.name.clone(), n.id))
-            .collect();
-
-        let edges_to_add: Vec<(NodeId, NodeId)> = self
-            .graph
-            .nodes()
-            .filter(|n| n.category == NodeCategory::Import)
-            .filter_map(|node| {
-                let parts: Vec<&str> = node.name.split("::").collect();
-                if let Some(last) = parts.last() {
-                    for lang in &["rust", "python", "go", "c#"] {
-                        let key = format!("{}:{}", lang, last);
-                        if let Some(&def_id) = definitions.get(&key) {
-                            return Some((node.id, def_id));
-                        }
-                    }
-                }
-                None
-            })
-            .collect();
-
-        for (src, tgt) in edges_to_add {
-            self.graph
-                .add_edge(src, tgt, Edge::new(EdgeType::References));
-        }
-
-        self
-    }
-
-    pub fn link_calls(mut self) -> Self {
-        let definitions: HashMap<String, NodeId> = self
-            .graph
-            .nodes()
-            .filter(|n| n.category == NodeCategory::Function)
-            .map(|n| (n.name.clone(), n.id))
-            .collect();
-
-        let unresolved = std::mem::take(&mut self.unresolved_calls);
-
-        for (caller_id, call) in unresolved {
-            if let Some(&callee_id) = definitions.get(&call.callee) {
-                let mut edge = Edge::new(EdgeType::Calls);
-                if let Some(ref receiver) = call.receiver {
-                    edge.metadata.insert(
-                        "receiver".to_string(),
-                        serde_json::Value::String(receiver.clone()),
-                    );
-                }
-                edge.metadata.insert(
-                    "call_kind".to_string(),
-                    serde_json::Value::String(format!("{:?}", call.call_kind).to_lowercase()),
-                );
-                self.graph.add_edge(caller_id, callee_id, edge);
-            }
-        }
-
-        self
-    }
-
-    pub fn link_type_refs(mut self) -> Self {
-        let types: HashMap<String, NodeId> = self
-            .graph
-            .nodes()
-            .filter(|n| n.category == NodeCategory::Type)
-            .map(|n| (n.name.clone(), n.id))
-            .collect();
-
-        let unresolved = std::mem::take(&mut self.unresolved_type_refs);
-
-        for (source_id, type_ref) in unresolved {
-            if let Some(&type_id) = types.get(&type_ref.type_name) {
-                let mut edge = Edge::new(EdgeType::UsesType);
-                edge.metadata.insert(
-                    "ref_kind".to_string(),
-                    serde_json::Value::String(format!("{:?}", type_ref.ref_kind).to_lowercase()),
-                );
-                self.graph.add_edge(source_id, type_id, edge);
-            }
-        }
-
-        self
-    }
-
     pub fn link_all(self) -> Self {
-        self.link_imports().link_calls().link_type_refs()
+        self.link_imports()
+            .link_calls()
+            .link_type_refs()
+            .link_impls()
+            .link_extends()
+            .link_ffi()
     }
 
     pub fn build(self) -> RpgGraph {
