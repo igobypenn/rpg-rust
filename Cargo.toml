@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "rpg-encoder",
     "rpg-generator",
+    "rpg-mcp",
 ]
 
 [workspace.dependencies]
