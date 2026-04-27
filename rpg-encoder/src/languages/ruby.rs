@@ -354,32 +354,28 @@ impl RubyParser {
                     return;
                 }
             }
-            "identifier" => {
-                if !enclosing_fn.is_empty() {
-                    let text = node.text(source);
-                    if text
-                        .chars()
-                        .next()
-                        .map(|c| c.is_uppercase())
-                        .unwrap_or(false)
-                        && !builtins::ruby::is_builtin(text)
-                    {
-                        result.type_refs.push(
-                            TypeRefInfo::new(enclosing_fn.as_str(), text.to_string())
-                                .with_kind(TypeRefKind::Local),
-                        );
-                    }
+            "identifier" if !enclosing_fn.is_empty() => {
+                let text = node.text(source);
+                if text
+                    .chars()
+                    .next()
+                    .map(|c| c.is_uppercase())
+                    .unwrap_or(false)
+                    && !builtins::ruby::is_builtin(text)
+                {
+                    result.type_refs.push(
+                        TypeRefInfo::new(enclosing_fn.as_str(), text.to_string())
+                            .with_kind(TypeRefKind::Local),
+                    );
                 }
             }
-            "constant" => {
-                if !enclosing_fn.is_empty() {
-                    let text = node.text(source);
-                    if !builtins::ruby::is_builtin(text) {
-                        result.type_refs.push(
-                            TypeRefInfo::new(enclosing_fn.as_str(), text.to_string())
-                                .with_kind(TypeRefKind::Local),
-                        );
-                    }
+            "constant" if !enclosing_fn.is_empty() => {
+                let text = node.text(source);
+                if !builtins::ruby::is_builtin(text) {
+                    result.type_refs.push(
+                        TypeRefInfo::new(enclosing_fn.as_str(), text.to_string())
+                            .with_kind(TypeRefKind::Local),
+                    );
                 }
             }
             _ => {}
