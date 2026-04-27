@@ -8,7 +8,7 @@
 A **Repository Planning Graph (RPG)** is a structured representation of code that captures both syntactic structure (functions, types, modules) and semantic relationships (calls, imports, inheritance, FFI bindings). This workspace provides:
 
 - **rpg-encoder**: Parse codebases into RPG format
-- **rpg-generator**: Generate code from natural language descriptions
+- **rpg-mcp**: MCP server for RPG-based code intelligence
 
 ## About ZeroRepo
 
@@ -26,7 +26,7 @@ This project implements the concepts from Microsoft Research's ZeroRepo paper, w
 ```
 rpg-rust/
 ├── rpg-encoder/      # Code → RPG (analysis)
-├── rpg-generator/    # Description → RPG → Code (generation)
+├── rpg-mcp/          # MCP server for code intelligence
 └── docs/             # Research and RFCs
 ```
 
@@ -36,7 +36,6 @@ rpg-rust/
 - **FFI Detection**: Cross-language boundaries (`extern "C"`, cgo, JNI, ctypes)
 - **Incremental Updates**: Efficient re-encoding of changed files
 - **Semantic Enrichment**: Optional LLM-based feature extraction
-- **TDD Code Generation**: 3-phase pipeline with verification
 
 ## Quick Start
 
@@ -47,8 +46,6 @@ rpg-rust/
 rpg-encoder = "0.1"
 # All language parsers are included by default
 ```
-
-### Basic Usage
 
 ### Basic Usage
 
@@ -76,7 +73,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 ## Documentation
 
 - [rpg-encoder/README.md](rpg-encoder/README.md) - Encoder documentation
-- [rpg-generator/README.md](rpg-generator/README.md) - Generator documentation
 - [Architecture](rpg-encoder/docs/architecture.md) - System design
 - [API Reference](rpg-encoder/docs/api-reference.md) - Public API
 

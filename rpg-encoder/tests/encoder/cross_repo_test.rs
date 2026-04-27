@@ -124,27 +124,3 @@ cross_repo_test!(opencode_self_encoding, "opencode", |path: &std::path::Path| {
         node_count, edge_count, impl_edges
     );
 });
-
-cross_repo_test!(rpg_generator_validates, "rpg-generator", |path: &std::path::Path| {
-    let mut encoder = RpgEncoder::new().unwrap();
-    let result = encoder.encode(path).unwrap();
-
-    let node_count = result.graph.node_count();
-    let edge_count = result.graph.edge_count();
-
-    assert!(
-        node_count > 50,
-        "rpg-generator should have >50 nodes, got {}",
-        node_count
-    );
-    assert!(
-        edge_count > 50,
-        "rpg-generator should have >50 edges, got {}",
-        edge_count
-    );
-
-    println!(
-        "rpg-generator: {} nodes, {} edges",
-        node_count, edge_count
-    );
-});

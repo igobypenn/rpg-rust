@@ -39,56 +39,6 @@ File: {file_path}
 Code:
 {code}"#;
 
-const IDENTIFY_AREAS_PROMPT: &str = r#"You are an expert software architect. Identify the main functional areas of a repository.
-
-## Constraints:
-1. Output 1–8 functional areas (be conservative)
-2. Areas must be mutually exclusive and collectively cover the repo
-3. Avoid vague buckets: Core, Misc, Other, Utils
-4. Use PascalCase names (e.g., "FeatureExtraction", "CodeParsing")
-5. Do not include tests, docs, or build files as areas
-
-## Output Format:
-Return ONLY a JSON array. No markdown code blocks. No explanation.
-["FunctionalArea1", "FunctionalArea2", ...]
-
-Identify functional areas for this repository:
-
-Repository: {repo_info}
-
-Structure:
-{skeleton}
-
-Features:
-{features_summary}"#;
-
-const ASSIGN_FEATURES_PROMPT: &str = r#"You are an expert software architect. Assign features to functional areas and categories.
-
-## Target Path Format:
-{functional_area}/{category}/{subcategory}
-- functional_area: Must be one of the provided areas
-- category: Broader purpose (e.g., "parsing", "validation")
-- subcategory: Specific context (e.g., "rust_parser", "token_check")
-
-## Constraints:
-1. Every feature MUST be assigned to exactly one path
-2. Use only the provided functional areas
-3. Paths should be meaningful and domain-aligned
-
-## Output Format:
-Return ONLY valid JSON. No markdown code blocks. No explanation.
-{
-  "functional_area/category/subcategory": ["feature_name_1", "feature_name_2"],
-  ...
-}
-
-Assign these features to paths:
-
-Functional Areas: {functional_areas}
-
-Features:
-{features}"#;
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ExtractionScope {
     File,
@@ -96,18 +46,10 @@ pub enum ExtractionScope {
     Repository,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum OrganizationMode {
-    #[default]
-    None,
-    LlmBased,
-}
-
 #[derive(Debug, Clone)]
 pub struct SemanticConfig {
     pub llm: LlmConfig,
     pub scope: ExtractionScope,
-    pub organization: OrganizationMode,
 }
 
 impl SemanticConfig {
@@ -115,17 +57,11 @@ impl SemanticConfig {
         Self {
             llm,
             scope: ExtractionScope::File,
-            organization: OrganizationMode::None,
         }
     }
 
     pub fn with_scope(mut self, scope: ExtractionScope) -> Self {
         self.scope = scope;
-        self
-    }
-
-    pub fn with_organization(mut self, mode: OrganizationMode) -> Self {
-        self.organization = mode;
         self
     }
 }
@@ -160,13 +96,12 @@ pub struct EntityFeatures {
 
 pub struct FeatureExtractor {
     client: Arc<OpenAIClient>,
-    config: SemanticConfig,
 }
 
 impl FeatureExtractor {
-    pub fn new(config: SemanticConfig) -> std::result::Result<Self, LlmError> {
-        let client = Arc::new(OpenAIClient::new(config.llm.clone())?);
-        Ok(Self { client, config })
+    pub fn new(_config: SemanticConfig) -> std::result::Result<Self, LlmError> {
+        let client = Arc::new(OpenAIClient::new(_config.llm.clone())?);
+        Ok(Self { client })
     }
 
     /// Get a reference to the underlying LLM client.
@@ -205,22 +140,10 @@ impl FeatureExtractor {
         code: &str,
         file_path: &Path,
         repo_info: &str,
-        repo_skeleton: &str,
+        _repo_skeleton: &str,
     ) -> std::result::Result<Vec<OrganizedFeature>, LlmError> {
         let features = self.extract_from_file(code, file_path, repo_info).await?;
-
-        match self.config.organization {
-            OrganizationMode::None => Ok(self.organize_by_path(&features, file_path)),
-            OrganizationMode::LlmBased => {
-                let organizer = ComponentOrganizer::new(self.client.clone());
-                let functional_areas = organizer
-                    .identify_functional_areas(repo_info, repo_skeleton, &features)
-                    .await?;
-                organizer
-                    .organize_features(&features, &functional_areas)
-                    .await
-            }
-        }
+        Ok(self.organize_by_path(&features, file_path))
     }
 
     pub fn organize_by_path(
@@ -260,97 +183,6 @@ impl FeatureExtractor {
                 }
             })
             .collect()
-    }
-}
-
-pub struct ComponentOrganizer {
-    client: Arc<OpenAIClient>,
-}
-
-impl ComponentOrganizer {
-    pub fn new(client: Arc<OpenAIClient>) -> Self {
-        Self { client }
-    }
-
-    pub async fn identify_functional_areas(
-        &self,
-        repo_info: &str,
-        repo_skeleton: &str,
-        features: &[ExtractedFeature],
-    ) -> std::result::Result<Vec<String>, LlmError> {
-        let features_summary = features
-            .iter()
-            .map(|f| format!("{}: {:?}", f.entity_name, f.features))
-            .collect::<Vec<_>>()
-            .join("\n");
-
-        let prompt = IDENTIFY_AREAS_PROMPT
-            .replace("{repo_info}", repo_info)
-            .replace("{skeleton}", repo_skeleton)
-            .replace("{features_summary}", &features_summary);
-
-        self.client.complete_json("", &prompt).await
-    }
-
-    pub async fn organize_features(
-        &self,
-        features: &[ExtractedFeature],
-        functional_areas: &[String],
-    ) -> std::result::Result<Vec<OrganizedFeature>, LlmError> {
-        let features_str = features
-            .iter()
-            .map(|f| format!("{}: {:?}", f.entity_name, f.features))
-            .collect::<Vec<_>>()
-            .join("\n");
-
-        let areas_str = functional_areas.join(", ");
-
-        let prompt = ASSIGN_FEATURES_PROMPT
-            .replace("{functional_areas}", &areas_str)
-            .replace("{features}", &features_str);
-
-        let assignments: std::collections::HashMap<String, Vec<String>> =
-            self.client.complete_json("", &prompt).await?;
-
-        let mut result = Vec::new();
-
-        for feature in features {
-            let (feature_path, functional_area) =
-                self.find_assignment(&feature.entity_name, &assignments, functional_areas);
-
-            result.push(OrganizedFeature {
-                entity_name: feature.entity_name.clone(),
-                features: feature.features.clone(),
-                description: feature.description.clone(),
-                feature_path,
-                functional_area,
-            });
-        }
-
-        Ok(result)
-    }
-
-    fn find_assignment(
-        &self,
-        entity_name: &str,
-        assignments: &std::collections::HashMap<String, Vec<String>>,
-        functional_areas: &[String],
-    ) -> (String, String) {
-        for (path, entities) in assignments {
-            if entities.iter().any(|e| e == entity_name) {
-                let functional_area = path.split('/').next().unwrap_or("Core").to_string();
-                return (path.clone(), functional_area);
-            }
-        }
-
-        let functional_area = functional_areas
-            .first()
-            .cloned()
-            .unwrap_or_else(|| "Core".to_string());
-        (
-            format!("{}/General/{}", functional_area, entity_name),
-            functional_area,
-        )
     }
 }
 

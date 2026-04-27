@@ -2,7 +2,6 @@
 resolver = "2"
 members = [
     "rpg-encoder",
-    "rpg-generator",
     "rpg-mcp",
 ]
 
@@ -30,10 +29,8 @@ serde_json = "1.0"
 thiserror = "2.0"
 tracing = "0.1"
 tokio = { version = "1", features = ["full"] }
-async-trait = "0.1"
 uuid = { version = "1", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
-futures = "0.3"
 
 [profile.bench]
 debug = true

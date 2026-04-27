@@ -7,7 +7,7 @@ license = "Apache-2.0"
 
 [features]
 default = []
-llm = ["reqwest", "tokio", "async-trait"]
+llm = ["reqwest", "tokio"]
 integration = ["llm"]
 compression = ["zstd"]
 
@@ -39,7 +39,6 @@ sha2 = "0.10"
 # Optional LLM dependencies
 reqwest = { version = "0.12", features = ["json", "rustls-tls"], optional = true, default-features = false }
 tokio = { version = "1", features = ["rt-multi-thread", "macros"], optional = true }
-async-trait = { version = "0.1", optional = true }
 
 # Optional compression
 zstd = { version = "0.13", optional = true }
