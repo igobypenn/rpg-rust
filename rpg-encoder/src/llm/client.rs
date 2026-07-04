@@ -370,104 +370,40 @@ impl OpenAIClient {
     }
 
     fn extract_json(content: &str) -> &str {
-        // Strategy: Find the LAST valid JSON structure at the end of the content
-        // The model outputs thinking text followed by the actual JSON
-        // The JSON should be the last thing, possibly on its own line(s)
+        // The model emits thinking text followed by the JSON. Extract the last
+        // valid JSON structure (object or array) from the content.
 
-        // First try to find ```json or ``` markers and use that if present
-        if let Some(start_marker) = content.find("```json\n") {
-            let json_start = start_marker + 8;
-            let remaining = &content[json_start..];
-            // Find closing ``` which may have leading whitespace on its line
-            for (idx, line) in remaining.lines().enumerate() {
-                if line.trim() == "```" {
-                    // Found closing marker - extract content before this line
-                    let end_offset: usize = remaining.lines().take(idx).map(|l| l.len() + 1).sum();
-                    return content[json_start..json_start + end_offset].trim();
-                }
+        // 1. A ```json fenced block, if present, holds the answer.
+        if let Some(start) = content.find("```json\n") {
+            let body = start + "```json\n".len();
+            if let Some(end) = content[body..].find("\n```") {
+                return content[body..body + end].trim();
             }
         }
 
-        // Find the last line that starts with { or [ (after trimming)
-        // This handles the case where JSON is at the end after thinking text
-        let mut byte_offset = 0;
-        let mut lines_with_offsets: Vec<(usize, &str)> = Vec::new();
-
+        // 2. Otherwise scan candidate line-starts (back to front) for a `{` or
+        //    `[`, and let serde validate + balance each candidate. serde's
+        //    byte_offset() marks where the value ends.
+        let mut offset = 0usize;
+        let mut candidate_offsets: Vec<usize> = Vec::new();
         for line in content.lines() {
-            lines_with_offsets.push((byte_offset, line));
-            byte_offset += line.len();
-            // Only add 1 for newline if there's actually a newline after this line
-            if byte_offset < content.len() {
-                byte_offset += 1;
+            if line.trim_start().starts_with(['{', '[']) {
+                candidate_offsets.push(offset);
+            }
+            offset += line.len();
+            if offset < content.len() {
+                offset += 1; // newline
             }
         }
 
-        tracing::trace!("Lines with offsets: {:?}", lines_with_offsets);
-
-        // Work backwards from the end to find the first line that starts with { or [
-        for i in (0..lines_with_offsets.len()).rev() {
-            let (offset, line) = lines_with_offsets[i];
-            let trimmed = line.trim();
-            tracing::trace!(
-                "Checking line {}: offset={}, trimmed={:?}",
-                i,
-                offset,
-                trimmed
-            );
-            if trimmed.starts_with('{') || trimmed.starts_with('[') {
-                // Found a potential JSON start, extract from here to end
-                let remaining = &content[offset..];
-                tracing::trace!(
-                    "Found match at offset {}, remaining: {:?}",
-                    offset,
-                    &remaining[..remaining.len().min(50)]
-                );
-                let chars: Vec<char> = remaining.chars().collect();
-
-                if chars.is_empty() {
-                    continue;
-                }
-
-                // Find the end of the JSON structure
-                let open_char = chars[0];
-                let close_char = if open_char == '{' { '}' } else { ']' };
-
-                let mut depth: i32 = 0;
-                let mut in_string = false;
-                let mut escape = false;
-                let mut end_idx = 0;
-
-                for (j, &c) in chars.iter().enumerate() {
-                    if escape {
-                        escape = false;
-                        continue;
-                    }
-                    match c {
-                        '\\' if in_string => escape = true,
-                        '"' => in_string = !in_string,
-                        _ if !in_string && c == open_char => depth += 1,
-                        _ if !in_string && c == close_char => {
-                            depth -= 1;
-                            if depth == 0 {
-                                end_idx = j;
-                                break;
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-
-                if end_idx > 0 {
-                    let byte_len = chars[..=end_idx]
-                        .iter()
-                        .map(|c| c.len_utf8())
-                        .sum::<usize>();
-                    return remaining[..byte_len].trim();
-                }
+        for start in candidate_offsets.into_iter().rev() {
+            let rest = content[start..].trim_start();
+            let mut stream = serde_json::Deserializer::from_str(rest).into_iter::<serde_json::Value>();
+            if stream.next().is_some_and(|r| r.is_ok()) {
+                return rest[..stream.byte_offset()].trim();
             }
         }
 
-        // Fallback: just return trimmed content
         content.trim()
     }
 }
