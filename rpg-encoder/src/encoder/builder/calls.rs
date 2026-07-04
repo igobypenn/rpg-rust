@@ -1,10 +1,26 @@
 use super::GraphBuilder;
 use crate::core::{Edge, EdgeType, NodeCategory, NodeId};
-use std::path::Path;
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 
 impl GraphBuilder {
     pub fn link_calls(mut self) -> Self {
         let unresolved = std::mem::take(&mut self.unresolved_calls);
+
+        // Build a Type-name -> file-path index once, so each receiver lookup
+        // is O(1) instead of a full O(N) node scan per call. Previously this
+        // was an O(C x N) scan in the receiver branch below. Owned keys so the
+        // immutable borrow of the graph ends here.
+        let mut type_files: HashMap<String, PathBuf> = HashMap::new();
+        for node in self.graph.nodes() {
+            if node.category == NodeCategory::Type {
+                if let Some(path) = node.path.as_ref() {
+                    type_files
+                        .entry(node.name.clone())
+                        .or_insert_with(|| path.clone());
+                }
+            }
+        }
 
         for (caller_id, call, caller_file) in unresolved {
             if crate::languages::builtins::is_common_method_call(&call.callee) {
@@ -15,11 +31,8 @@ impl GraphBuilder {
 
             if let Some(ref receiver) = call.receiver {
                 if !receiver.is_empty() {
-                    let receiver_file = self
-                        .graph
-                        .nodes()
-                        .filter(|n| n.name == *receiver && n.category == NodeCategory::Type)
-                        .find_map(|n| n.path.clone());
+                    // O(1) receiver lookup via the prebuilt index.
+                    let receiver_file = type_files.get(receiver.as_str()).cloned();
 
                     if let Some(target_file) = receiver_file {
                         let target_id = self
