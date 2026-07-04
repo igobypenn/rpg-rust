@@ -175,7 +175,6 @@ pub mod encoder;
 pub mod error;
 pub mod incremental;
 pub mod languages;
-pub mod ops;
 pub mod parser;
 pub mod storage;
 

@@ -4,7 +4,7 @@ mod id;
 mod location;
 mod node;
 
-pub use edge::{Edge, EdgeType, EdgeView};
+pub use edge::{Edge, EdgeType};
 pub use graph::RpgGraph;
 pub use id::NodeId;
 pub use location::SourceLocation;

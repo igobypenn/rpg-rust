@@ -71,31 +71,12 @@ impl std::fmt::Display for EdgeType {
     }
 }
 
-/// Classification of edge types into functional or dependency views.
-///
-/// Per the paper, edges are classified as:
-/// - E_dep (Dependency): Calls, Imports, DependsOn, etc.
-/// - E_feature (Functional): BelongsToFeature, ImplementsFeature, ContainsFeature
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum EdgeView {
-    /// Functional hierarchy edges (E_feature)
-    Functional,
-    /// Dependency edges (E_dep)
-    Dependency,
-}
-
-impl EdgeType {
-    /// Returns the view classification for this edge type.
-    ///
-    /// - Functional edges: BelongsToFeature, ImplementsFeature, ContainsFeature
-    /// - dependency edges: all others (Calls, Imports, etc.)
-    #[must_use]
-    pub fn view(&self) -> EdgeView {
-        match self {
-            EdgeType::BelongsToFeature
-            | EdgeType::ImplementsFeature
-            | EdgeType::ContainsFeature => EdgeView::Functional,
-            _ => EdgeView::Dependency,
-        }
-    }
-}
+// Classification of edge types into functional or dependency views.
+//
+// Per the paper, edges are classified as:
+// - E_dep (Dependency): Calls, Imports, DependsOn, etc.
+// - E_feature (Functional): BelongsToFeature, ImplementsFeature, ContainsFeature
+//
+// The `EdgeView` enum and `EdgeType::view()` helper that encoded this split
+// were removed with the unused `ops` module. The distinction is still
+// expressible by matching on `EdgeType` directly.
