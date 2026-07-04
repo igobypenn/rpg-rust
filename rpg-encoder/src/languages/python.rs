@@ -356,9 +356,6 @@ impl PythonParser {
         enclosing_class: &mut Option<String>,
         result: &mut ParseResult,
     ) {
-        let mut seen: HashSet<&str> = HashSet::new();
-        let mut types: Vec<String> = Vec::new();
-
         match node.kind() {
             "import_statement" | "import_from_statement" => {
                 if let Some(import) = Self::extract_import(node, source, file) {
@@ -449,8 +446,9 @@ impl PythonParser {
             }
             "assignment" => {
                 if let Some(type_node) = node.child_by_field_name("type") {
-                    seen.clear();
-                    types.clear();
+                    // Allocated here (rare arm) instead of per-node at function entry.
+                    let mut seen: HashSet<&str> = HashSet::new();
+                    let mut types: Vec<String> = Vec::new();
                     collect_types(
                         &type_node,
                         source,

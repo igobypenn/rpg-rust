@@ -525,9 +525,6 @@ impl RustParser {
         enclosing_fn: &mut String,
         result: &mut ParseResult,
     ) {
-        let mut seen: HashSet<&str> = HashSet::new();
-        let mut types: Vec<String> = Vec::new();
-
         match node.kind() {
             "use_declaration" => {
                 if let Some(import) = Self::extract_use_declaration(node, source, file) {
@@ -601,8 +598,11 @@ impl RustParser {
             }
             "let_declaration" => {
                 if let Some(type_node) = node.child_by_field_name("type") {
-                    seen.clear();
-                    types.clear();
+                    // Allocated here (rare arm) instead of per-node at function
+                    // entry — previously walk_and_extract allocated these on
+                    // every node visit, ~99% wasted.
+                    let mut seen: HashSet<&str> = HashSet::new();
+                    let mut types: Vec<String> = Vec::new();
                     collect_types_with_scoped(
                         &type_node,
                         source,
