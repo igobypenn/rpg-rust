@@ -277,12 +277,15 @@ pub struct ParseResult {
 
 impl ParseResult {
     pub fn new(file_path: PathBuf) -> Self {
+        // Reserve modest capacities to avoid log(n) reallocations as the
+        // parser pushes definitions/calls/type_refs during the tree walk.
+        // Typical source files have tens of definitions and calls.
         Self {
             file_path,
-            imports: Vec::new(),
-            definitions: Vec::new(),
-            calls: Vec::new(),
-            type_refs: Vec::new(),
+            imports: Vec::with_capacity(4),
+            definitions: Vec::with_capacity(16),
+            calls: Vec::with_capacity(16),
+            type_refs: Vec::with_capacity(8),
             references: Vec::new(),
             ffi_bindings: Vec::new(),
         }

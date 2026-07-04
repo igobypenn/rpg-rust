@@ -169,8 +169,18 @@ fn extract_docs_before(
     source: &[u8],
     config: &DocStyleConfig,
 ) -> Option<String> {
-    let mut docs = Vec::new();
+    // Fast path: if the immediately preceding sibling isn't a comment or
+    // whitespace, there's no documentation to extract. Skip the Vec
+    // allocation that was previously paid on every definition.
     let mut current = node.prev_sibling();
+    match &current {
+        Some(sibling)
+            if config.comment_kinds.contains(&sibling.kind())
+                || sibling.kind().is_empty() => {}
+        _ => return None,
+    }
+
+    let mut docs = Vec::new();
 
     while let Some(sibling) = current {
         if config.comment_kinds.contains(&sibling.kind()) {
