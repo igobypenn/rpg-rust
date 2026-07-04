@@ -192,7 +192,8 @@ pub use core::{
     Edge, EdgeType, Node, NodeCategory, NodeId, NodeLevel, RpgGraph, SourceLocation,
 };
 pub use encoder::{
-    to_json, to_json_compact, EncodeResult, FileWalker, GraphBuilder, RpgEncoder, SerializedGraph,
+    to_json, to_json_compact, AbstractionResult, EncodeResult, FileWalker, FunctionalAbstraction,
+    FunctionalCentroid, GraphBuilder, RpgEncoder, SerializedGraph,
 };
 pub use error::{ParseErrorCategory, ParseFailure, Result, RpgError};
 pub use incremental::{

@@ -4,11 +4,15 @@
 //! repositories into RPG graphs.
 
 mod builder;
+mod functional;
 mod output;
 mod validation;
 mod walker;
 
 pub use builder::GraphBuilder;
+pub use functional::{AbstractionResult, CollectedFeature, FunctionalAbstraction, FunctionalCentroid};
+#[cfg(feature = "llm")]
+pub use functional::{AbstractionResponse, LlmOptions};
 pub use output::{
     serialize_graph, to_json, to_json_compact, SerializedEdge, SerializedGraph, SerializedNode,
 };
@@ -385,6 +389,20 @@ impl RpgEncoder {
             total_features = all_organized_features.len(),
             "Semantic encoding complete"
         );
+
+        // Phase 2: Functional Abstraction.
+        // Now that V^L nodes carry semantic features, induce V^H functional
+        // centroids and link them via BelongsToFeature edges. Uses the
+        // heuristic path-based inducer (no extra LLM call). The LLM-based
+        // path (run_with_llm) is available for callers that want it.
+        let abstraction = FunctionalAbstraction::new(&mut result.graph).run()?;
+        if abstraction.centroids_created > 0 {
+            tracing::info!(
+                centroids_created = abstraction.centroids_created,
+                nodes_linked = abstraction.nodes_linked,
+                "Functional abstraction complete"
+            );
+        }
 
         self.graph = Some(result.graph.clone());
 
