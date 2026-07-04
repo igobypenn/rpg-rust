@@ -236,3 +236,72 @@ async fn test_zai_invalid_api_key_error() {
 
     assert!(result.is_err());
 }
+
+/// End-to-end coverage of `RpgEncoder::encode_with_semantics`.
+///
+/// This is the only test that exercises the full semantic pipeline wired up in
+/// item 4: parse → per-file LLM feature extraction → functional abstraction
+/// (centroid creation + BelongsToFeature linking). It guards against the class
+/// of regression where the abstraction step silently produces zero output.
+///
+/// Requires network access and a configured endpoint (`.env`), so it is
+/// `#[ignore]`d by default. Run with:
+///
+/// ```bash
+/// cargo test --features integration test_encode_with_semantics_creates_centroids -- --ignored --nocapture
+/// ```
+#[tokio::test]
+#[ignore = "Long-running e2e test - run with: cargo test -- --ignored"]
+async fn test_encode_with_semantics_creates_centroids() {
+    use rpg_encoder::{EdgeType, ExtractionScope, NodeCategory, NodeLevel, RpgEncoder};
+
+    let config = SemanticConfig::new(create_test_config()).with_scope(ExtractionScope::File);
+
+    // Bounded real source dir: parses cleanly and has enough entities for the
+    // LLM to label, but keeps the request count small.
+    let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+    let target_dir = PathBuf::from(manifest_dir).join("examples/test-repo/rust");
+
+    let mut encoder = RpgEncoder::new().expect("encoder init");
+    let result = encoder
+        .encode_with_semantics(&target_dir, config)
+        .await
+        .expect("encode_with_semantics should succeed");
+
+    assert!(
+        result.files_processed > 0,
+        "should have processed at least one file"
+    );
+
+    let graph = &result.graph;
+
+    // The LLM enrichment should populate semantic features on V^L nodes.
+    let enriched_vl = graph
+        .nodes()
+        .filter(|n| n.node_level == NodeLevel::Low && n.semantic_feature.is_some())
+        .count();
+    assert!(
+        enriched_vl > 0,
+        "at least one V^L node should carry a semantic_feature after enrichment"
+    );
+
+    // The functional-abstraction step should induce at least one V^H centroid.
+    let centroid_count = graph
+        .nodes()
+        .filter(|n| n.category == NodeCategory::FunctionalCentroid)
+        .count();
+    assert!(
+        centroid_count > 0,
+        "functional abstraction should create at least one V^H centroid"
+    );
+
+    // ...and link V^L nodes to centroids via BelongsToFeature edges.
+    let belongs_edges = graph
+        .edges()
+        .filter(|(_, _, e)| e.edge_type == EdgeType::BelongsToFeature)
+        .count();
+    assert!(
+        belongs_edges > 0,
+        "V^L nodes should be linked to centroids via BelongsToFeature edges"
+    );
+}
