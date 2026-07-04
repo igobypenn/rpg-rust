@@ -81,15 +81,28 @@ impl FfiDetector {
         file: &Path,
         abi_patterns: &[&str],
     ) -> Vec<FfiBinding> {
+        // Fast path: most files have no extern blocks at all. Skip the
+        // per-line scan + lines Vec allocation entirely.
+        if !source.contains("extern") {
+            return Vec::new();
+        }
+
+        // Precompute the start patterns per abi once, instead of formatting
+        // two Strings per line per abi inside the loop.
+        let patterns: Vec<(String, String, &str)> = abi_patterns
+            .iter()
+            .map(|&abi| (format!("extern \"{abi}\""), format!("extern '{abi}'"), abi))
+            .collect();
+
         let mut bindings = Vec::new();
         let lines: Vec<&str> = source.lines().collect();
 
         for (line_idx, line) in lines.iter().enumerate() {
             let trimmed = line.trim();
 
-            for abi in abi_patterns {
-                if trimmed.starts_with(&format!("extern \"{}\"", abi))
-                    || trimmed.starts_with(&format!("extern '{}'", abi))
+            for (double_q, single_q, abi) in &patterns {
+                if trimmed.starts_with(double_q.as_str())
+                    || trimmed.starts_with(single_q.as_str())
                 {
                     if let Some(block_start) = source[trimmed.len()..].find('{') {
                         let remaining = &source[trimmed.len() + block_start..];
@@ -124,6 +137,11 @@ impl FfiDetector {
     }
 
     pub fn detect_no_mangle(source: &str, file: &Path) -> Vec<FfiBinding> {
+        // Fast path: skip the per-line scan unless the marker is present.
+        if !source.contains("no_mangle") {
+            return Vec::new();
+        }
+
         let mut bindings = Vec::new();
         let lines: Vec<&str> = source.lines().collect();
 
