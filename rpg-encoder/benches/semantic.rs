@@ -131,9 +131,10 @@ fn functional_pipeline(c: &mut Criterion) {
     group.finish();
 }
 
-/// Benchmark `find_node_in_file` — the O(n) per-entity scan in the
-/// enrichment loop. At scale this dominates because it's called once per
-/// extracted entity.
+/// Benchmark `find_node_in_file` — the public single-match lookup. This is a
+/// per-call O(n) scan; note it is NOT the enrichment-loop hot path anymore
+/// (that uses the per-file index benchmarked in `matching/per_file_index`
+/// below). Kept as a public-API microbenchmark and regression guard.
 fn find_node_in_file(c: &mut Criterion) {
     let mut group = c.benchmark_group("graph/find_node_in_file");
     group.throughput(Throughput::Elements(1));
@@ -171,5 +172,50 @@ fn find_node_in_file(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(semantic_benches, functional_pipeline, find_node_in_file);
+/// Benchmark the enrichment-loop matching pattern actually used in
+/// `encode_with_semantics`: build a per-file `(name -> Vec<NodeId>)` index
+/// once, then look up ~10 entities (a typical per-file LLM yield). This is
+/// O(N + entities) per file, vs the old O(entities x N) per-entity scan.
+fn matching_per_file_index(c: &mut Criterion) {
+    let mut group = c.benchmark_group("matching/per_file_index");
+
+    // Entities per file — a typical LLM extraction yield.
+    const ENTITIES: usize = 10;
+
+    for &size in &[500usize, 2000, 5000] {
+        let files = (size / 10).max(1);
+        let graph = build_graph_with_semantics(size, files);
+
+        // Target one file's worth of real names to look up.
+        let target_path = PathBuf::from(format!("src/mod_{:04}/file.rs", 0));
+        let names: Vec<String> = (0..ENTITIES).map(|i| format!("func_{}", i * (size / ENTITIES).max(1))).collect();
+
+        group.throughput(Throughput::Elements(size as u64));
+        group.bench_with_input(BenchmarkId::new("build_and_lookup", size), &(), |b, _| {
+            b.iter(|| {
+                // Build the per-file index (one pass over all nodes), then
+                // resolve ENTITIES names — mirrors encode_with_semantics.
+                let mut by_name: std::collections::HashMap<String, Vec<rpg_encoder::NodeId>> =
+                    std::collections::HashMap::new();
+                for n in graph.nodes() {
+                    if n.path.as_deref() == Some(target_path.as_path()) {
+                        by_name.entry(n.name.clone()).or_default().push(n.id);
+                    }
+                }
+                for name in &names {
+                    black_box(by_name.get(name).cloned().unwrap_or_default());
+                }
+            })
+        });
+    }
+
+    group.finish();
+}
+
+criterion_group!(
+    semantic_benches,
+    functional_pipeline,
+    find_node_in_file,
+    matching_per_file_index
+);
 criterion_main!(semantic_benches);
