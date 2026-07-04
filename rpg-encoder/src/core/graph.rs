@@ -296,11 +296,12 @@ impl RpgGraph {
 
     pub fn remove_node(&mut self, id: NodeId) -> Option<Node> {
         let idx = self.node_id_map.remove(&id)?;
-        let last_idx = if self.graph.node_count() > 1 {
-            self.graph.node_indices().max().unwrap_or(idx)
-        } else {
-            idx
-        };
+
+        // petgraph::remove_node swap-removes: the node at the highest live
+        // index is moved into the removed slot. That highest index is simply
+        // node_count()-1 — no need to scan all indices for the max (which was
+        // O(N) per removal, O(K×N) for remove_file_nodes).
+        let last_idx = NodeIndex::new(self.graph.node_count().saturating_sub(1));
 
         let moved_node_id = if last_idx != idx {
             self.graph.node_weight(last_idx).map(|n| n.id)
