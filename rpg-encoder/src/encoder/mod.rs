@@ -379,17 +379,43 @@ impl RpgEncoder {
         for (file_path, organized) in enriched {
             match organized {
                 Ok(features) => {
+                    // Build a per-file (name -> Vec<NodeId>) index ONCE,
+                    // instead of an O(N) graph scan per entity. The matching
+                    // rules (exact, last ::-segment, case-insensitive) are
+                    // preserved; only the lookup becomes O(1) per name. Owned
+                    // keys so the immutable borrow of the graph ends here.
+                    let mut by_name: std::collections::HashMap<String, Vec<crate::core::NodeId>> =
+                        std::collections::HashMap::new();
+                    for n in result.graph.nodes() {
+                        if n.path.as_deref() == Some(file_path.as_path()) {
+                            by_name.entry(n.name.clone()).or_default().push(n.id);
+                        }
+                    }
+
                     for of in &features {
-                        // Match all node ids for this entity name (handles
-                        // overloaded/duplicate names — previously first-only).
-                        // Collect ids before mutating so we don't hold a
-                        // shared borrow across update_node_semantics.
-                        let matched_ids: Vec<_> = result
-                            .graph
-                            .find_nodes_in_file(&file_path, &of.entity_name)
-                            .into_iter()
-                            .map(|n| n.id)
-                            .collect();
+                        // Try exact, then last ::-segment (Type::method -> method).
+                        let last_segment = of.entity_name.rsplit("::").next().unwrap_or(&of.entity_name);
+                        let mut matched_ids: Vec<crate::core::NodeId> = by_name
+                            .get(of.entity_name.as_str())
+                            .cloned()
+                            .unwrap_or_default();
+                        if matched_ids.is_empty() && last_segment != of.entity_name {
+                            matched_ids = by_name.get(last_segment).cloned().unwrap_or_default();
+                        }
+                        // Case-insensitive fallback (rare): scan this file's
+                        // names only — bounded by entities in one file.
+                        if matched_ids.is_empty() {
+                            let nl = of.entity_name.to_ascii_lowercase();
+                            let ll = last_segment.to_ascii_lowercase();
+                            matched_ids = by_name
+                                .iter()
+                                .filter(|(k, _)| {
+                                    k.to_ascii_lowercase() == nl || k.to_ascii_lowercase() == ll
+                                })
+                                .flat_map(|(_, v)| v.iter().copied())
+                                .collect();
+                        }
+
                         for id in matched_ids {
                             result.graph.update_node_semantics(
                                 id,

@@ -237,6 +237,11 @@ path = "tests/llm/e2e_test.rs"
 required-features = ["integration"]
 
 [[test]]
+name = "semantic_scale_tmp"
+path = "tests/llm/semantic_scale_tmp_test.rs"
+required-features = ["integration"]
+
+[[test]]
 name = "incremental_diff"
 path = "tests/incremental/diff_test.rs"
 
