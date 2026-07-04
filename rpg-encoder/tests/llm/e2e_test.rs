@@ -1,6 +1,6 @@
 #![cfg(feature = "integration")]
 
-use rpg_encoder::{FeatureExtractor, LlmConfig, OrganizationMode, SemanticConfig};
+use rpg_encoder::{FeatureExtractor, LlmConfig, SemanticConfig};
 use std::path::PathBuf;
 
 fn init_logging() {
@@ -105,10 +105,7 @@ async fn test_zai_extract_empty_code() {
 #[tokio::test]
 async fn test_zai_organize_by_path() {
     let config = create_test_config();
-    let extractor = FeatureExtractor::new(
-        SemanticConfig::new(config).with_organization(OrganizationMode::None),
-    )
-    .unwrap();
+    let extractor = FeatureExtractor::new(SemanticConfig::new(config)).unwrap();
 
     let code = r#"
 pub fn process_data(input: &str) -> String {
@@ -133,10 +130,7 @@ pub fn process_data(input: &str) -> String {
 #[tokio::test]
 async fn test_zai_organize_llm_based() {
     let config = create_test_config();
-    let extractor = FeatureExtractor::new(
-        SemanticConfig::new(config).with_organization(OrganizationMode::LlmBased),
-    )
-    .unwrap();
+    let extractor = FeatureExtractor::new(SemanticConfig::new(config)).unwrap();
 
     let code = r#"
 pub struct Database {
@@ -173,9 +167,7 @@ impl Database {
 async fn test_zai_full_repository_analysis() {
     let config = create_test_config();
     let extractor = FeatureExtractor::new(
-        SemanticConfig::new(config)
-            .with_scope(rpg_encoder::ExtractionScope::Repository)
-            .with_organization(OrganizationMode::LlmBased),
+        SemanticConfig::new(config).with_scope(rpg_encoder::ExtractionScope::Repository),
     )
     .unwrap();
 

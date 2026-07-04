@@ -149,7 +149,6 @@ pub(super) fn parse_edge_type(s: &str) -> EdgeType {
     }
 }
 
-#[cfg_attr(not(test), allow(dead_code))]
 pub(super) fn node_id_from_str(s: &str) -> Option<NodeId> {
     let s = s.strip_prefix("node_")?;
     let idx: usize = s.parse().ok()?;

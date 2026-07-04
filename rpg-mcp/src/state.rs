@@ -51,7 +51,6 @@ pub struct McpConfig {
     pub workspace: PathBuf,
     pub data_dir: PathBuf,
     pub hash_mode: HashMode,
-    #[allow(dead_code)]
     pub semantic: bool,
 }
 
