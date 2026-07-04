@@ -1,8 +1,9 @@
 mod fixtures;
 
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
+use rpg_encoder::parser::{CallInfo, DefinitionInfo, ParseResult};
 use rpg_encoder::{FileWalker, GraphBuilder, RpgEncoder};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 fn walker_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("encoder/walker");
@@ -290,10 +291,57 @@ fn incremental_benchmark(c: &mut Criterion) {
     drop(small_fixture);
 }
 
+/// Benchmark `link_calls` with method calls that carry a receiver — the
+/// O(C × N) hot path where each receiver triggers a full node scan.
+/// Isolates the cost we intend to fix in Tier 2b.
+fn builder_link_calls_with_receivers(c: &mut Criterion) {
+    let mut group = c.benchmark_group("encoder/link_calls_receivers");
+
+    for &size in &[100usize, 500, 2000] {
+        // Build a ParseResult with `size` Type definitions (structs) and
+        // `size` method calls, each calling a method on one of those types.
+        // Every call has a receiver -> every one hits the O(N) scan.
+        group.throughput(Throughput::Elements(size as u64));
+        group.bench_with_input(BenchmarkId::new("resolve", size), &(), |b, _| {
+            b.iter_batched(
+                || {
+                    let file_path = PathBuf::from("src/calls.rs");
+                    let mut result = ParseResult::new(file_path);
+                    for i in 0..size {
+                        result.definitions.push(DefinitionInfo::new("struct", format!("Type{i}")));
+                    }
+                    for i in 0..size {
+                        result.calls.push(
+                            CallInfo::method(
+                                format!("caller_{i}"),
+                                format!("Type{}", i % size),
+                                "do_thing",
+                            ),
+                        );
+                    }
+                    let mut builder = GraphBuilder::new().with_repo("test", Path::new("."));
+                    builder = builder
+                        .try_add_parsed_file(&result, "rust")
+                        .expect("add_parsed_file");
+                    builder
+                },
+                |builder| {
+                    let builder = builder.link_calls();
+                    black_box(builder)
+                },
+                criterion::BatchSize::SmallInput,
+            )
+        });
+    }
+
+    group.finish();
+}
+
 criterion_group!(
     encoder_benches,
     walker_benchmark,
     builder_benchmark,
+    builder_link_calls_with_receivers,
     full_encode_benchmark,
     encode_by_complexity,
     encode_output_benchmark,

@@ -61,6 +61,10 @@ harness = false
 name = "encoder"
 harness = false
 
+[[bench]]
+name = "semantic"
+harness = false
+
 [[test]]
 name = "parser_registry"
 path = "tests/parser/registry_test.rs"
