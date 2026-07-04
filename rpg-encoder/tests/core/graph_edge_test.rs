@@ -223,6 +223,50 @@ fn test_graph_find_node_in_file_not_found() {
 }
 
 #[test]
+fn test_graph_find_node_in_file_qualified_name() {
+    // The LLM emits `Type::method`; the builder stores bare `method`.
+    let mut graph = RpgGraph::new();
+    graph.add_node(
+        Node::new(NodeId::new(0), NodeCategory::Function, "fn", "rust", "login")
+            .with_path(PathBuf::from("src/auth.rs")),
+    );
+
+    let result = graph.find_node_in_file(&PathBuf::from("src/auth.rs"), "User::login");
+    assert!(result.is_some());
+    assert_eq!(result.unwrap().name, "login");
+}
+
+#[test]
+fn test_graph_find_node_in_file_case_insensitive() {
+    let mut graph = RpgGraph::new();
+    graph.add_node(
+        Node::new(NodeId::new(0), NodeCategory::Type, "struct", "rust", "parser")
+            .with_path(PathBuf::from("src/lib.rs")),
+    );
+
+    let result = graph.find_node_in_file(&PathBuf::from("src/lib.rs"), "Parser");
+    assert!(result.is_some());
+    assert_eq!(result.unwrap().name, "parser");
+}
+
+#[test]
+fn test_graph_find_nodes_in_file_returns_all_duplicates() {
+    // Two methods named `new` on different impls in the same file.
+    let mut graph = RpgGraph::new();
+    graph.add_node(
+        Node::new(NodeId::new(0), NodeCategory::Function, "fn", "rust", "new")
+            .with_path(PathBuf::from("src/types.rs")),
+    );
+    graph.add_node(
+        Node::new(NodeId::new(1), NodeCategory::Function, "fn", "rust", "new")
+            .with_path(PathBuf::from("src/types.rs")),
+    );
+
+    let results = graph.find_nodes_in_file(&PathBuf::from("src/types.rs"), "new");
+    assert_eq!(results.len(), 2, "should return both duplicate-name nodes");
+}
+
+#[test]
 fn test_graph_find_node_by_location_no_match() {
     let mut graph = RpgGraph::new();
 

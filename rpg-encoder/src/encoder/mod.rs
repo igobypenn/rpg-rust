@@ -358,11 +358,19 @@ impl RpgEncoder {
             match organized {
                 Ok(features) => {
                     for of in &features {
-                        if let Some(node) =
-                            result.graph.find_node_in_file(&file_path, &of.entity_name)
-                        {
+                        // Match all node ids for this entity name (handles
+                        // overloaded/duplicate names — previously first-only).
+                        // Collect ids before mutating so we don't hold a
+                        // shared borrow across update_node_semantics.
+                        let matched_ids: Vec<_> = result
+                            .graph
+                            .find_nodes_in_file(&file_path, &of.entity_name)
+                            .into_iter()
+                            .map(|n| n.id)
+                            .collect();
+                        for id in matched_ids {
                             result.graph.update_node_semantics(
-                                node.id,
+                                id,
                                 of.features.clone(),
                                 of.description.clone(),
                                 of.feature_path.clone(),

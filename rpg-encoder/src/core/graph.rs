@@ -373,9 +373,35 @@ impl RpgGraph {
         })
     }
 
+    /// Find the first node in `file_path` matching `name`.
+    ///
+    /// Matching is tolerant of how LLMs qualify entity names:
+    /// - exact `name == n.name`
+    /// - last `::`-segment of `name` (so `Type::method` matches a node named `method`)
+    /// - case-insensitive equality as a fallback
     pub fn find_node_in_file(&self, file_path: &Path, name: &str) -> Option<&Node> {
+        self.find_nodes_in_file(file_path, name).into_iter().next()
+    }
+
+    /// Find ALL nodes in `file_path` matching `name` (see [`find_node_in_file`]
+    /// for the matching rules). Returns every match so callers can enrich
+    /// overloaded/duplicate names rather than only the first.
+    pub fn find_nodes_in_file(&self, file_path: &Path, name: &str) -> Vec<&Node> {
+        // Last `::`-segment: `Type::method` -> `method`. Handles qualified
+        // names the LLM emits that the builder stores unqualified.
+        let last_segment = name.rsplit("::").next().unwrap_or(name);
+        let name_lower = name.to_ascii_lowercase();
+        let last_lower = last_segment.to_ascii_lowercase();
+
         self.nodes()
-            .find(|n| n.path.as_ref().map(|p| p == file_path).unwrap_or(false) && n.name == name)
+            .filter(|n| n.path.as_ref().map(|p| p == file_path).unwrap_or(false))
+            .filter(|n| {
+                n.name == name
+                    || n.name == last_segment
+                    || n.name.to_ascii_lowercase() == name_lower
+                    || n.name.to_ascii_lowercase() == last_lower
+            })
+            .collect()
     }
 
     pub fn remove_edges_for_nodes(&mut self, node_ids: &[NodeId]) -> usize {
