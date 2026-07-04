@@ -610,24 +610,23 @@ impl<'a> RpgEvolution<'a> {
             changed_nodes.iter().copied().collect();
         let mut removed = 0;
 
-        // Collect edges to remove first (can't mutate while iterating)
-        let edges_to_remove: Vec<(NodeId, NodeId)> = self
-            .snapshot
-            .graph
-            .edges()
-            .filter_map(|(source, target, edge)| {
-                // Only BelongsToFeature edges from changed V^L nodes to V^H centroids
-                if edge.edge_type == EdgeType::BelongsToFeature && changed_set.contains(&source) {
-                    // Verify target is a V^H centroid
-                    if let Some(target_node) = self.snapshot.graph.get_node(target) {
-                        if target_node.node_level == NodeLevel::High {
-                            return Some((source, target));
-                        }
+        // Walk only the outgoing edges of each changed source node, instead of
+        // a full O(E) scan over all edges. For small change sets on large
+        // graphs (the common incremental case) this is O(|changed| x out_deg).
+        let mut edges_to_remove: Vec<(NodeId, NodeId)> = Vec::new();
+        for &source in changed_set.iter() {
+            for (target, edge) in self.snapshot.graph.edges_from(source) {
+                if edge.edge_type != EdgeType::BelongsToFeature {
+                    continue;
+                }
+                // Verify target is a V^H centroid.
+                if let Some(target_node) = self.snapshot.graph.get_node(target) {
+                    if target_node.node_level == NodeLevel::High {
+                        edges_to_remove.push((source, target));
                     }
                 }
-                None
-            })
-            .collect();
+            }
+        }
 
         // Remove the collected edges
         for (source, target) in &edges_to_remove {

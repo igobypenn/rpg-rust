@@ -107,9 +107,9 @@ impl GraphBuilder {
     pub(crate) fn find_via_imports(&self, file_path: &Path, callee: &str) -> Option<NodeId> {
         let imports = self.file_imports.get(file_path)?;
         for import in imports {
-            let parts: Vec<&str> = import.module_path.split("::").collect();
-            if let Some(imported_name) = parts.last() {
-                if imported_name == &callee || import.imported_names.iter().any(|n| n == callee) {
+            // Last ::-segment (e.g. `std::io::Read` -> `Read`), no alloc.
+            if let Some(imported_name) = import.module_path.rsplit("::").next() {
+                if imported_name == callee || import.imported_names.iter().any(|n| n == callee) {
                     if let Some(entries) = self.bare_name_defs.get(callee) {
                         return Some(entries.first()?.1);
                     }

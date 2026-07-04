@@ -8,9 +8,9 @@ impl GraphBuilder {
             .nodes()
             .filter(|n| n.category == NodeCategory::Import)
             .filter_map(|node| {
-                let parts: Vec<&str> = node.name.split("::").collect();
-                if let Some(last) = parts.last() {
-                    if let Some(entries) = self.bare_name_defs.get(*last) {
+                // Last ::-segment (e.g. `std::io::Read` -> `Read`), no alloc.
+                if let Some(last) = node.name.rsplit("::").next() {
+                    if let Some(entries) = self.bare_name_defs.get(last) {
                         if let Some((_, def_id)) = entries.first() {
                             return Some((node.id, *def_id));
                         }
