@@ -102,6 +102,13 @@ impl<'a> RpgEvolution<'a> {
             summary.llm_calls += modified_result.llm_calls;
         }
 
+        // Orphan-edge cleanup for modified files (their old nodes were
+        // removed without cleanup in process_modified_files). Runs once for
+        // the whole diff instead of once per modified file.
+        if !diff.modified.is_empty() {
+            summary.edges_rebuilt += self.cleanup_orphaned_edges();
+        }
+
         // === V^H Centroid Invalidation ===
         // Collect all changed nodes for centroid invalidation
         let mut all_changed_nodes = Vec::new();
@@ -134,25 +141,36 @@ impl<'a> RpgEvolution<'a> {
         let mut result = DeleteResult::default();
 
         for file_path in files {
-            let nodes = self.snapshot.graph.remove_file_nodes(file_path);
-            result.nodes_removed.extend(nodes);
+            self.remove_file_state(file_path, &mut result.nodes_removed);
+        }
 
-            self.snapshot.unit_cache.remove(file_path);
-            self.snapshot.file_hashes.remove(file_path);
+        // Orphan-edge cleanup runs ONCE for the batch, not per file. Previously
+        // each modified file called process_deleted_files which re-scanned all
+        // nodes + edges (O(M x (N + E))).
+        result.edges_removed = self.cleanup_orphaned_edges();
+        Ok(result)
+    }
 
-            for &node_id in &result.nodes_removed {
-                let dependents = self.snapshot.dependents_of(node_id);
-                for dep_id in dependents {
-                    if let Some(node) = self.snapshot.graph.get_node_mut(dep_id) {
-                        node.features.clear();
-                        node.description = None;
-                    }
+    /// Remove a file's nodes + cached state, clearing dependent semantics.
+    /// Does NOT run orphan-edge cleanup — callers batch that via
+    /// [`process_deleted_files`] or [`cleanup_orphaned_edges`].
+    fn remove_file_state(&mut self, file_path: &Path, removed: &mut Vec<NodeId>) {
+        let nodes = self.snapshot.graph.remove_file_nodes(file_path);
+
+        self.snapshot.unit_cache.remove(file_path);
+        self.snapshot.file_hashes.remove(file_path);
+
+        for &node_id in &nodes {
+            let dependents = self.snapshot.dependents_of(node_id);
+            for dep_id in dependents {
+                if let Some(node) = self.snapshot.graph.get_node_mut(dep_id) {
+                    node.features.clear();
+                    node.description = None;
                 }
             }
         }
 
-        result.edges_removed = self.cleanup_orphaned_edges();
-        Ok(result)
+        removed.extend(nodes);
     }
 
     async fn process_added_files(
@@ -377,7 +395,12 @@ impl<'a> RpgEvolution<'a> {
         let mut result = UpdateResult::default();
 
         for modified in files {
-            self.process_deleted_files(std::slice::from_ref(&modified.path))?;
+            // Remove the file's stale nodes WITHOUT orphan-edge cleanup
+            // (per-file cleanup was O(M x (N+E))); cleanup runs once for the
+            // whole diff in process_diff via process_deleted_files.
+            let mut removed = Vec::new();
+            self.remove_file_state(&modified.path, &mut removed);
+            result.nodes_removed += removed.len();
 
             let full_path = self.snapshot.repo_dir.join(&modified.path);
 
