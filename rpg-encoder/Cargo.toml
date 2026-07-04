@@ -7,7 +7,7 @@ license = "Apache-2.0"
 
 [features]
 default = []
-llm = ["reqwest", "tokio"]
+llm = ["reqwest", "tokio", "futures"]
 integration = ["llm"]
 
 [dependencies]
@@ -38,6 +38,7 @@ sha2 = "0.10"
 # Optional LLM dependencies
 reqwest = { version = "0.12", features = ["json", "rustls-tls"], optional = true, default-features = false }
 tokio = { version = "1", features = ["rt-multi-thread", "macros"], optional = true }
+futures = { workspace = true, optional = true }
 
 [dev-dependencies]
 tempfile = "3"

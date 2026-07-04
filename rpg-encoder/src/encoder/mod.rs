@@ -329,32 +329,54 @@ impl RpgEncoder {
             }
         }
 
-        for file_path in seen_paths {
-            let code = match std::fs::read_to_string(&file_path) {
-                Ok(c) => c,
-                Err(_) => continue,
-            };
+        // Extract features for all files CONCURRENTLY, bounded by
+        // `config.llm.max_concurrent`. The client's semaphore throttles
+        // in-flight HTTP requests; buffer_unordered runs up to that many
+        // extraction futures at once. Previously this was a serial `for`
+        // loop, so max_concurrent had no effect (one request in flight).
+        use futures::stream::{self, StreamExt};
 
-            let organized = match config.scope {
-                crate::agents::ExtractionScope::File => {
-                    extractor
-                        .extract_and_organize(&code, &file_path, repo_info, "")
-                        .await
-                }
-                crate::agents::ExtractionScope::Module
-                | crate::agents::ExtractionScope::Repository => {
-                    extractor
-                        .extract_from_file(&code, &file_path, repo_info)
-                        .await
-                        .map(|features: Vec<crate::agents::ExtractedFeature>| {
-                            features
-                                .into_iter()
-                                .flat_map(|f| extractor.organize_by_path(&[f], &file_path))
-                                .collect()
-                        })
-                }
-            };
+        let scope = config.scope;
+        let max_concurrent = config.llm.max_concurrent.max(1);
 
+        let enriched: Vec<(std::path::PathBuf, std::result::Result<Vec<crate::agents::OrganizedFeature>, crate::llm::LlmError>)> = stream::iter(seen_paths)
+            .map(|file_path| {
+                let extractor = &extractor;
+                async move {
+                    let code = match std::fs::read_to_string(&file_path) {
+                        Ok(c) => c,
+                        Err(_) => {
+                            let display = file_path.display().to_string();
+                            return (file_path, Err(crate::llm::LlmError::Api(format!("read failed: {display}"))));
+                        }
+                    };
+                    let organized = match scope {
+                        crate::agents::ExtractionScope::File => {
+                            extractor.extract_and_organize(&code, &file_path, repo_info, "").await
+                        }
+                        crate::agents::ExtractionScope::Module
+                        | crate::agents::ExtractionScope::Repository => {
+                            extractor
+                                .extract_from_file(&code, &file_path, repo_info)
+                                .await
+                                .map(|features: Vec<crate::agents::ExtractedFeature>| {
+                                    features
+                                        .into_iter()
+                                        .flat_map(|f| extractor.organize_by_path(&[f], &file_path))
+                                        .collect()
+                                })
+                        }
+                    };
+                    (file_path, organized)
+                }
+            })
+            .buffer_unordered(max_concurrent)
+            .collect()
+            .await;
+
+        // Graph mutation (matching + update) stays sequential: it borrows the
+        // graph mutably and is cheap relative to the LLM calls above.
+        for (file_path, organized) in enriched {
             match organized {
                 Ok(features) => {
                     for of in &features {
