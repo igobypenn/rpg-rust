@@ -345,6 +345,15 @@ impl RpgGraph {
         feature_path: String,
     ) -> bool {
         if let Some(node) = self.get_node_mut(id) {
+            // Also populate `semantic_feature` as a joined string so that the
+            // functional-abstraction pipeline (and incremental-evolution
+            // centroid maintenance) can match on it. Consistent with how
+            // recompute_centroids derives centroid features.
+            node.semantic_feature = if features.is_empty() {
+                None
+            } else {
+                Some(features.join("; "))
+            };
             node.features = features;
             node.description = Some(description);
             node.feature_path = Some(feature_path);

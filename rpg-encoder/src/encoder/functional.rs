@@ -151,7 +151,24 @@ impl<'a> FunctionalAbstraction<'a> {
             .collect()
     }
 
+    /// Derive a functional area name from a node's path: the immediate parent
+    /// directory name (robust to absolute and relative paths). Returns `None`
+    /// if the path has no usable directory segment.
+    fn area_from_path(path_str: &str) -> Option<String> {
+        use std::path::Path as StdPath;
+        let area = StdPath::new(path_str)
+            .ancestors()
+            .skip(1) // skip the file itself
+            .find_map(|d| d.file_name().and_then(|n| n.to_str()).filter(|s| !s.is_empty()))?;
+        Some(to_title_case(area))
+    }
+
     /// Phase 2.2: Induce functional centroids via heuristic (path-based).
+    ///
+    /// Derives each functional area from the containing directory of a node's
+    /// path. This is robust to absolute and relative paths (the walker stores
+    /// absolute paths), and gives a more meaningful area name than a deep path
+    /// segment.
     pub fn induce_centroids_heuristic(
         &self,
         features: &[CollectedFeature],
@@ -159,30 +176,24 @@ impl<'a> FunctionalAbstraction<'a> {
         let mut centroids: HashMap<String, FunctionalCentroid> = HashMap::new();
 
         for feature in features {
-            if let Some(path) = &feature.path {
-                let parts: Vec<&str> = path
-                    .trim_start_matches("./")
-                    .trim_start_matches("src/")
-                    .split('/')
-                    .take(2)
-                    .collect();
+            let Some(path_str) = &feature.path else {
+                continue;
+            };
+            let Some(area) = Self::area_from_path(path_str) else {
+                continue;
+            };
 
-                if let Some(&area_name) = parts.first() {
-                    let area = to_title_case(area_name);
-
-                    centroids
-                        .entry(area.clone())
-                        .or_insert_with(|| FunctionalCentroid {
-                            name: area,
-                            description: format!(
-                                "Functional area for {} related functionality",
-                                area_name
-                            ),
-                            semantic_feature: format!("Handles {} related operations", area_name),
-                            parent: None,
-                        });
-                }
-            }
+            centroids
+                .entry(area.clone())
+                .or_insert_with(|| FunctionalCentroid {
+                    name: area.clone(),
+                    description: format!(
+                        "Functional area for {} related functionality",
+                        area
+                    ),
+                    semantic_feature: format!("Handles {} related operations", area),
+                    parent: None,
+                });
         }
 
         centroids.into_values().collect()
@@ -222,6 +233,11 @@ impl<'a> FunctionalAbstraction<'a> {
     }
 
     /// Phase 2.4: Hierarchical Aggregation - Link V^L nodes to V^H centroids.
+    ///
+    /// Primary strategy: link each V^L node to the centroid derived from its
+    /// own path (deterministic, consistent with `induce_centroids_heuristic`).
+    /// Fallback: semantic word-overlap match against centroid names for nodes
+    /// whose path didn't yield an area.
     pub fn aggregate_hierarchy(
         &mut self,
         features: &[CollectedFeature],
@@ -230,9 +246,14 @@ impl<'a> FunctionalAbstraction<'a> {
         let mut result = AbstractionResult::default();
 
         for feature in features {
-            let best_match = self.find_best_centroid(&feature.semantic_feature, centroid_map);
+            let centroid_id = feature
+                .path
+                .as_deref()
+                .and_then(Self::area_from_path)
+                .and_then(|area| centroid_map.get(&area).copied())
+                .or_else(|| self.find_best_centroid(&feature.semantic_feature, centroid_map).map(|(_, id)| id));
 
-            if let Some((_centroid_name, centroid_id)) = best_match {
+            if let Some(centroid_id) = centroid_id {
                 self.graph
                     .add_typed_edge(feature.node_id, centroid_id, EdgeType::BelongsToFeature);
                 result.nodes_linked += 1;
