@@ -1,7 +1,7 @@
 use petgraph::graph::NodeIndex;
 use petgraph::visit::EdgeRef;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 use std::path::{Path, PathBuf};
 
 use super::edge::{Edge, EdgeType};
@@ -18,7 +18,7 @@ pub struct RpgGraph {
     )]
     graph: DiGraph<Node, Edge>,
     #[serde(skip)]
-    node_id_map: HashMap<NodeId, NodeIndex>,
+    node_id_map: FxHashMap<NodeId, NodeIndex>,
     #[serde(skip)]
     next_node_id: usize,
     #[serde(skip)]
@@ -62,7 +62,7 @@ where
     let data = GraphData::deserialize(deserializer)?;
     let mut graph = DiGraph::new();
 
-    let mut node_id_to_index = HashMap::new();
+    let mut node_id_to_index = FxHashMap::default();
     for mut node in data.nodes {
         let idx = graph.add_node(Node {
             id: node.id,
@@ -108,7 +108,7 @@ impl RpgGraph {
     pub fn new() -> Self {
         Self {
             graph: DiGraph::new(),
-            node_id_map: HashMap::new(),
+            node_id_map: FxHashMap::default(),
             next_node_id: 0,
             next_edge_id: 0,
         }

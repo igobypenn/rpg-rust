@@ -34,6 +34,7 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
 sha2 = "0.10"
+rustc-hash = "2"
 
 # Optional LLM dependencies
 reqwest = { version = "0.12", features = ["json", "rustls-tls"], optional = true, default-features = false }

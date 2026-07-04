@@ -1,7 +1,7 @@
 use crate::core::{Edge, EdgeType, Node, NodeCategory, NodeId, RpgGraph, SourceLocation};
 use crate::error::Result;
 use crate::parser::{ImportInfo, ParseResult};
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 use std::path::{Path, PathBuf};
 
 mod calls;
@@ -15,15 +15,15 @@ pub struct GraphBuilder {
     pub(crate) graph: RpgGraph,
     repo_name: Option<String>,
     repo_path: Option<PathBuf>,
-    pub(crate) file_nodes: HashMap<PathBuf, NodeId>,
-    dir_nodes: HashMap<PathBuf, NodeId>,
+    pub(crate) file_nodes: FxHashMap<PathBuf, NodeId>,
+    dir_nodes: FxHashMap<PathBuf, NodeId>,
     pub(crate) unresolved_calls: Vec<(NodeId, crate::parser::CallInfo, PathBuf)>,
     pub(crate) unresolved_type_refs: Vec<(NodeId, crate::parser::TypeRefInfo, PathBuf)>,
     pub(crate) unresolved_impls: Vec<(NodeId, String)>,
     pub(crate) ffi_bindings: Vec<(NodeId, crate::languages::ffi::FfiBinding)>,
-    pub(crate) file_imports: HashMap<PathBuf, Vec<ImportInfo>>,
-    pub(crate) qualified_defs: HashMap<(PathBuf, String), NodeId>,
-    pub(crate) bare_name_defs: HashMap<String, Vec<(PathBuf, NodeId)>>,
+    pub(crate) file_imports: FxHashMap<PathBuf, Vec<ImportInfo>>,
+    pub(crate) qualified_defs: FxHashMap<(PathBuf, String), NodeId>,
+    pub(crate) bare_name_defs: FxHashMap<String, Vec<(PathBuf, NodeId)>>,
 }
 
 impl Default for GraphBuilder {
@@ -39,15 +39,15 @@ impl GraphBuilder {
             graph: RpgGraph::new(),
             repo_name: None,
             repo_path: None,
-            file_nodes: HashMap::new(),
-            dir_nodes: HashMap::new(),
+            file_nodes: FxHashMap::default(),
+            dir_nodes: FxHashMap::default(),
             unresolved_calls: Vec::new(),
             unresolved_type_refs: Vec::new(),
             unresolved_impls: Vec::new(),
             ffi_bindings: Vec::new(),
-            file_imports: HashMap::new(),
-            qualified_defs: HashMap::new(),
-            bare_name_defs: HashMap::new(),
+            file_imports: FxHashMap::default(),
+            qualified_defs: FxHashMap::default(),
+            bare_name_defs: FxHashMap::default(),
         }
     }
 
