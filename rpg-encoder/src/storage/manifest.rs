@@ -31,9 +31,6 @@ pub struct BaseInfo {
     /// SHA-256 hash of the base file for integrity verification.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub file_hash: Option<String>,
-    /// Whether the base is zstd-compressed.
-    #[serde(default)]
-    pub compressed: bool,
 }
 
 /// Record of a single patch in the manifest's patch list.
@@ -96,7 +93,6 @@ impl Default for Manifest {
                 node_count: 0,
                 edge_count: 0,
                 file_hash: None,
-                compressed: false,
             },
             patches: Vec::new(),
             compaction_threshold: CompactionThreshold::default(),
@@ -132,7 +128,6 @@ mod tests {
             node_count: 100,
             edge_count: 200,
             file_hash: Some("sha256:abc".to_string()),
-            compressed: false,
         };
         manifest.patches.push(PatchInfo {
             seq: 1,

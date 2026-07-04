@@ -1,8 +1,7 @@
 //! Chunked JSON storage with global patch layer.
 //!
 //! Provides `RpgStore` for persisting RPG graphs as a base JSON file
-//! with append-only patch files. Supports automatic compaction and
-//! optional zstd compression.
+//! with append-only patch files. Supports automatic compaction.
 //!
 //! # Directory Layout
 //!

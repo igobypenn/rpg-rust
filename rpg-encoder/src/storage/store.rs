@@ -98,24 +98,11 @@ impl RpgStore {
     /// Returns an error if the base file is missing or corrupt,
     /// or if any patch file cannot be read or parsed.
     pub fn load(&self) -> Result<RpgSnapshot> {
-        let (_base_path, base_bytes) = if self.manifest.base.compressed {
-            let zst_path = self.root.join("base.json.zst");
-            if !zst_path.exists() {
-                return Err(RpgError::Incremental(
-                    "Compressed base file not found".to_string(),
-                ));
-            }
-            let compressed = std::fs::read(&zst_path)?;
-            let decompressed = decompress_if_needed(&compressed)?;
-            (zst_path, decompressed)
-        } else {
-            let path = self.root.join(BASE_FILE);
-            if !path.exists() {
-                return Err(RpgError::Incremental("No base file found".to_string()));
-            }
-            let bytes = std::fs::read(&path)?;
-            (path, bytes)
-        };
+        let path = self.root.join(BASE_FILE);
+        if !path.exists() {
+            return Err(RpgError::Incremental("No base file found".to_string()));
+        }
+        let base_bytes = std::fs::read(&path)?;
 
         let base_json = String::from_utf8(base_bytes)
             .map_err(|e| RpgError::Incremental(format!("Base is not valid UTF-8: {}", e)))?;
@@ -174,7 +161,6 @@ impl RpgStore {
             node_count: snapshot.graph.node_count(),
             edge_count: snapshot.graph.edge_count(),
             file_hash: Some(base_hash),
-            compressed: false,
         };
 
         self.manifest.patches.clear();
@@ -377,59 +363,6 @@ fn atomic_write(path: &Path, content: &[u8]) -> Result<()> {
     Ok(())
 }
 
-fn decompress_if_needed(data: &[u8]) -> Result<Vec<u8>> {
-    #[cfg(feature = "compression")]
-    {
-        zstd::decode_all(data)
-            .map_err(|e| RpgError::Incremental(format!("zstd decompression failed: {}", e)))
-    }
-    #[cfg(not(feature = "compression"))]
-    {
-        let _ = data;
-        Err(RpgError::Incremental(
-            "Base is compressed but 'compression' feature is not enabled".to_string(),
-        ))
-    }
-}
-
-#[cfg(feature = "compression")]
-impl RpgStore {
-    /// Compress the base file with zstd.
-    ///
-    /// Replaces `base.json` with `base.json.zst`.
-    ///
-    /// # Errors
-    ///
-    /// Returns an error if no base file exists or compression fails.
-    pub fn compress_base(&mut self) -> Result<()> {
-        let base_path = self.root.join(BASE_FILE);
-        if !base_path.exists() {
-            return Err(RpgError::Incremental(
-                "No base file to compress".to_string(),
-            ));
-        }
-
-        let base_bytes = std::fs::read(&base_path)?;
-        let compressed = zstd::encode_all(&base_bytes[..], 3)
-            .map_err(|e| RpgError::Incremental(format!("zstd compression failed: {}", e)))?;
-
-        let zst_path = self.root.join("base.json.zst");
-        atomic_write(&zst_path, &compressed)?;
-
-        let backup = self.root.join("base.json.uncompressed");
-        std::fs::rename(&base_path, &backup)?;
-
-        self.manifest.base.compressed = true;
-        self.write_manifest()?;
-
-        if let Err(e) = std::fs::remove_file(&backup) {
-            tracing::warn!("Failed to remove uncompressed backup: {}", e);
-        }
-
-        Ok(())
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -629,32 +562,5 @@ mod tests {
 
         let store2 = RpgStore::open(repo_path).unwrap();
         assert!(store2.manifest().file_index.contains_key("src/lib.rs"));
-    }
-
-    #[cfg(feature = "compression")]
-    #[test]
-    fn test_compress_and_load_roundtrip() {
-        let dir = tempfile::tempdir().unwrap();
-        let repo_path = dir.path();
-
-        let mut store = RpgStore::init(repo_path).unwrap();
-
-        let mut snapshot = RpgSnapshot::new("test", repo_path);
-        snapshot.graph.add_node(Node::new(
-            NodeId::new(0),
-            NodeCategory::Function,
-            "function",
-            "rust",
-            "foo",
-        ));
-        store.save_base(&snapshot).unwrap();
-
-        store.compress_base().unwrap();
-        assert!(store.manifest().base.compressed);
-        assert!(!repo_path.join(".rpg/base.json").exists());
-        assert!(repo_path.join(".rpg/base.json.zst").exists());
-
-        let loaded = store.load().unwrap();
-        assert_eq!(loaded.graph.node_count(), 1);
     }
 }
