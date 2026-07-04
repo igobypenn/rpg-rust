@@ -531,23 +531,22 @@ impl<'a> RpgEvolution<'a> {
             return Ok(0);
         }
 
-        // First pass: collect features for each centroid (without holding references)
+        // First pass: collect features for each centroid by walking its
+        // incoming BelongsToFeature edges directly (O(members) per centroid),
+        // instead of scanning every node and asking edge_between (O(C x N x deg)).
         let mut centroid_features: std::collections::HashMap<NodeId, Vec<String>> =
             std::collections::HashMap::new();
 
         for centroid_id in &stale_centroids {
             let mut features = Vec::new();
 
-            for node in self.snapshot.graph.nodes() {
-                if node.node_level == NodeLevel::Low {
-                    // Check if this node is connected to the centroid
-                    if self
-                        .snapshot
-                        .graph
-                        .edge_between(node.id, *centroid_id)
-                        .is_some()
-                    {
-                        if let Some(feat) = &node.semantic_feature {
+            for (source_id, edge) in self.snapshot.graph.edges_to(*centroid_id) {
+                if edge.edge_type != EdgeType::BelongsToFeature {
+                    continue;
+                }
+                if let Some(n) = self.snapshot.graph.get_node(source_id) {
+                    if n.node_level == NodeLevel::Low {
+                        if let Some(feat) = &n.semantic_feature {
                             features.push(feat.clone());
                         }
                     }
