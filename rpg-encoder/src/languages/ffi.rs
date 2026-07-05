@@ -184,6 +184,127 @@ impl FfiDetector {
         bindings
     }
 
+    /// Detect `extern "C" { fn ...; }` import blocks by walking the parsed
+    /// tree-sitter-rust AST (foreign_mod_item → declaration_list →
+    /// function_signature_item), instead of line-scanning the source string.
+    /// Positions come from the tree, avoiding the string-slicing fragility
+    /// of the source-text `detect_extern_blocks`.
+    pub fn detect_extern_blocks_tree(
+        root: tree_sitter::Node,
+        source: &[u8],
+        file: &Path,
+    ) -> Vec<FfiBinding> {
+        use crate::parser::helpers::TsNodeExt;
+
+        let mut bindings = Vec::new();
+        let mut stack = vec![root];
+        while let Some(node) = stack.pop() {
+            if node.kind() == "foreign_mod_item" {
+                // ABI: extern_modifier → string_literal → string_content.
+                let abi = Self::extract_extern_abi(&node, source).unwrap_or("C");
+                // Function declarations live in declaration_list.
+                let mut cursor = node.walk();
+                for child in node.named_children(&mut cursor) {
+                    if child.kind() == "declaration_list" {
+                        let mut dcursor = child.walk();
+                        for sig in child.named_children(&mut dcursor) {
+                            if sig.kind() == "function_signature_item" {
+                                if let Some(name) = sig.child_by_field_name("name") {
+                                    let symbol = name.text(source).to_string();
+                                    bindings.push(
+                                        FfiBinding::new("rust", abi, symbol, FfiKind::Import)
+                                            .with_location(sig.to_location(file)),
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Descend into other named children.
+                let mut cursor = node.walk();
+                for child in node.named_children(&mut cursor) {
+                    stack.push(child);
+                }
+            }
+        }
+        bindings
+    }
+
+    /// Extract the ABI string ("C", "system", ...) from a foreign_mod_item's
+    /// extern_modifier child, by reading its source text.
+    fn extract_extern_abi<'a>(node: &tree_sitter::Node<'a>, source: &'a [u8]) -> Option<&'a str> {
+        use crate::parser::helpers::TsNodeExt;
+        let mut cursor = node.walk();
+        for child in node.named_children(&mut cursor) {
+            if child.kind() == "extern_modifier" {
+                // extern_modifier text is like `extern "C"` — strip to the ABI.
+                let text = child.text(source);
+                // Accept `extern "X"` or bare `extern`.
+                if let Some(start) = text.find('"') {
+                    if let Some(end) = text[start + 1..].find('"') {
+                        return Some(&text[start + 1..start + 1 + end]);
+                    }
+                }
+                return Some("C");
+            }
+        }
+        None
+    }
+
+    /// Detect `#[no_mangle]` exports by walking the parsed tree-sitter-rust
+    /// AST: an `attribute_item` containing `no_mangle` immediately precedes a
+    /// `function_item`. Replaces the source-text `detect_no_mangle`.
+    pub fn detect_no_mangle_tree(
+        root: tree_sitter::Node,
+        source: &[u8],
+        file: &Path,
+    ) -> Vec<FfiBinding> {
+        use crate::parser::helpers::TsNodeExt;
+
+        let mut bindings = Vec::new();
+
+        // attribute_item and its following function_item are siblings at the
+        // same level, so walk every node and check attribute + next_sibling.
+        let mut stack = vec![root];
+        while let Some(node) = stack.pop() {
+            if node.kind() == "attribute_item" && Self::is_no_mangle_attr(&node, source) {
+                // The function_item is the next named sibling.
+                if let Some(next) = node.next_named_sibling() {
+                    if next.kind() == "function_item" {
+                        if let Some(name) = next.child_by_field_name("name") {
+                            let symbol = name.text(source).to_string();
+                            bindings.push(
+                                FfiBinding::new("rust", "c", symbol, FfiKind::Export)
+                                    .with_location(next.to_location(file)),
+                            );
+                        }
+                    }
+                }
+            } else {
+                let mut cursor = node.walk();
+                for child in node.named_children(&mut cursor) {
+                    stack.push(child);
+                }
+            }
+        }
+
+        bindings
+    }
+
+    fn is_no_mangle_attr(node: &tree_sitter::Node, source: &[u8]) -> bool {
+        use crate::parser::helpers::TsNodeExt;
+        // attribute_item → attribute → identifier "no_mangle".
+        let mut cursor = node.walk();
+        for child in node.named_children(&mut cursor) {
+            if child.kind() == "attribute" {
+                let text = child.text(source);
+                return text.contains("no_mangle");
+            }
+        }
+        false
+    }
+
     pub fn detect_cgo_exports(source: &str, file: &Path) -> Vec<FfiBinding> {
         let mut bindings = Vec::new();
         let lines: Vec<&str> = source.lines().collect();

@@ -658,8 +658,8 @@ impl TreeSitterParser for RustParser {
             }
         }
 
-        let mut ffi_bindings = FfiDetector::detect_no_mangle(source, path);
-        ffi_bindings.extend(FfiDetector::detect_extern_blocks(source, path, &["C"]));
+        let mut ffi_bindings = FfiDetector::detect_no_mangle_tree(root, source_bytes, path);
+        ffi_bindings.extend(FfiDetector::detect_extern_blocks_tree(root, source_bytes, path));
         result.ffi_bindings = ffi_bindings;
 
         Ok(result)
