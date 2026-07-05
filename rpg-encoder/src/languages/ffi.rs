@@ -196,6 +196,15 @@ impl FfiDetector {
     ) -> Vec<FfiBinding> {
         use crate::parser::helpers::TsNodeExt;
 
+        // Fast path: skip the tree walk unless extern blocks are present.
+        // (Most files have none; the source scan is far cheaper than a full
+        // AST traversal looking for a node kind that isn't there.)
+        if let Ok(src) = std::str::from_utf8(source) {
+            if !src.contains("extern") {
+                return Vec::new();
+            }
+        }
+
         let mut bindings = Vec::new();
         let mut stack = vec![root];
         while let Some(node) = stack.pop() {
@@ -261,6 +270,13 @@ impl FfiDetector {
         file: &Path,
     ) -> Vec<FfiBinding> {
         use crate::parser::helpers::TsNodeExt;
+
+        // Fast path: skip the tree walk unless the marker is present.
+        if let Ok(src) = std::str::from_utf8(source) {
+            if !src.contains("no_mangle") {
+                return Vec::new();
+            }
+        }
 
         let mut bindings = Vec::new();
 
