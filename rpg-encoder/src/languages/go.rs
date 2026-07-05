@@ -485,6 +485,11 @@ impl GoParser {
                 if let Some(def) = Self::extract_type_decl(node, source, file) {
                     result.definitions.push(def);
                 }
+                // extract_type_decl already collects field/method metadata
+                // from struct_type/interface_type. Go types contain no nested
+                // definitions, so return to avoid the generic recursion
+                // re-walking the type_spec subtrees for nothing.
+                return;
             }
             "call_expression" => {
                 if let Some(call) = Self::extract_call(node, source, file, enclosing_fn) {

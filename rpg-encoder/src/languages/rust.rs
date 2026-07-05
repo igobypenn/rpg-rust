@@ -557,6 +557,11 @@ impl RustParser {
                     Self::extract_type_refs_from_struct(node, source, &struct_name, result);
                     result.definitions.push(def);
                 }
+                // Rust struct bodies contain only field declarations (no nested
+                // defs), and extract_type_refs_from_struct already walked the
+                // field types. Return to avoid the generic recursion re-walking
+                // every field type subtree a second time. Mirrors function_item.
+                return;
             }
             "enum_item" => {
                 if let Some(def) = Self::extract_enum(node, source, file) {
