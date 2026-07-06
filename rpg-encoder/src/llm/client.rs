@@ -23,15 +23,8 @@ pub enum LlmError {
     ConcurrencyLimit,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum LlmProvider {
-    OpenAI,
-    OpenAICompatible,
-}
-
 #[derive(Debug, Clone)]
 pub struct LlmConfig {
-    pub provider: LlmProvider,
     pub model: String,
     pub base_url: Option<String>,
     pub api_key: Option<String>,
@@ -46,7 +39,6 @@ pub struct LlmConfig {
 impl Default for LlmConfig {
     fn default() -> Self {
         Self {
-            provider: LlmProvider::OpenAI,
             model: "gpt-4o-mini".to_string(),
             base_url: None,
             api_key: None,
@@ -78,14 +70,7 @@ impl LlmConfig {
             .map(|v| v == "1" || v.to_lowercase() == "true")
             .unwrap_or(false);
 
-        let provider = if base_url.is_some() {
-            LlmProvider::OpenAICompatible
-        } else {
-            LlmProvider::OpenAI
-        };
-
         Ok(Self {
-            provider,
             model,
             base_url,
             api_key,
@@ -100,7 +85,6 @@ impl LlmConfig {
 
     pub fn openai_compatible(base_url: impl Into<String>, model: impl Into<String>) -> Self {
         Self {
-            provider: LlmProvider::OpenAICompatible,
             model: model.into(),
             base_url: Some(base_url.into()),
             api_key: None,
@@ -211,7 +195,10 @@ impl std::fmt::Debug for OpenAIClient {
 impl OpenAIClient {
     pub fn new(config: LlmConfig) -> std::result::Result<Self, LlmError> {
         let client = Client::new();
-        let semaphore = Arc::new(Semaphore::new(config.max_concurrent));
+        // max_concurrent=0 would create a zero-permit semaphore that blocks
+        // forever — clamp to 1.
+        let max_conc = config.max_concurrent.max(1);
+        let semaphore = Arc::new(Semaphore::new(max_conc));
         Ok(Self {
             client,
             config,
@@ -276,7 +263,12 @@ impl OpenAIClient {
         debug_output.push_str("\nMessages:\n");
         for msg in &request.messages {
             let content_preview = if msg.content.len() > 200 {
-                format!("{}...", &msg.content[..200])
+                // Walk back to char boundary to avoid panicking on multi-byte UTF-8.
+                let mut cut = 200;
+                while cut > 0 && !msg.content.is_char_boundary(cut) {
+                    cut -= 1;
+                }
+                format!("{}...", &msg.content[..cut])
             } else {
                 msg.content.clone()
             };

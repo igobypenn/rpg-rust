@@ -34,7 +34,21 @@ impl FileWatcher {
                 let _ = event_tx.blocking_send(());
             })?;
 
-        watcher.watch(&workspace, RecursiveMode::Recursive)?;
+        // Start watching — degrade gracefully if the OS watch limit is reached
+        // (common on Linux with default inotify settings). The server still
+        // works; only the automatic file-watcher is disabled. Users can call
+        // detect_changes manually to refresh the graph.
+        if let Err(e) = watcher.watch(&workspace, RecursiveMode::Recursive) {
+            tracing::warn!(
+                error = %e,
+                "File watcher disabled — increase fs.inotify.max_user_watches \
+                 or use detect_changes tool manually. Server will continue \
+                 without auto-refresh."
+            );
+            // Return a watcher handle that immediately finishes (no task spawned).
+            // The watcher object is dropped here, closing the notify backend.
+            return Ok(Self { _shutdown_tx: shutdown_tx });
+        }
 
         let state = app_state.clone();
         let registry = parser_registry.clone();
@@ -53,13 +67,23 @@ impl FileWatcher {
                         let ws = workspace.clone();
                         let st = state.clone();
                         let reg = registry.clone();
-                        if let Err(e) = tokio::spawn(async move {
+                        match tokio::spawn(async move {
                             process_changes(&ws, &st, &reg).await
-                        }).await.expect("spawn failed") {
-                            tracing::error!("Failed to process file changes: {}", e);
+                        }).await {
+                            Ok(Ok(())) => {}
+                            Ok(Err(e)) => {
+                                tracing::error!("Failed to process file changes: {}", e);
+                            }
+                            Err(e) => {
+                                tracing::error!(
+                                    "Watcher task panicked (graph not updated): {} \
+                                     — increase fs.inotify.max_user_watches if recurring",
+                                    e
+                                );
+                            }
                         }
                     }
-                    Some(_) = shutdown_rx.recv() => {
+                    _ = shutdown_rx.recv() => {
                         tracing::info!("File watcher shutting down");
                         break;
                     }
@@ -80,24 +104,31 @@ async fn process_changes(
     app_state: &AppState,
     registry: &ParserRegistry,
 ) -> anyhow::Result<()> {
-    let diff = {
-        let snapshot = app_state.snapshot.read().expect("snapshot lock poisoned");
-        generate_diff(&snapshot, workspace, registry)?
-    };
-
-    if diff.is_empty() {
-        return Ok(());
-    }
-
-    tracing::info!(
-        added = diff.added.len(),
-        deleted = diff.deleted.len(),
-        modified = diff.modified.len(),
-        "Processing incremental update"
-    );
-
+    // Acquire the write lock BEFORE computing the diff, so the diff+apply is
+    // atomic. Computing the diff under a read lock then re-locking for write
+    // creates a TOCTOU window where another caller (detect_changes) can
+    // apply the same diff, producing duplicate nodes.
     let (new_snapshot, summary) = {
-        let mut snapshot = app_state.snapshot.write().expect("snapshot lock poisoned");
+        let mut snapshot = app_state.snapshot.write();
+        let diff = generate_diff(&snapshot, workspace, registry)?;
+
+        if diff.is_empty() {
+            // Persist the new hash so we don't re-scan on every tick.
+            drop(snapshot);
+            let hash = compute_dir_hash(workspace, app_state.config.hash_mode)?;
+            if let Err(e) = save_dir_hash(&app_state.config.data_dir, &hash) {
+                tracing::warn!("Failed to save dir hash: {}", e);
+            }
+            return Ok(());
+        }
+
+        tracing::info!(
+            added = diff.added.len(),
+            deleted = diff.deleted.len(),
+            modified = diff.modified.len(),
+            "Processing incremental update"
+        );
+
         let mut evolution = RpgEvolution::new(&mut snapshot, registry);
         let summary = tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(evolution.process_diff(diff, None))
@@ -124,7 +155,7 @@ fn persist_snapshot(
     snapshot: &RpgSnapshot,
 ) -> anyhow::Result<()> {
     let data_dir = &app_state.config.data_dir;
-    let mut store_guard = app_state.store.write().expect("store lock poisoned");
+    let mut store_guard = app_state.store.write();
 
     let store = if store_guard.is_none() {
         let s = match RpgStore::open(workspace) {

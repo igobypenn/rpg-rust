@@ -51,10 +51,25 @@ impl GraphBuilder {
         }
     }
 
+    /// Relativize an absolute path against the repo root.
+    ///
+    /// All node paths, location files, and lookup keys are stored repo-relative
+    /// so that `.rpg/base.json` is portable across machines (the committed-graph
+    /// workflow). If `repo_path` is unset or the path doesn't start with it,
+    /// the path is returned unchanged.
+    fn relativize(&self, path: &Path) -> PathBuf {
+        match &self.repo_path {
+            Some(root) => path.strip_prefix(root).map(PathBuf::from).unwrap_or_else(|_| path.to_path_buf()),
+            None => path.to_path_buf(),
+        }
+    }
+
     pub fn with_repo(mut self, name: impl Into<String>, path: impl Into<PathBuf>) -> Self {
         let name = name.into();
         let path = path.into();
 
+        // The Repository node's path is "." (it IS the root). This keeps it
+        // relative rather than embedding the absolute repo path in the graph.
         let node = Node::new(
             NodeId::new(self.graph.node_count()),
             NodeCategory::Repository,
@@ -62,7 +77,7 @@ impl GraphBuilder {
             "unknown",
             &name,
         )
-        .with_path(path.clone());
+        .with_path(PathBuf::from("."));
 
         self.graph.add_node(node);
 
@@ -72,19 +87,19 @@ impl GraphBuilder {
     }
 
     pub fn add_file(mut self, path: &Path, language: &str) -> Self {
-        let path_buf = path.to_path_buf();
+        let path_buf = self.relativize(path);
         if self.file_nodes.contains_key(&path_buf) {
             return self;
         }
 
-        let parent_id = self.get_or_create_dir(path.parent().unwrap_or(Path::new("")), language);
+        let parent_id = self.get_or_create_dir(path_buf.parent().unwrap_or(Path::new("")), language);
 
         let node = Node::new(
             NodeId::new(self.graph.node_count()),
             NodeCategory::File,
             "file",
             language,
-            path.file_name().and_then(|n| n.to_str()).unwrap_or("file"),
+            path_buf.file_name().and_then(|n| n.to_str()).unwrap_or("file"),
         )
         .with_path(path_buf.clone());
 
@@ -120,7 +135,10 @@ impl GraphBuilder {
     }
 
     fn add_parsed_file_internal(&mut self, result: &ParseResult, language: &str) -> Result<()> {
-        let path_buf = result.file_path.clone();
+        // Relativize the file path against the repo root so all stored paths
+        // are repo-relative (portable across machines for the committed-graph
+        // workflow).
+        let path_buf = self.relativize(&result.file_path);
         let file_id = if let Some(&id) = self.file_nodes.get(&path_buf) {
             id
         } else {
@@ -140,7 +158,7 @@ impl GraphBuilder {
             .with_path(path_buf.clone());
 
             let id = self.graph.add_node(node);
-            self.file_nodes.insert(path_buf, id);
+            self.file_nodes.insert(path_buf.clone(), id);
 
             if let Some(parent_id) = parent_id {
                 self.graph
@@ -151,7 +169,7 @@ impl GraphBuilder {
         };
 
         self.file_imports
-            .insert(result.file_path.clone(), result.imports.clone());
+            .insert(path_buf.clone(), result.imports.clone());
 
         for def in &result.definitions {
             let category = match def.kind.as_str() {
@@ -169,7 +187,7 @@ impl GraphBuilder {
                 language,
                 &def.name,
             )
-            .with_path(result.file_path.clone())
+            .with_path(path_buf.clone())
             .with_signature(def.signature.clone().unwrap_or_default())
             .with_documentation(def.doc.clone().unwrap_or_default());
 
@@ -177,7 +195,7 @@ impl GraphBuilder {
 
             if let Some(loc) = &def.location {
                 node.location = Some(SourceLocation {
-                    file: result.file_path.clone(),
+                    file: path_buf.clone(),
                     start_line: loc.start_line,
                     start_column: loc.start_column,
                     end_line: loc.end_line,
@@ -190,11 +208,11 @@ impl GraphBuilder {
                 .add_edge(file_id, node_id, Edge::new(EdgeType::Contains));
 
             self.qualified_defs
-                .insert((result.file_path.clone(), def.name.clone()), node_id);
+                .insert((path_buf.clone(), def.name.clone()), node_id);
             self.bare_name_defs
                 .entry(def.name.clone())
                 .or_default()
-                .push((result.file_path.clone(), node_id));
+                .push((path_buf.clone(), node_id));
 
             if def.kind == "impl_trait" {
                 if let Some(trait_val) = def.metadata.get("trait") {
@@ -214,7 +232,7 @@ impl GraphBuilder {
                 language,
                 &import.module_path,
             )
-            .with_path(result.file_path.clone());
+            .with_path(path_buf.clone());
 
             let node_id = self.graph.add_node(node);
             self.graph
@@ -223,12 +241,12 @@ impl GraphBuilder {
 
         for call in &result.calls {
             self.unresolved_calls
-                .push((file_id, call.clone(), result.file_path.clone()));
+                .push((file_id, call.clone(), path_buf.clone()));
         }
 
         for type_ref in &result.type_refs {
             self.unresolved_type_refs
-                .push((file_id, type_ref.clone(), result.file_path.clone()));
+                .push((file_id, type_ref.clone(), path_buf.clone()));
         }
 
         for ffi in &result.ffi_bindings {

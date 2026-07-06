@@ -1,3 +1,3 @@
 mod client;
 
-pub use client::{LlmConfig, LlmError, LlmProvider, OpenAIClient};
+pub use client::{LlmConfig, LlmError, OpenAIClient};

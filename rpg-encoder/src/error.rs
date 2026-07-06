@@ -45,12 +45,6 @@ pub enum RpgError {
     #[error("No parser found for file: {0}")]
     NoParser(String),
 
-    #[error("Empty response: {context}")]
-    EmptyResponse { context: String },
-
-    #[error("Failed to parse response: {context}")]
-    ResponseParse { context: String },
-
     #[error("Path error during {operation}: {path}")]
     PathError { path: String, operation: String },
 
@@ -63,6 +57,10 @@ pub enum RpgError {
     #[cfg(feature = "llm")]
     #[error("LLM error: {0}")]
     Llm(#[from] crate::llm::LlmError),
+
+    #[cfg(feature = "embeddings")]
+    #[error("Embedding error: {0}")]
+    Embedding(#[from] crate::embeddings::EmbeddingError),
 }
 
 impl RpgError {

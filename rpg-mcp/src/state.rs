@@ -1,7 +1,9 @@
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 
-use rpg_encoder::{RpgGraph, RpgSnapshot, RpgStore};
+use parking_lot::RwLock;
+
+use rpg_encoder::{ParserRegistry, RpgGraph, RpgSnapshot, RpgStore};
 use sha2::{Digest, Sha256};
 
 pub fn load_dotenv() {
@@ -64,7 +66,7 @@ impl McpConfig {
 
         let data_dir = std::env::var("RPG_DATA_DIR")
             .map(PathBuf::from)
-            .unwrap_or_else(|_| workspace.join(".rpg-data"));
+            .unwrap_or_else(|_| workspace.join(".rpg"));
 
         let hash_mode = std::env::var("RPG_HASH_MODE")
             .map(|s| HashMode::from_str(&s))
@@ -88,30 +90,58 @@ pub struct AppState {
     pub graph: Arc<RwLock<RpgGraph>>,
     pub snapshot: Arc<RwLock<RpgSnapshot>>,
     pub store: Arc<RwLock<Option<RpgStore>>>,
+    /// Parser registry shared between the watcher and MCP tools (e.g.
+    /// detect_changes). Read-only after initialization.
+    pub registry: Arc<ParserRegistry>,
+    /// Vector embedding index (sidecar at `<workspace>/.rpg/embeddings.bin`),
+    /// loaded lazily by `vector_search`. `None` when no embeddings have been
+    /// computed yet (run `encode_with_embeddings` first).
+    pub embeddings: Arc<RwLock<Option<rpg_encoder::FlatIndex>>>,
+    /// Agent memory store (cross-session notes). Loaded lazily on first use.
+    pub memories: Arc<crate::tools::memory::MemoryStore>,
 }
 
 impl AppState {
-    pub fn new(config: McpConfig, snapshot: RpgSnapshot) -> Self {
+    pub fn new(config: McpConfig, snapshot: RpgSnapshot, registry: Arc<ParserRegistry>) -> Self {
         let graph = snapshot.graph.clone();
+        let memories = Arc::new(crate::tools::memory::MemoryStore::from_env(&config.workspace));
         Self {
             config,
             graph: Arc::new(RwLock::new(graph)),
             snapshot: Arc::new(RwLock::new(snapshot)),
             store: Arc::new(RwLock::new(None)),
+            registry,
+            embeddings: Arc::new(RwLock::new(None)),
+            memories,
         }
     }
 
     pub fn update(&self, new_snapshot: RpgSnapshot) {
         let new_graph = new_snapshot.graph.clone();
-        *self.graph.write().expect("graph lock poisoned") = new_graph;
-        *self.snapshot.write().expect("snapshot lock poisoned") = new_snapshot;
+        *self.graph.write() = new_graph;
+        *self.snapshot.write() = new_snapshot;
     }
 }
 
 pub fn compute_dir_hash(dir: &Path, mode: HashMode) -> anyhow::Result<String> {
     let mut entries: Vec<(PathBuf, String)> = Vec::new();
 
-    for entry in walkdir::WalkDir::new(dir).follow_links(false).into_iter() {
+    // Skip directories that change independently of source code — including
+    // them would make the hash change on every save/compile, defeating the
+    // detect_changes fast path.
+    let skip_dirs: &[&str] = &[".rpg", ".git", "target", "node_modules", ".next", "dist", "build"];
+
+    for entry in walkdir::WalkDir::new(dir)
+        .follow_links(false)
+        .into_iter()
+        .filter_entry(|e| {
+            if !e.file_type().is_dir() {
+                return true;
+            }
+            let name = e.file_name().to_string_lossy();
+            !skip_dirs.contains(&name.as_ref())
+        })
+    {
         let entry = match entry {
             Ok(e) => e,
             Err(_) => continue,
@@ -157,16 +187,16 @@ pub fn compute_dir_hash(dir: &Path, mode: HashMode) -> anyhow::Result<String> {
 }
 
 pub fn load_dir_hash(data_dir: &Path) -> Option<String> {
-    let hash_path = data_dir.join(".rpg").join("dir_hash");
+    // data_dir IS the .rpg directory now — the hash file lives directly in it.
+    let hash_path = data_dir.join("dir_hash");
     std::fs::read_to_string(&hash_path)
         .ok()
         .map(|s| s.trim().to_string())
 }
 
 pub fn save_dir_hash(data_dir: &Path, hash: &str) -> anyhow::Result<()> {
-    let rpg_dir = data_dir.join(".rpg");
-    std::fs::create_dir_all(&rpg_dir)?;
-    let hash_path = rpg_dir.join("dir_hash");
+    std::fs::create_dir_all(data_dir)?;
+    let hash_path = data_dir.join("dir_hash");
     std::fs::write(&hash_path, hash)?;
     Ok(())
 }

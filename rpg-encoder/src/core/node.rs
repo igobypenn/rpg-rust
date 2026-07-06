@@ -199,6 +199,26 @@ impl Node {
         }
     }
 
+    /// Get the `(start_line, end_line)` range for this node, preferring
+    /// `source_ref`, falling back to `location`. Returns `None` if neither
+    /// is set or the range is invalid (start == 0).
+    ///
+    /// This is the canonical way to resolve a node's source line range —
+    /// previously duplicated across 7+ call sites.
+    #[must_use]
+    pub fn line_range(&self) -> Option<(usize, usize)> {
+        let (start, end) = self
+            .source_ref
+            .as_ref()
+            .map(|sr| (sr.start_line, sr.end_line))
+            .or_else(|| self.location.as_ref().map(|l| (l.start_line, l.end_line)))?;
+        if start == 0 || end == 0 {
+            None
+        } else {
+            Some((start, end))
+        }
+    }
+
     /// Set the file path.
     pub fn with_path(mut self, path: impl Into<PathBuf>) -> Self {
         self.path = Some(path.into());
@@ -277,6 +297,16 @@ impl std::fmt::Display for NodeCategory {
             NodeCategory::Feature => write!(f, "feature"),
             NodeCategory::Component => write!(f, "component"),
             NodeCategory::FunctionalCentroid => write!(f, "functional_centroid"),
+        }
+    }
+}
+
+impl std::fmt::Display for NodeLevel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            NodeLevel::Low => write!(f, "low"),
+            NodeLevel::Intermediate => write!(f, "intermediate"),
+            NodeLevel::High => write!(f, "high"),
         }
     }
 }

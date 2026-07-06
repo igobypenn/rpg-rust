@@ -8,7 +8,14 @@ license = "Apache-2.0"
 [features]
 default = []
 llm = ["reqwest", "tokio", "futures"]
-integration = ["llm"]
+# Embeddings: vector search over node text. Only needs async-trait + the same
+# HTTP stack (reqwest/tokio/futures) that the embedding client uses. Does NOT
+# require the llm feature — someone could embed features from SCIP or manual
+# sources without LLM enrichment.
+embeddings = ["async-trait", "reqwest", "tokio", "futures"]
+# zvec backend for embeddings (Alibaba's in-process vector DB). Off by default:
+# brings in a C++/Proxima native build dependency. Use only when scale demands.
+zvec = ["embeddings", "dep:zvec-bindings"]
 
 [dependencies]
 petgraph = { workspace = true }
@@ -41,6 +48,13 @@ reqwest = { version = "0.12", features = ["json", "rustls-tls"], optional = true
 tokio = { version = "1", features = ["rt-multi-thread", "macros"], optional = true }
 futures = { workspace = true, optional = true }
 
+# Optional embeddings dependencies
+async-trait = { version = "0.1", optional = true }
+
+# Optional zvec backend (Alibaba's in-process vector DB). Off by default:
+# brings in a C++/Proxima native build dependency. Enable with `zvec` feature.
+zvec-bindings = { version = "0.4", optional = true }
+
 [dev-dependencies]
 tempfile = "3"
 dotenvy = "0.15"
@@ -49,6 +63,7 @@ criterion = { version = "0.5", features = ["html_reports"] }
 rand = "0.8"
 insta = { version = "1.39", features = ["json", "yaml"] }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+futures = { workspace = true }
 
 
 [[bench]]
@@ -235,7 +250,17 @@ required-features = ["llm"]
 [[test]]
 name = "llm_e2e"
 path = "tests/llm/e2e_test.rs"
-required-features = ["integration"]
+required-features = ["llm"]
+
+[[test]]
+name = "embeddings_property"
+path = "tests/embeddings/property_test.rs"
+required-features = ["embeddings"]
+
+[[test]]
+name = "embeddings_persist"
+path = "tests/embeddings/persist_test.rs"
+required-features = ["embeddings"]
 
 [[test]]
 name = "incremental_diff"
@@ -257,7 +282,24 @@ path = "tests/storage/integration_test.rs"
 name = "storage_prop"
 path = "tests/storage/prop_test.rs"
 
+[[test]]
+name = "storage_portability"
+path = "tests/storage/portability_test.rs"
+
+[[test]]
+name = "regression_consistency"
+path = "tests/regression/consistency_test.rs"
+
+[[test]]
+name = "regression_deferred"
+path = "tests/regression/deferred_issues_test.rs"
+
 [[example]]
 name = "llm_debug"
 path = "examples/llm_debug.rs"
 required-features = ["llm"]
+
+[[example]]
+name = "bench_embeddings"
+path = "examples/bench_embeddings.rs"
+required-features = ["embeddings"]

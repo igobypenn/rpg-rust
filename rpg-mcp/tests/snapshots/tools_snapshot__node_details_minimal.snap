@@ -1,0 +1,19 @@
+---
+source: rpg-mcp/tests/tools_snapshot.rs
+expression: j
+---
+{
+  "category": "function",
+  "id": "[id]",
+  "incoming_edges": [
+    {
+      "metadata": {},
+      "source": "[id]",
+      "type": "contains"
+    }
+  ],
+  "kind": "fn",
+  "name": "process_payment",
+  "outgoing_edges": [],
+  "path": "src/lib.rs"
+}

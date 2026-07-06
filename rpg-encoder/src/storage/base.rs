@@ -2,7 +2,9 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
-use crate::core::{Edge, EdgeType, Node, NodeCategory, NodeId, RpgGraph};
+use crate::core::{
+    Edge, EdgeType, Node, NodeCategory, NodeId, NodeLevel, RpgGraph, SourceLocation, SourceRef,
+};
 use crate::encoder::{serialize_graph, SerializedGraph};
 use crate::incremental::{CachedUnit, RpgSnapshot, SNAPSHOT_VERSION};
 
@@ -55,22 +57,66 @@ impl BaseSnapshot {
     #[must_use]
     pub fn into_snapshot(self, repo_dir: &Path, repo_name: &str) -> RpgSnapshot {
         let mut rpg_graph = RpgGraph::new();
+        // Map serialized string ids ("node_42") to the preserved NodeId.
+        // With add_node_preserving_id, the NodeId is stable across save/reload.
         let mut id_map: HashMap<String, NodeId> = HashMap::new();
 
         for node_data in &self.graph.nodes {
             let category = parse_category(&node_data.category);
+            // Parse the original NodeId from the serialized string ("node_42" → 42).
+            // Preserving the original id is critical for embeddings sidecar
+            // stability and node_id_index consistency across save/reload.
+            let original_id = node_id_from_str(&node_data.id).unwrap_or(NodeId::new(0));
             let mut node = Node::new(
-                NodeId::new(0),
+                original_id,
                 category,
                 &node_data.kind,
                 &node_data.language,
                 &node_data.name,
             );
+            // Restore ALL fields that Node::new defaults.
             if let Some(ref path) = node_data.path {
                 node = node.with_path(PathBuf::from(path));
             }
-            let new_id = rpg_graph.add_node(node);
-            id_map.insert(node_data.id.clone(), new_id);
+            if let Some(ref loc) = node_data.location {
+                node.location = Some(SourceLocation {
+                    file: PathBuf::from(&loc.file),
+                    start_line: loc.start_line,
+                    start_column: loc.start_column,
+                    end_line: loc.end_line,
+                    end_column: loc.end_column,
+                });
+            }
+            node.metadata = node_data.metadata.clone();
+            if let Some(ref desc) = node_data.description {
+                node = node.with_description(desc.clone());
+            }
+            if !node_data.features.is_empty() {
+                node = node.with_features(node_data.features.clone());
+            }
+            if let Some(ref fp) = node_data.feature_path {
+                node = node.with_feature_path(fp.clone());
+            }
+            if let Some(ref sig) = node_data.signature {
+                node = node.with_signature(sig.clone());
+            }
+            if let Some(ref sr) = node_data.source_ref {
+                node.source_ref = Some(SourceRef {
+                    start_line: sr.start_line,
+                    end_line: sr.end_line,
+                });
+            }
+            if let Some(ref sf) = node_data.semantic_feature {
+                node = node.with_semantic_feature(sf.clone());
+            }
+            node.node_level = parse_node_level(&node_data.node_level);
+            if let Some(ref doc) = node_data.documentation {
+                node = node.with_documentation(doc.clone());
+            }
+            // Preserve the original NodeId — critical for embeddings sidecar
+            // stability and node_id_index consistency across save/reload.
+            let preserved_id = rpg_graph.add_node_preserving_id(node);
+            id_map.insert(node_data.id.clone(), preserved_id);
         }
 
         for edge_data in &self.graph.edges {
@@ -78,7 +124,9 @@ impl BaseSnapshot {
                 (id_map.get(&edge_data.source), id_map.get(&edge_data.target))
             {
                 let edge_type = parse_edge_type(&edge_data.edge_type);
-                rpg_graph.add_edge(src, tgt, Edge::new(edge_type));
+                let mut edge = Edge::new(edge_type);
+                edge.metadata = edge_data.metadata.clone();
+                rpg_graph.add_edge(src, tgt, edge);
             }
         }
 
@@ -146,6 +194,15 @@ pub(super) fn parse_edge_type(s: &str) -> EdgeType {
         "contains_feature" => EdgeType::ContainsFeature,
         "belongs_to_component" => EdgeType::BelongsToComponent,
         _ => EdgeType::References,
+    }
+}
+
+/// Parse a node_level string ("low"/"intermediate"/"high") back into the enum.
+pub(super) fn parse_node_level(s: &str) -> NodeLevel {
+    match s {
+        "intermediate" => NodeLevel::Intermediate,
+        "high" => NodeLevel::High,
+        _ => NodeLevel::Low,
     }
 }
 

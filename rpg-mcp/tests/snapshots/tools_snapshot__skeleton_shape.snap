@@ -1,0 +1,114 @@
+---
+source: rpg-mcp/tests/tools_snapshot.rs
+expression: j
+---
+{
+  "files": [
+    {
+      "child_count": 16,
+      "children": [
+        {
+          "category": "function",
+          "id": "[id]",
+          "kind": "fn",
+          "name": "call_imported"
+        },
+        {
+          "category": "function",
+          "id": "[id]",
+          "kind": "fn",
+          "name": "rpg_exported_fn"
+        },
+        {
+          "category": "function",
+          "id": "[id]",
+          "kind": "fn",
+          "name": "unused_helper"
+        },
+        {
+          "category": "function",
+          "id": "[id]",
+          "kind": "fn",
+          "name": "refund_payment"
+        },
+        {
+          "category": "function",
+          "id": "[id]",
+          "kind": "fn",
+          "name": "process_payment"
+        },
+        {
+          "category": "function",
+          "id": "[id]",
+          "kind": "fn",
+          "name": "refund"
+        },
+        {
+          "category": "function",
+          "id": "[id]",
+          "kind": "fn",
+          "name": "save"
+        },
+        {
+          "category": "function",
+          "id": "[id]",
+          "kind": "fn",
+          "name": "find"
+        },
+        {
+          "category": "variable",
+          "id": "[id]",
+          "kind": "impl_trait",
+          "name": "PaypalProcessor"
+        },
+        {
+          "category": "type",
+          "id": "[id]",
+          "kind": "struct",
+          "name": "PaypalProcessor"
+        },
+        {
+          "category": "function",
+          "id": "[id]",
+          "kind": "fn",
+          "name": "refund"
+        },
+        {
+          "category": "function",
+          "id": "[id]",
+          "kind": "fn",
+          "name": "save"
+        },
+        {
+          "category": "function",
+          "id": "[id]",
+          "kind": "fn",
+          "name": "find"
+        },
+        {
+          "category": "variable",
+          "id": "[id]",
+          "kind": "impl_trait",
+          "name": "StripeProcessor"
+        },
+        {
+          "category": "type",
+          "id": "[id]",
+          "kind": "struct",
+          "name": "StripeProcessor"
+        },
+        {
+          "category": "type",
+          "id": "[id]",
+          "kind": "trait",
+          "name": "PaymentProcessor"
+        }
+      ],
+      "id": "[id]",
+      "language": "rust",
+      "name": "lib.rs",
+      "path": "src/lib.rs"
+    }
+  ],
+  "total_files": 1
+}

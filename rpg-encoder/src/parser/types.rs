@@ -183,7 +183,6 @@ pub enum TypeRefKind {
     Field,
     Local,
     GenericArg,
-    Bound,
 }
 
 #[derive(Debug, Clone)]

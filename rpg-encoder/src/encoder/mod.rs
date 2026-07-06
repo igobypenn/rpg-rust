@@ -230,6 +230,11 @@ impl RpgEncoder {
         self.root.as_deref()
     }
 
+    /// Get the parser registry (for `generate_diff` / `RpgEvolution`).
+    pub fn registry(&self) -> &ParserRegistry {
+        &self.registry
+    }
+
     /// Consume the encoder and return the graph.
     pub fn into_graph(self) -> Option<RpgGraph> {
         self.graph
@@ -323,8 +328,12 @@ impl RpgEncoder {
             std::collections::HashSet::new();
         for node in result.graph.nodes() {
             if let Some(ref path) = node.path {
-                if path.is_file() {
-                    seen_paths.insert(path.clone());
+                // Node paths are repo-relative — join with root to check
+                // existence and read. Without this join, the is_file() check
+                // fails when CWD != workspace (the normal case for MCP servers).
+                let full_path = root.join(path);
+                if full_path.is_file() {
+                    seen_paths.insert(full_path);
                 }
             }
         }
@@ -461,6 +470,77 @@ impl RpgEncoder {
         }
 
         self.graph = Some(result.graph.clone());
+
+        Ok(result)
+    }
+
+    /// Encode with LLM semantic enrichment **and** vector embeddings.
+    ///
+    /// Runs `encode_with_semantics` (parse + LLM features + functional
+    /// abstraction), then computes embeddings over every embeddable node's text
+    /// (metadata + source) and stores them in a sidecar index at
+    /// `<root>/.rpg/embeddings.bin`. The graph JSON is untouched — vectors live
+    /// in the sidecar, keyed by [`NodeId`].
+    ///
+    /// Re-embeds only nodes whose embed text changed since the last run
+    /// (incremental via a content-hash cache stored alongside the index).
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the underlying semantic encode fails or the
+    /// embedding endpoint is unreachable / returns malformed vectors.
+    /// Encode with LLM semantic enrichment **and** vector embeddings.
+    ///
+    /// Runs `encode_with_semantics` (parse + LLM features + functional
+    /// abstraction), then computes embeddings over every embeddable node's text
+    /// (metadata + source) and stores them in a sidecar index at
+    /// `<root>/.rpg/embeddings.bin`. The graph JSON is untouched — vectors live
+    /// in the sidecar, keyed by [`NodeId`].
+    ///
+    /// Re-embeds only nodes whose embed text changed since the last run
+    /// (incremental via a content-hash cache stored alongside the index).
+    ///
+    /// Requires both the `llm` and `embeddings` features (LLM enrichment
+    /// produces the features that embeddings vectorize).
+    #[cfg(all(feature = "llm", feature = "embeddings"))]
+    pub async fn encode_with_embeddings(
+        &mut self,
+        root: &Path,
+        config: crate::agents::SemanticConfig,
+        embed_config: crate::embeddings::EmbeddingConfig,
+    ) -> crate::error::Result<EncodeResult> {
+        // Phase 1 + 2: semantic encode + functional abstraction.
+        let result = self.encode_with_semantics(root, config).await?;
+
+        // Phase 3: Embeddings over the finalized graph (low-level + centroids).
+        let emb_client = crate::embeddings::EmbeddingClient::new(embed_config.clone())
+            .map_err(RpgError::Embedding)?;
+
+        let sidecar = root.join(crate::storage::RPG_DIR).join("embeddings.bin");
+        let mut store = if sidecar.exists() {
+            // Re-open an existing index (preserves the hash cache for incremental
+            // re-embed). The hash cache is rebuilt from the live graph below.
+            let index = crate::embeddings::FlatIndex::load(&sidecar)
+                .map_err(RpgError::Embedding)?;
+            crate::embeddings::EmbeddingStore::new(Box::new(index), sidecar)
+        } else {
+            crate::embeddings::EmbeddingStore::new(
+                Box::new(crate::embeddings::FlatIndex::new(embed_config.dimension)),
+                sidecar,
+            )
+        };
+
+        let stats = store
+            .embed_graph(&result.graph, root, &emb_client, embed_config.batch_size)
+            .await
+            .map_err(RpgError::Embedding)?;
+
+        tracing::info!(
+            embedded = stats.embedded,
+            skipped_unchanged = stats.skipped_unchanged,
+            queued = stats.queued,
+            "Embeddings complete"
+        );
 
         Ok(result)
     }

@@ -1,0 +1,21 @@
+---
+source: rpg-mcp/tests/tools_snapshot.rs
+expression: j
+---
+{
+  "category": "function",
+  "id": "[id]",
+  "incoming_edges": [
+    {
+      "metadata": {},
+      "source": "[id]",
+      "type": "contains"
+    }
+  ],
+  "kind": "fn",
+  "language": "rust",
+  "name": "process_payment",
+  "outgoing_edges": [],
+  "path": "src/lib.rs",
+  "signature": "process_payment(processor: &mut dyn PaymentProcessor, amount: u64)bool"
+}

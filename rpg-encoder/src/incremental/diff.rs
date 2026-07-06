@@ -219,8 +219,12 @@ fn parse_units_from_source(
 
 pub(super) fn extract_unit_content(source: &str, start_line: usize, end_line: usize) -> String {
     let lines: Vec<&str> = source.lines().collect();
-    let start = start_line.saturating_sub(1);
+    let start = start_line.saturating_sub(1).min(lines.len());
     let end = end_line.min(lines.len());
+
+    if start >= end {
+        return String::new();
+    }
 
     lines[start..end].join("\n")
 }

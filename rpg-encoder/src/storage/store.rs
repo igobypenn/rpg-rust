@@ -1,13 +1,14 @@
 use std::path::{Path, PathBuf};
 
-use crate::core::{Node, NodeId};
+use crate::core::{Edge, Node, NodeId};
 use crate::error::{Result, RpgError};
 use crate::incremental::{compute_file_hash, RpgSnapshot};
-use crate::storage::base::{node_id_from_str, parse_category, BaseSnapshot};
+use crate::storage::base::{node_id_from_str, parse_category, parse_edge_type, BaseSnapshot};
 use crate::storage::manifest::{BaseInfo, FileEntry, Manifest, PatchInfo};
 use crate::storage::patch::Patch;
 
-const RPG_DIR: &str = ".rpg";
+/// The `.rpg` data directory name, used by the store and the embeddings sidecar.
+pub const RPG_DIR: &str = ".rpg";
 const MANIFEST_FILE: &str = "manifest.json";
 const BASE_FILE: &str = "base.json";
 const PATCHES_DIR: &str = "patches";
@@ -332,8 +333,12 @@ fn apply_patch(snapshot: &mut RpgSnapshot, patch: &Patch) {
 
         for serialized_node in &file_patch.added_nodes {
             let category = parse_category(&serialized_node.category);
+            // Preserve the original NodeId from the serialized form — critical
+            // for embeddings sidecar validity. Previously used add_node which
+            // overwrote the id with a fresh sequential one.
+            let original_id = node_id_from_str(&serialized_node.id).unwrap_or(NodeId::new(0));
             let mut node = Node::new(
-                NodeId::new(0),
+                original_id,
                 category,
                 &serialized_node.kind,
                 &serialized_node.language,
@@ -342,7 +347,22 @@ fn apply_patch(snapshot: &mut RpgSnapshot, patch: &Patch) {
             if let Some(ref path) = serialized_node.path {
                 node = node.with_path(PathBuf::from(path));
             }
-            snapshot.graph.add_node(node);
+            snapshot.graph.add_node_preserving_id(node);
+        }
+
+        // Apply edge deltas (previously silently dropped).
+        for edge_str in &file_patch.removed_edges {
+            if let (Some(src), Some(tgt)) = (node_id_from_str(&edge_str.source), node_id_from_str(&edge_str.target)) {
+                snapshot.graph.remove_edge_between(src, tgt);
+            }
+        }
+        for edge_data in &file_patch.added_edges {
+            if let (Some(src), Some(tgt)) = (node_id_from_str(&edge_data.source), node_id_from_str(&edge_data.target)) {
+                let edge_type = parse_edge_type(&edge_data.edge_type);
+                let mut edge = Edge::new(edge_type);
+                edge.metadata = edge_data.metadata.clone();
+                snapshot.graph.add_edge(src, tgt, edge);
+            }
         }
 
         let file_path = PathBuf::from(path_str);

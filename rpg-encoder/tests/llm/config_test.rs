@@ -1,20 +1,19 @@
 #![cfg(feature = "llm")]
 
-use rpg_encoder::{LlmConfig, LlmProvider};
+use rpg_encoder::LlmConfig;
 
 #[test]
 fn test_llm_config_default() {
     let config = LlmConfig::default();
-    assert_eq!(config.provider, LlmProvider::OpenAI);
     assert_eq!(config.model, "gpt-4o-mini");
     assert_eq!(config.max_tokens, 4096);
+    assert!(config.base_url.is_none());
 }
 
 #[test]
 fn test_llm_config_openai_compatible() {
     let config =
         LlmConfig::openai_compatible("https://open.bigmodel.cn/api/paas/v4", "glm-4-flash");
-    assert_eq!(config.provider, LlmProvider::OpenAICompatible);
     assert_eq!(config.model, "glm-4-flash");
     assert_eq!(
         config.base_url,

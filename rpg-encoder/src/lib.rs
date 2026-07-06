@@ -173,37 +173,47 @@
 pub mod core;
 pub mod encoder;
 pub mod error;
+pub mod export;
 pub mod incremental;
 pub mod languages;
 pub mod parser;
+pub mod scip;
 pub mod storage;
 
 #[cfg(feature = "llm")]
 pub mod agents;
 #[cfg(feature = "llm")]
 pub mod llm;
+#[cfg(feature = "embeddings")]
+pub mod embeddings;
 
 #[cfg(feature = "llm")]
 pub use agents::{ExtractionScope, FeatureExtractor, SemanticConfig};
 #[cfg(feature = "llm")]
 pub use llm::{LlmConfig, OpenAIClient};
+#[cfg(feature = "embeddings")]
+pub use embeddings::{
+    EmbeddingClient, EmbeddingConfig, EmbeddingError, EmbeddingIndex, EmbeddingStore, Embedder,
+    FlatIndex,
+};
+#[cfg(feature = "zvec")]
+pub use embeddings::{ZvecIndex, ZvecIndexKind};
 
 pub use core::{
     Edge, EdgeType, Node, NodeCategory, NodeId, NodeLevel, RpgGraph, SourceLocation,
 };
 pub use encoder::{
-    to_json, to_json_compact, AbstractionResult, EncodeResult, FileWalker, FunctionalAbstraction,
+    to_json, to_json_compact, EncodeResult, FileWalker, FunctionalAbstraction,
     FunctionalCentroid, GraphBuilder, RpgEncoder, SerializedGraph,
 };
-pub use error::{ParseErrorCategory, ParseFailure, Result, RpgError};
+pub use error::{Result, RpgError};
 pub use incremental::{
     compute_hash, generate_diff, CachedUnit, CodeUnit, DiffStats, EvolutionSummary, FileDiff,
-    ModifiedFile, RpgEvolution, RpgSnapshot, SnapshotStats, UnitType, SNAPSHOT_VERSION,
+    RpgEvolution, RpgSnapshot, UnitType, SNAPSHOT_VERSION,
 };
 pub use parser::{LanguageParser, ParserRegistry};
-pub use storage::{
-    BaseInfo, BaseSnapshot, CompactionThreshold, FileEntry, Manifest, PatchInfo, RpgStore,
-};
+pub use storage::{BaseSnapshot, RpgStore, RPG_DIR};
+pub use export::{to_cypher, to_dot, to_graphml};
+pub use scip::{enrich_graph as enrich_graph_scip, ScipIndex};
 
 pub mod utils;
-pub use utils::{jaccard_similarity, semantic_similarity};

@@ -1,0 +1,19 @@
+---
+source: rpg-mcp/tests/tools_snapshot.rs
+expression: j
+---
+{
+  "call_edge_count": "[count]",
+  "edge_type_counts": "[counts]",
+  "ffi_edge_count": "[count]",
+  "implements_edge_count": "[count]",
+  "import_resolution_rate": "[rate]",
+  "languages": [
+    "rust",
+    "unknown"
+  ],
+  "node_category_counts": "[counts]",
+  "total_edges": "[count]",
+  "total_nodes": "[count]",
+  "warnings": "[warnings]"
+}

@@ -38,6 +38,12 @@ pub struct EvolutionSummary {
 pub struct RpgEvolution<'a> {
     snapshot: &'a mut RpgSnapshot,
     registry: &'a ParserRegistry,
+    /// Pending cross-file references collected during parsing, to be resolved
+    /// in a re-link pass at the end of `process_diff`. Without this, modified
+    /// files lose their Calls/References/UsesType edges permanently.
+    pending_calls: Vec<(NodeId, crate::parser::CallInfo, PathBuf)>,
+    pending_type_refs: Vec<(NodeId, crate::parser::TypeRefInfo, PathBuf)>,
+    pending_imports: Vec<(NodeId, crate::parser::ImportInfo, PathBuf)>,
 }
 
 fn create_file_node(file_path: &Path, language: &str) -> Node {
@@ -56,7 +62,13 @@ fn create_file_node(file_path: &Path, language: &str) -> Node {
 
 impl<'a> RpgEvolution<'a> {
     pub fn new(snapshot: &'a mut RpgSnapshot, registry: &'a ParserRegistry) -> Self {
-        Self { snapshot, registry }
+        Self {
+            snapshot,
+            registry,
+            pending_calls: Vec::new(),
+            pending_type_refs: Vec::new(),
+            pending_imports: Vec::new(),
+        }
     }
 
     pub async fn process_diff(
@@ -108,6 +120,11 @@ impl<'a> RpgEvolution<'a> {
         if !diff.modified.is_empty() {
             summary.edges_rebuilt += self.cleanup_orphaned_edges();
         }
+
+        // Re-link cross-file edges (Calls, UsesType, References) from the
+        // pending references collected during parsing. Without this, incremental
+        // updates permanently drop cross-file edges.
+        summary.edges_rebuilt += self.relink_cross_file_edges();
 
         // === V^H Centroid Invalidation ===
         // Collect all changed nodes for centroid invalidation
@@ -292,6 +309,18 @@ impl<'a> RpgEvolution<'a> {
             .with_node_id(node_id);
 
             units.push(cached_unit);
+        }
+
+        // Collect cross-file references for the re-link pass. Without this,
+        // modified files permanently lose their Calls/References/UsesType edges.
+        for call in &parse_result.calls {
+            self.pending_calls.push((file_node_id, call.clone(), file_path.to_path_buf()));
+        }
+        for type_ref in &parse_result.type_refs {
+            self.pending_type_refs.push((file_node_id, type_ref.clone(), file_path.to_path_buf()));
+        }
+        for import in &parse_result.imports {
+            self.pending_imports.push((file_node_id, import.clone(), file_path.to_path_buf()));
         }
 
         Ok(units)
@@ -484,6 +513,124 @@ impl<'a> RpgEvolution<'a> {
         });
 
         orphaned
+    }
+
+    /// Re-link cross-file edges (Calls, UsesType, References) from pending
+    /// references collected during incremental parsing.
+    ///
+    /// Builds name indexes from the live graph and resolves each pending
+    /// reference. This is the incremental equivalent of `GraphBuilder::link_all`
+    /// — without it, modified files permanently lose cross-file edges.
+    ///
+    /// Returns the number of edges created.
+    fn relink_cross_file_edges(&mut self) -> usize {
+        use crate::core::NodeCategory;
+        use rustc_hash::FxHashMap;
+
+        if self.pending_calls.is_empty()
+            && self.pending_type_refs.is_empty()
+            && self.pending_imports.is_empty()
+        {
+            return 0;
+        }
+
+        let mut edges_created = 0usize;
+
+        // Build name indexes from the live graph (same as GraphBuilder).
+        let mut qualified_defs: FxHashMap<(PathBuf, String), NodeId> = FxHashMap::default();
+        let mut bare_name_defs: FxHashMap<String, Vec<(PathBuf, NodeId)>> = FxHashMap::default();
+
+        for node in self.snapshot.graph.nodes() {
+            if matches!(
+                node.category,
+                NodeCategory::Function | NodeCategory::Type | NodeCategory::Module
+            ) {
+                if let Some(ref path) = node.path {
+                    qualified_defs.insert((path.clone(), node.name.clone()), node.id);
+                    bare_name_defs
+                        .entry(node.name.clone())
+                        .or_default()
+                        .push((path.clone(), node.id));
+                }
+            }
+        }
+
+        // Resolve pending calls. The source is the caller FUNCTION node, not
+        // the file node — find it by caller name in the caller's file.
+        for (_file_node_id, call, file_path) in &self.pending_calls {
+            // Find the caller function node by name in this file.
+            let caller_id = qualified_defs.get(&(file_path.clone(), call.caller.clone()));
+            let Some(&source_id) = caller_id else {
+                continue;
+            };
+
+            let callee = &call.callee;
+            let last_segment = callee.rsplit("::").next().unwrap_or(callee);
+
+            // Try same-file qualified lookup.
+            if let Some(&target_id) = qualified_defs.get(&(file_path.clone(), callee.clone())) {
+                if self.snapshot.graph.add_typed_edge(source_id, target_id, EdgeType::Calls) {
+                    edges_created += 1;
+                }
+                continue;
+            }
+
+            // Try bare-name lookup (only if unambiguous).
+            if let Some(entries) = bare_name_defs.get(last_segment) {
+                if entries.len() == 1 {
+                    let target_id = entries[0].1;
+                    if self.snapshot.graph.add_typed_edge(source_id, target_id, EdgeType::Calls) {
+                        edges_created += 1;
+                    }
+                }
+            }
+        }
+
+        // Resolve pending type references.
+        for (_file_node_id, type_ref, file_path) in &self.pending_type_refs {
+            // Find the node that references this type (by file + name is N/A
+            // for type_refs — the source is typically the file or function).
+            // Use the first function in the file as the source.
+            let source_id = {
+                let mut found = None;
+                for node in self.snapshot.graph.nodes() {
+                    if node.path.as_deref() == Some(file_path)
+                        && node.category == NodeCategory::Function
+                    {
+                        found = Some(node.id);
+                        break;
+                    }
+                }
+                found
+            };
+            let Some(source_id) = source_id else { continue };
+
+            let type_name = &type_ref.type_name;
+            let last_segment = type_name.rsplit("::").next().unwrap_or(type_name);
+
+            if let Some(&target_id) = qualified_defs.get(&(file_path.clone(), type_name.clone())) {
+                if self.snapshot.graph.add_typed_edge(source_id, target_id, EdgeType::UsesType) {
+                    edges_created += 1;
+                }
+                continue;
+            }
+
+            if let Some(entries) = bare_name_defs.get(last_segment) {
+                if entries.len() == 1 {
+                    let target_id = entries[0].1;
+                    if self.snapshot.graph.add_typed_edge(source_id, target_id, EdgeType::UsesType) {
+                        edges_created += 1;
+                    }
+                }
+            }
+        }
+
+        // Clear pending — they're now resolved (or unresolvable).
+        self.pending_calls.clear();
+        self.pending_type_refs.clear();
+        self.pending_imports.clear();
+
+        edges_created
     }
 
     /// Invalidate V^H centroids whose member V^L nodes have changed.

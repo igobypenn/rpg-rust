@@ -10,22 +10,32 @@ use super::node::{Node, NodeCategory, NodeLevel};
 
 use petgraph::graph::DiGraph;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct RpgGraph {
-    #[serde(
-        serialize_with = "serialize_graph",
-        deserialize_with = "deserialize_graph"
-    )]
     graph: DiGraph<Node, Edge>,
-    #[serde(skip)]
     node_id_map: FxHashMap<NodeId, NodeIndex>,
-    #[serde(skip)]
     next_node_id: usize,
-    #[serde(skip)]
-    next_edge_id: usize,
 }
 
-fn serialize_graph<S>(graph: &DiGraph<Node, Edge>, serializer: S) -> Result<S::Ok, S::Error>
+impl Serialize for RpgGraph {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serialize_graph_impl(&self.graph, serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for RpgGraph {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserialize_rpg_graph(deserializer)
+    }
+}
+
+fn serialize_graph_impl<S>(graph: &DiGraph<Node, Edge>, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
@@ -49,21 +59,32 @@ where
     GraphData { nodes, edges }.serialize(serializer)
 }
 
-fn deserialize_graph<'de, D>(deserializer: D) -> Result<DiGraph<Node, Edge>, D::Error>
+/// Custom deserializer for `RpgGraph` that rebuilds `node_id_map` and
+/// `next_node_id` from the deserialized petgraph. Without this, the skip
+/// fields default to empty/zero and every map-based accessor silently fails.
+fn deserialize_rpg_graph<'de, D>(deserializer: D) -> Result<RpgGraph, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
     #[derive(Deserialize)]
+    #[serde(rename_all = "snake_case")]
     struct GraphData {
         nodes: Vec<Node>,
         edges: Vec<(NodeId, NodeId, Edge)>,
     }
 
+    // The serialized form is a map with "nodes" and "edges" keys (from
+    // serialize_graph). We deserialize it directly.
     let data = GraphData::deserialize(deserializer)?;
+
     let mut graph = DiGraph::new();
+    let mut node_id_map: FxHashMap<NodeId, NodeIndex> = FxHashMap::default();
+    let mut max_id = 0usize;
 
     let mut node_id_to_index = FxHashMap::default();
     for mut node in data.nodes {
+        let id = node.id;
+        max_id = max_id.max(id.index() + 1);
         let idx = graph.add_node(Node {
             id: node.id,
             category: node.category,
@@ -82,7 +103,8 @@ where
             semantic_feature: node.semantic_feature.take(),
             node_level: node.node_level,
         });
-        node_id_to_index.insert(node.id, idx);
+        node_id_to_index.insert(id, idx);
+        node_id_map.insert(id, idx);
     }
 
     for (source_id, target_id, edge) in data.edges {
@@ -94,7 +116,11 @@ where
         }
     }
 
-    Ok(graph)
+    Ok(RpgGraph {
+        graph,
+        node_id_map,
+        next_node_id: max_id,
+    })
 }
 
 impl Default for RpgGraph {
@@ -110,7 +136,6 @@ impl RpgGraph {
             graph: DiGraph::new(),
             node_id_map: FxHashMap::default(),
             next_node_id: 0,
-            next_edge_id: 0,
         }
     }
 
@@ -125,10 +150,20 @@ impl RpgGraph {
         id
     }
 
-    pub fn add_edge(&mut self, source: NodeId, target: NodeId, edge: Edge) -> bool {
-        self.next_edge_id += 1;
+    /// Add a node, preserving its existing `node.id` instead of assigning a
+    /// new sequential one. Used by `into_snapshot` to keep NodeIds stable
+    /// across save/reload cycles (critical for embeddings sidecar validity).
+    ///
+    /// Updates `next_node_id` to avoid future collisions.
+    pub fn add_node_preserving_id(&mut self, node: Node) -> NodeId {
+        let id = node.id;
+        self.next_node_id = self.next_node_id.max(id.index() + 1);
+        let idx = self.graph.add_node(node);
+        self.node_id_map.insert(id, idx);
+        id
+    }
 
-        if let (Some(&sidx), Some(&tidx)) =
+    pub fn add_edge(&mut self, source: NodeId, target: NodeId, edge: Edge) -> bool {        if let (Some(&sidx), Some(&tidx)) =
             (self.node_id_map.get(&source), self.node_id_map.get(&target))
         {
             self.graph.add_edge(sidx, tidx, edge);
@@ -588,6 +623,76 @@ impl RpgGraph {
             })
             .collect()
     }
+
+    /// Count of incoming edges for `id`. Non-allocating (unlike `edges_to().len()`).
+    ///
+    /// Use this instead of `edges_to(id).len()` when you only need the count —
+    /// it avoids building a Vec of references. Critical for tools that iterate
+    /// all nodes and count incoming edges (get_architecture_overview,
+    /// find_dead_code, analyze_diff).
+    pub fn in_degree(&self, id: NodeId) -> usize {
+        let Some(&idx) = self.node_id_map.get(&id) else {
+            return 0;
+        };
+        self.graph
+            .edges_directed(idx, petgraph::Direction::Incoming)
+            .count()
+    }
+
+    /// `true` if `id` has at least one incoming edge of any of the given types.
+    /// Short-circuits on the first match — non-allocating.
+    ///
+    /// Use this instead of `edges_to(id).iter().any(...)` for existence checks.
+    pub fn has_incoming_of_types(&self, id: NodeId, types: &[EdgeType]) -> bool {
+        let Some(&idx) = self.node_id_map.get(&id) else {
+            return false;
+        };
+        self.graph
+            .edges_directed(idx, petgraph::Direction::Incoming)
+            .any(|edge_ref| types.contains(&edge_ref.weight().edge_type))
+    }
+
+    /// Depth-bounded BFS from `start`, returning all reachable NodeIds.
+    ///
+    /// If `upstream` is true, follows incoming edges (callers/parents);
+    /// otherwise follows outgoing edges (callees/children).
+    /// If `edge_filter` is `Some`, only traverses edges of that type.
+    ///
+    /// This is the canonical BFS — previously duplicated across 6 call sites.
+    #[must_use]
+    pub fn bfs_reachable(
+        &self,
+        start: NodeId,
+        depth: usize,
+        upstream: bool,
+        edge_filter: Option<EdgeType>,
+    ) -> std::collections::HashSet<NodeId> {
+        let mut visited: std::collections::HashSet<NodeId> = std::collections::HashSet::new();
+        visited.insert(start);
+        let mut frontier: Vec<(NodeId, usize)> = vec![(start, 0)];
+
+        while let Some((node_id, d)) = frontier.pop() {
+            if d >= depth {
+                continue;
+            }
+            let neighbors: Vec<(NodeId, &Edge)> = if upstream {
+                self.edges_to(node_id)
+            } else {
+                self.edges_from(node_id)
+            };
+            for (nbr, edge) in neighbors {
+                if let Some(et) = edge_filter {
+                    if edge.edge_type != et {
+                        continue;
+                    }
+                }
+                if visited.insert(nbr) {
+                    frontier.push((nbr, d + 1));
+                }
+            }
+        }
+        visited
+    }
 }
 
 fn find_common_ancestor(paths: &[PathBuf]) -> PathBuf {
@@ -979,6 +1084,14 @@ mod tests {
 
         assert_eq!(deserialized.node_count(), graph.node_count());
         assert_eq!(deserialized.edge_count(), graph.edge_count());
+        // Verify the map is rebuilt (Issue 1 fix): get_node must work.
+        for node in graph.nodes() {
+            assert!(
+                deserialized.get_node(node.id).is_some(),
+                "node {:?} must be accessible after deserialization",
+                node.id
+            );
+        }
     }
 
     #[test]

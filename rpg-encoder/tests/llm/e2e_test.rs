@@ -248,7 +248,7 @@ async fn test_zai_invalid_api_key_error() {
 /// `#[ignore]`d by default. Run with:
 ///
 /// ```bash
-/// cargo test --features integration test_encode_with_semantics_creates_centroids -- --ignored --nocapture
+/// cargo test --features llm test_encode_with_semantics_creates_centroids -- --ignored --nocapture
 /// ```
 #[tokio::test]
 #[ignore = "Long-running e2e test - run with: cargo test -- --ignored"]

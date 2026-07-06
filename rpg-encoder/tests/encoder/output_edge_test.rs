@@ -188,5 +188,5 @@ fn test_to_json_all_edge_types() {
     assert!(json.contains("calls"));
     assert!(json.contains("references"));
     assert!(json.contains("contains"));
-    assert!(json.contains("dependson"));
+    assert!(json.contains("depends_on"));
 }

@@ -23,12 +23,18 @@ pub enum UnitType {
 impl UnitType {
     pub fn from_kind(kind: &str) -> Option<Self> {
         match kind {
-            "function" => Some(UnitType::Function),
+            // Accept both the parser-produced kind strings ("fn", "method",
+            // "function") and the canonical form. The parsers produce "fn"
+            // (Rust/C), "method" (C#/Java), "function" (Python/Go) — all map
+            // to Function. Without this, process_file_structural skips all
+            // function definitions during incremental updates.
+            "fn" | "function" | "method" => Some(UnitType::Function),
             "struct" => Some(UnitType::Struct),
+            "class" | "interface" | "record" => Some(UnitType::Struct),
             "enum" => Some(UnitType::Enum),
             "trait" => Some(UnitType::Trait),
-            "impl" => Some(UnitType::Impl),
-            "module" => Some(UnitType::Module),
+            "impl" | "impl_trait" => Some(UnitType::Impl),
+            "mod" | "module" => Some(UnitType::Module),
             _ => None,
         }
     }

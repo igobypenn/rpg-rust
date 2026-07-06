@@ -1,0 +1,45 @@
+---
+source: rpg-mcp/tests/tools_snapshot.rs
+expression: j
+---
+{
+  "count": "[count]",
+  "ffi_bindings": [
+    {
+      "kind": "\"Export\"",
+      "node_id": 7,
+      "owner_file": "main.rs",
+      "signature": null,
+      "source_lang": "rust",
+      "symbol": "process_data",
+      "target_lang": "c"
+    },
+    {
+      "kind": "\"Export\"",
+      "node_id": 8,
+      "owner_file": "main.rs",
+      "signature": null,
+      "source_lang": "rust",
+      "symbol": "add_numbers",
+      "target_lang": "c"
+    },
+    {
+      "kind": "\"Import\"",
+      "node_id": 9,
+      "owner_file": "main.rs",
+      "signature": null,
+      "source_lang": "rust",
+      "symbol": "external_function",
+      "target_lang": "C"
+    },
+    {
+      "kind": "\"Import\"",
+      "node_id": 10,
+      "owner_file": "main.rs",
+      "signature": null,
+      "source_lang": "rust",
+      "symbol": "another_external",
+      "target_lang": "C"
+    }
+  ]
+}

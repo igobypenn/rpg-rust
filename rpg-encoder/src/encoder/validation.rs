@@ -22,7 +22,7 @@ impl ValidationReport {
         let mut resolved_imports = 0usize;
 
         for node in graph.nodes() {
-            let cat = format!("{:?}", node.category).to_lowercase();
+            let cat = node.category.to_string();
             *node_category_counts.entry(cat).or_insert(0) += 1;
             if node.category == NodeCategory::Import {
                 import_count += 1;
@@ -30,7 +30,7 @@ impl ValidationReport {
         }
 
         for (src, _tgt, edge) in graph.edges() {
-            let et = format!("{:?}", edge.edge_type).to_lowercase();
+            let et = edge.edge_type.to_string();
             *edge_type_counts.entry(et.clone()).or_insert(0) += 1;
             if (edge.edge_type == EdgeType::References || edge.edge_type == EdgeType::Imports)
                 && graph

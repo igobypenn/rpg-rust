@@ -104,7 +104,7 @@ pub fn serialize_graph(graph: &RpgGraph) -> SerializedGraph {
         .nodes()
         .map(|n| SerializedNode {
             id: format!("node_{}", n.id.index()),
-            category: format!("{:?}", n.category).to_lowercase(),
+            category: n.category.to_string(),
             kind: n.kind.clone(),
             language: n.language.clone(),
             name: n.name.clone(),
@@ -120,7 +120,7 @@ pub fn serialize_graph(graph: &RpgGraph) -> SerializedGraph {
                 end_line: sr.end_line,
             }),
             semantic_feature: n.semantic_feature.clone(),
-            node_level: format!("{:?}", n.node_level).to_lowercase(),
+            node_level: n.node_level.to_string(),
             documentation: n.documentation.clone(),
         })
         .collect();
@@ -130,7 +130,7 @@ pub fn serialize_graph(graph: &RpgGraph) -> SerializedGraph {
         .map(|(s, t, e)| SerializedEdge {
             source: format!("node_{}", s.index()),
             target: format!("node_{}", t.index()),
-            edge_type: format!("{:?}", e.edge_type).to_lowercase(),
+            edge_type: e.edge_type.to_string(),
             metadata: e.metadata.clone(),
         })
         .collect();

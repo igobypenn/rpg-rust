@@ -1,7 +1,3 @@
-mod service;
-mod state;
-mod watcher;
-
 use std::path::Path;
 use std::sync::Arc;
 
@@ -9,9 +5,9 @@ use rmcp::ServiceExt;
 use rpg_encoder::{ParserRegistry, RpgEncoder, RpgSnapshot, RpgStore};
 use tracing::info;
 
-use service::RpgService;
-use state::{compute_dir_hash, load_dir_hash, save_dir_hash, AppState, McpConfig};
-use watcher::FileWatcher;
+use rpg_mcp::service::RpgService;
+use rpg_mcp::state::{compute_dir_hash, load_dir_hash, save_dir_hash, AppState, McpConfig};
+use rpg_mcp::watcher::FileWatcher;
 
 fn create_parser_registry() -> anyhow::Result<ParserRegistry> {
     let mut registry = ParserRegistry::new();
@@ -74,9 +70,11 @@ async fn main() -> anyhow::Result<()> {
             };
 
             std::fs::create_dir_all(&config.data_dir).ok();
-            if let Ok(mut store) = RpgStore::init(&config.data_dir) {
+            // RpgStore::init/open append ".rpg" to the path internally, so
+            // pass the workspace root (not data_dir, which IS ".rpg" already).
+            if let Ok(mut store) = RpgStore::init(workspace) {
                 store.save_base(&snapshot).ok();
-            } else if let Ok(mut store) = RpgStore::open(&config.data_dir) {
+            } else if let Ok(mut store) = RpgStore::open(workspace) {
                 store.save_base(&snapshot).ok();
             }
 
@@ -97,7 +95,7 @@ async fn main() -> anyhow::Result<()> {
         }
     };
 
-    let app_state = Arc::new(AppState::new(config.clone(), snapshot));
+    let app_state = Arc::new(AppState::new(config.clone(), snapshot, registry.clone()));
 
     let _watcher = FileWatcher::start(app_state.clone(), registry)?;
 
@@ -113,8 +111,18 @@ fn load_existing_store(workspace: &Path, config: &McpConfig) -> Option<RpgSnapsh
     let stored_hash: String = load_dir_hash(&config.data_dir)?;
 
     if stored_hash == current_hash {
-        let store = RpgStore::open(&config.data_dir).ok()?;
-        store.load().ok()
+        // RpgStore::open appends ".rpg" to the path — pass workspace, not data_dir.
+        let store = RpgStore::open(workspace).ok()?;
+        let snapshot = store.load().ok()?;
+        // Fix repo_dir: RpgStore::load sets it to root.parent() which is wrong
+        // when the store is at workspace/.rpg (parent is workspace, correct)
+        // but the snapshot needs the actual workspace for source file reads.
+        // RpgStore::open(workspace) → self.root = workspace/.rpg → parent = workspace. Correct.
+        tracing::info!(
+            repo_dir = ?snapshot.repo_dir,
+            "Store loaded"
+        );
+        Some(snapshot)
     } else {
         tracing::info!("Directory hash mismatch, re-encoding");
         None
