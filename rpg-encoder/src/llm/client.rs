@@ -7,6 +7,14 @@ use std::sync::Arc;
 use thiserror::Error;
 use tokio::sync::Semaphore;
 
+/// Parse a boolean env var, case-insensitive. Accepts "true", "1", "yes", "on".
+fn parse_bool_env(name: &str) -> bool {
+    match env::var(name) {
+        Ok(v) => matches!(v.to_lowercase().as_str(), "true" | "1" | "yes" | "on"),
+        Err(_) => false,
+    }
+}
+
 #[derive(Debug, Error)]
 pub enum LlmError {
     #[error("HTTP request failed: {0}")]
@@ -62,13 +70,9 @@ impl LlmConfig {
             .and_then(|s| s.parse().ok())
             .unwrap_or(3);
 
-        let debug_mode = env::var("RPG_DEBUG")
-            .map(|v| v == "1" || v.to_lowercase() == "true")
-            .unwrap_or(false);
+        let debug_mode = parse_bool_env("RPG_DEBUG");
         let debug_file = env::var("RPG_DEBUG_FILE").ok().map(PathBuf::from);
-        let reasoning = env::var("OPENAI_REASONING")
-            .map(|v| v == "1" || v.to_lowercase() == "true")
-            .unwrap_or(false);
+        let reasoning = parse_bool_env("OPENAI_REASONING");
 
         Ok(Self {
             model,

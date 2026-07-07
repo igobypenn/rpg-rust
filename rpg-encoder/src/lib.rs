@@ -22,8 +22,9 @@
 //!
 //! | Feature | Description |
 //! |---------|-------------|
-//! | `llm` | LLM integration for code analysis |
-//! | `integration` | Integration tests with full tooling (implies `llm`) |
+//! | `llm` | LLM-powered semantic feature extraction |
+//! | `embeddings` | Vector embeddings (FlatIndex + optional zvec) |
+//! | `zvec` | zvec vector DB backend (native C++ dependency) |
 //!
 //! ## Quick Start
 //!

@@ -41,10 +41,19 @@ pub enum HashMode {
 
 impl HashMode {
     fn from_str(s: &str) -> Self {
-        match s {
+        match s.to_lowercase().as_str() {
             "content" => Self::Content,
             _ => Self::Mtime,
         }
+    }
+}
+
+/// Parse a boolean env var, case-insensitive. Accepts "true", "1", "yes", "on".
+/// Everything else (including unset) is false.
+fn parse_bool_env(name: &str) -> bool {
+    match std::env::var(name) {
+        Ok(v) => matches!(v.to_lowercase().as_str(), "true" | "1" | "yes" | "on"),
+        Err(_) => false,
     }
 }
 
@@ -61,8 +70,18 @@ impl McpConfig {
         load_dotenv();
 
         let workspace = std::env::var("RPG_WORKSPACE")
-            .map_err(|_| anyhow::anyhow!("RPG_WORKSPACE env var is required"))?;
+            .map_err(|_| anyhow::anyhow!(
+                "RPG_WORKSPACE env var is required. Set it in .env (see .env.example) or as an environment variable."
+            ))?;
         let workspace = PathBuf::from(&workspace);
+
+        // Validate workspace exists and is a directory.
+        if !workspace.is_dir() {
+            return Err(anyhow::anyhow!(
+                "RPG_WORKSPACE '{}' does not exist or is not a directory.",
+                workspace.display()
+            ));
+        }
 
         let data_dir = std::env::var("RPG_DATA_DIR")
             .map(PathBuf::from)
@@ -72,9 +91,16 @@ impl McpConfig {
             .map(|s| HashMode::from_str(&s))
             .unwrap_or(HashMode::Mtime);
 
-        let semantic = std::env::var("RPG_SEMANTIC")
-            .map(|s| s == "true" || s == "1")
-            .unwrap_or(false);
+        let semantic = parse_bool_env("RPG_SEMANTIC");
+
+        // Warn if semantic mode is enabled but no API key is set.
+        if semantic && std::env::var("OPENAI_API_KEY").is_err() {
+            tracing::warn!(
+                "RPG_SEMANTIC=true but OPENAI_API_KEY is not set. \
+                 Semantic enrichment will fail when encoding. \
+                 Set OPENAI_API_KEY in .env or disable RPG_SEMANTIC."
+            );
+        }
 
         Ok(Self {
             workspace,
