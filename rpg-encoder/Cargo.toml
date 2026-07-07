@@ -304,3 +304,7 @@ required-features = ["llm"]
 name = "bench_embeddings"
 path = "examples/bench_embeddings.rs"
 required-features = ["embeddings"]
+
+[[example]]
+name = "bench_token_reduction"
+path = "examples/bench_token_reduction.rs"
