@@ -173,10 +173,11 @@ impl GraphBuilder {
 
         for def in &result.definitions {
             let category = match def.kind.as_str() {
-                "fn" => NodeCategory::Function,
-                "struct" | "enum" | "trait" | "type" | "class" | "interface" => NodeCategory::Type,
+                "fn" | "function" | "method" | "procedure" | "sub" | "def" | "func" => NodeCategory::Function,
+                "struct" | "enum" | "trait" | "type" | "class" | "interface" | "record" | "object" => NodeCategory::Type,
                 "mod" | "module" => NodeCategory::Module,
                 "const" | "constant" => NodeCategory::Constant,
+                "field" | "property" | "var" | "variable" | "let" | "val" | "var_decl" => NodeCategory::Variable,
                 _ => NodeCategory::Variable,
             };
 

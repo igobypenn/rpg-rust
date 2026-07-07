@@ -88,6 +88,10 @@ name = "parser_registry"
 path = "tests/parser/registry_test.rs"
 
 [[test]]
+name = "cross_file"
+path = "tests/parser/cross_file_test.rs"
+
+[[test]]
 name = "graph_edge"
 path = "tests/core/graph_edge_test.rs"
 
