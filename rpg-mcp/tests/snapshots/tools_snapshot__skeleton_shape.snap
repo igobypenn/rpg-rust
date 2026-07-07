@@ -110,5 +110,6 @@ expression: j
       "path": "src/lib.rs"
     }
   ],
+  "limit": 500,
   "total_files": 1
 }

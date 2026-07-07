@@ -30,6 +30,10 @@ fn parse_detail_level(s: &str) -> crate::tools::format::DetailLevel {
     crate::tools::format::DetailLevel::parse(Some(s))
 }
 
+/// Maximum number of results any tool returns in a single response.
+/// Prevents MCP protocol bloat on large graphs (CRG issue #262).
+const MAX_RESULTS: usize = 500;
+
 /// Resolve a node id param to a NodeId, returning invalid_params if the node
 /// doesn't exist. Eliminates the duplicated not-found check across tools.
 fn require_node(graph: &rpg_encoder::RpgGraph, id: u64) -> Result<rpg_encoder::NodeId, McpError> {
@@ -372,7 +376,7 @@ impl RpgService {
             .ok_or_else(|| McpError::invalid_params("missing 'query'", None))?;
         let kind = get_str(&params, "kind");
         let category = get_str(&params, "category");
-        let limit = get_u64(&params, "limit").unwrap_or(50) as usize;
+        let limit = get_u64(&params, "limit").unwrap_or(50).min(500) as usize;
 
         let cat_filter: Option<NodeCategory> = category.and_then(|c| {
             let parsed = parse_category(c);
@@ -491,7 +495,7 @@ impl RpgService {
         let source = get_u64(&params, "source").map(|v| v as usize);
         let target = get_u64(&params, "target").map(|v| v as usize);
         let edge_type = get_str(&params, "edge_type");
-        let limit = get_u64(&params, "limit").unwrap_or(100) as usize;
+        let limit = get_u64(&params, "limit").unwrap_or(100).min(500) as usize;
 
         let type_filter: Option<EdgeType> = edge_type.and_then(parse_edge_type);
 
@@ -540,7 +544,7 @@ impl RpgService {
             as usize;
         let direction = get_str(&params, "direction").unwrap_or("both");
         let depth = get_u64(&params, "depth").unwrap_or(2).clamp(1, 10) as usize;
-        let limit = get_u64(&params, "limit").unwrap_or(100) as usize;
+        let limit = get_u64(&params, "limit").unwrap_or(100).min(500) as usize;
         let edge_type_str = get_str(&params, "edge_type");
         let edge_filter = edge_type_str.and_then(parse_edge_type);
 
@@ -646,7 +650,7 @@ impl RpgService {
             .ok_or_else(|| McpError::invalid_params("missing numeric 'node_id'", None))?
             as usize;
         let depth = get_u64(&params, "depth").unwrap_or(1).clamp(1, 5) as usize;
-        let limit = get_u64(&params, "limit").unwrap_or(50) as usize;
+        let limit = get_u64(&params, "limit").unwrap_or(50).min(500) as usize;
 
         let graph = self.state.graph.read();
         let node_id = rpg_encoder::NodeId::new(id);
@@ -668,7 +672,7 @@ impl RpgService {
             .ok_or_else(|| McpError::invalid_params("missing numeric 'node_id'", None))?
             as usize;
         let depth = get_u64(&params, "depth").unwrap_or(1).clamp(1, 5) as usize;
-        let limit = get_u64(&params, "limit").unwrap_or(50) as usize;
+        let limit = get_u64(&params, "limit").unwrap_or(50).min(500) as usize;
 
         let graph = self.state.graph.read();
         let node_id = rpg_encoder::NodeId::new(id);
@@ -844,6 +848,7 @@ impl RpgService {
     )]
     pub async fn find_dead_code(&self, params: JsonObject) -> Result<CallToolResult, McpError> {
         let scope = get_str(&params, "scope");
+        let limit = get_u64(&params, "limit").unwrap_or(100).min(MAX_RESULTS as u64) as usize;
         let include_exported = get_str(&params, "include_exported")
             .map(|s| s == "true" || s == "1")
             .unwrap_or(false);
@@ -897,12 +902,14 @@ impl RpgService {
                     "semantic_feature": n.semantic_feature,
                 })
             })
+            .take(limit)
             .collect();
 
         Ok(CallToolResult::success(vec![Content::text(
             json!({
                 "dead_code": dead,
                 "count": dead.len(),
+                "limit": limit,
                 "scope": scope,
                 "note": "Review before removal — entry points, trait impls, and dynamically-called code may lack in-graph callers.",
             })
@@ -913,7 +920,8 @@ impl RpgService {
     #[tool(
         description = "Get the skeleton: file nodes with their direct children (Contains edges)"
     )]
-    pub async fn get_skeleton(&self, _params: JsonObject) -> Result<CallToolResult, McpError> {
+    pub async fn get_skeleton(&self, params: JsonObject) -> Result<CallToolResult, McpError> {
+        let limit = get_u64(&params, "limit").unwrap_or(500).min(MAX_RESULTS as u64) as usize;
         let graph = self.state.graph.read();
 
         let file_nodes: Vec<_> = graph
@@ -958,11 +966,13 @@ impl RpgService {
                 .unwrap_or("")
                 .cmp(b["path"].as_str().unwrap_or(""))
         });
+        skeleton.truncate(limit);
 
         Ok(CallToolResult::success(vec![Content::text(
             json!({
                 "files": skeleton,
                 "total_files": skeleton.len(),
+                "limit": limit,
             })
             .to_string(),
         )]))
@@ -973,7 +983,7 @@ impl RpgService {
     )]
     pub async fn get_features(&self, params: JsonObject) -> Result<CallToolResult, McpError> {
         let file_path = get_str(&params, "file_path");
-        let limit = get_u64(&params, "limit").unwrap_or(100) as usize;
+        let limit = get_u64(&params, "limit").unwrap_or(100).min(500) as usize;
 
         let graph = self.state.graph.read();
         let mut results: Vec<Value> = Vec::new();
@@ -1018,7 +1028,7 @@ impl RpgService {
 
     #[tool(description = "Get nodes with Component category")]
     pub async fn get_components(&self, params: JsonObject) -> Result<CallToolResult, McpError> {
-        let limit = get_u64(&params, "limit").unwrap_or(100) as usize;
+        let limit = get_u64(&params, "limit").unwrap_or(100).min(500) as usize;
 
         let graph = self.state.graph.read();
         let mut results: Vec<Value> = Vec::new();
@@ -1052,7 +1062,7 @@ impl RpgService {
         description = "Browse the functional (V^H) hierarchy: high-level feature centroids and their member nodes. Use to understand what a repo does at a behavioral level. Returns each centroid with its member functions/types."
     )]
     pub async fn get_feature_tree(&self, params: JsonObject) -> Result<CallToolResult, McpError> {
-        let limit = get_u64(&params, "limit").unwrap_or(50) as usize;
+        let limit = get_u64(&params, "limit").unwrap_or(50).min(500) as usize;
 
         let graph = self.state.graph.read();
 
@@ -1098,7 +1108,7 @@ impl RpgService {
     pub async fn get_ffi_bindings(&self, params: JsonObject) -> Result<CallToolResult, McpError> {
         let lang_filter = get_str(&params, "language");
         let kind_filter = get_str(&params, "kind");
-        let limit = get_u64(&params, "limit").unwrap_or(100) as usize;
+        let limit = get_u64(&params, "limit").unwrap_or(100).min(500) as usize;
 
         let graph = self.state.graph.read();
 
@@ -1172,7 +1182,7 @@ impl RpgService {
     pub async fn semantic_search(&self, params: JsonObject) -> Result<CallToolResult, McpError> {
         let query = get_str(&params, "query")
             .ok_or_else(|| McpError::invalid_params("missing 'query'", None))?;
-        let top_k = get_u64(&params, "top_k").unwrap_or(10) as usize;
+        let top_k = get_u64(&params, "top_k").unwrap_or(10).min(500) as usize;
         let scope = get_str(&params, "scope"); // optional feature_path prefix
 
         let query_lower = query.to_ascii_lowercase();
@@ -1385,7 +1395,7 @@ impl RpgService {
         &self,
         params: JsonObject,
     ) -> Result<CallToolResult, McpError> {
-        let top_n = get_u64(&params, "top_n").unwrap_or(10) as usize;
+        let top_n = get_u64(&params, "top_n").unwrap_or(10).min(500) as usize;
 
         let graph = self.state.graph.read();
 
@@ -1493,7 +1503,7 @@ impl RpgService {
         let _tel = crate::tools::telemetry::timed(&self.telemetry, "vector_search", &params);
         let query = get_str(&params, "query")
             .ok_or_else(|| McpError::invalid_params("missing 'query'", None))?;
-        let top_k = get_u64(&params, "top_k").unwrap_or(10) as usize;
+        let top_k = get_u64(&params, "top_k").unwrap_or(10).min(500) as usize;
         let detail = get_str(&params, "detail_level").unwrap_or("summary");
 
         // Lazily load the sidecar index on first use.
@@ -1883,6 +1893,15 @@ impl RpgService {
                 .map_err(|e| McpError::internal_error(format!("write failed: {e}"), None))?;
         }
 
+        // Size guard: if the output is large and no file path was given,
+        // return only a summary to avoid MCP protocol bloat.
+        const MAX_INLINE_OUTPUT: usize = 100_000; // 100KB
+        let (output_field, truncated) = if output.len() > MAX_INLINE_OUTPUT && path.is_none() {
+            (output[..MAX_INLINE_OUTPUT.min(output.len())].to_string(), true)
+        } else {
+            (output.clone(), false)
+        };
+
         Ok(CallToolResult::success(vec![Content::text(
             json!({
                 "format": format,
@@ -1890,7 +1909,8 @@ impl RpgService {
                 "edges": edge_count,
                 "bytes": output.len(),
                 "path": path,
-                "output": output,
+                "truncated": truncated,
+                "output": output_field,
             })
             .to_string(),
         )]))
