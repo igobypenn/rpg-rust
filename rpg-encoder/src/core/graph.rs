@@ -10,6 +10,26 @@ use super::node::{Node, NodeCategory, NodeLevel};
 
 use petgraph::graph::DiGraph;
 
+/// The Repository Planning Graph — the central data structure.
+///
+/// A directed graph of [`Node`]s connected by [`Edge`]s, backed by
+/// `petgraph::DiGraph` with an `FxHashMap<NodeId, NodeIndex>` for O(1)
+/// lookups by id. Supports serialization (custom serde that rebuilds the
+/// index on load), incremental mutation, and traversal queries.
+///
+/// # Layout
+///
+/// - **V^L (Low)**: implementation nodes (functions, types, files) — the
+///   majority. Accessed via [`low_level_nodes`](Self::low_level_nodes).
+/// - **V^H (High)**: functional centroid nodes — abstract behavioral areas.
+///   Accessed via [`functional_centroids`](Self::functional_centroids).
+///
+/// # Complexity notes
+///
+/// - `get_node`, `add_edge`, `edges_from`, `edges_to`: **O(1)** or **O(degree)**
+/// - `nodes`, `edges`: **O(N)** / **O(E)** iteration
+/// - `find_node_by_name`, `find_node_by_path`: **O(N)** linear scan
+/// - `in_degree`, `has_incoming_of_types`: **O(degree)**, non-allocating
 #[derive(Debug, Clone)]
 pub struct RpgGraph {
     graph: DiGraph<Node, Edge>,
@@ -130,6 +150,7 @@ impl Default for RpgGraph {
 }
 
 impl RpgGraph {
+    /// Create a new empty graph.
     #[must_use = "RpgGraph must be used"]
     pub fn new() -> Self {
         Self {
@@ -139,6 +160,8 @@ impl RpgGraph {
         }
     }
 
+    /// Add a node, assigning a fresh sequential NodeId. The node's existing
+    /// `id` field is overwritten. Returns the assigned id.
     pub fn add_node(&mut self, mut node: Node) -> NodeId {
         let id = NodeId::new(self.next_node_id);
         node.id = id;
@@ -163,6 +186,7 @@ impl RpgGraph {
         id
     }
 
+    /// Add an edge between two nodes. Returns `false` if either node doesn't exist.
     pub fn add_edge(&mut self, source: NodeId, target: NodeId, edge: Edge) -> bool {        if let (Some(&sidx), Some(&tidx)) =
             (self.node_id_map.get(&source), self.node_id_map.get(&target))
         {
@@ -173,28 +197,33 @@ impl RpgGraph {
         }
     }
 
+    /// Add a typed edge (convenience wrapper for `add_edge` with `Edge::new`).
     pub fn add_typed_edge(&mut self, source: NodeId, target: NodeId, edge_type: EdgeType) -> bool {
         self.add_edge(source, target, Edge::new(edge_type))
     }
 
+    /// Get a node by id. **O(1)**.
     pub fn get_node(&self, id: NodeId) -> Option<&Node> {
         self.node_id_map
             .get(&id)
             .and_then(|&idx| self.graph.node_weight(idx))
     }
 
+    /// Get a mutable reference to a node by id. **O(1)**.
     pub fn get_node_mut(&mut self, id: NodeId) -> Option<&mut Node> {
         self.node_id_map
             .get(&id)
             .and_then(|&idx| self.graph.node_weight_mut(idx))
     }
 
+    /// Iterate all nodes. **O(N)**.
     pub fn nodes(&self) -> impl Iterator<Item = &Node> {
         self.graph
             .node_indices()
             .filter_map(move |idx| self.graph.node_weight(idx))
     }
 
+    /// Iterate all edges as `(source_id, target_id, &Edge)`. **O(E)**.
     pub fn edges(&self) -> impl Iterator<Item = (NodeId, NodeId, &Edge)> {
         self.graph.edge_indices().filter_map(move |eidx| {
             let (source, target) = self.graph.edge_endpoints(eidx)?;
@@ -205,36 +234,44 @@ impl RpgGraph {
         })
     }
 
+    /// Total number of nodes. **O(1)**.
     pub fn node_count(&self) -> usize {
         self.graph.node_count()
     }
 
+    /// Total number of edges. **O(1)**.
     pub fn edge_count(&self) -> usize {
         self.graph.edge_count()
     }
 
+    /// Find the first node with a matching path. **O(N)**.
     pub fn find_node_by_path(&self, path: &Path) -> Option<&Node> {
         self.nodes()
             .find(|n| n.path.as_ref().map(|p| p == path).unwrap_or(false))
     }
 
+    /// Find the first node with a matching name (and optional category). **O(N)**.
     pub fn find_node_by_name(&self, name: &str, category: Option<NodeCategory>) -> Option<&Node> {
         self.nodes()
             .find(|n| n.name == name && category.is_none_or(|c| n.category == c))
     }
 
+    /// Iterate V^L (low-level implementation) nodes.
     pub fn low_level_nodes(&self) -> impl Iterator<Item = &Node> {
         self.nodes().filter(|n| n.node_level == NodeLevel::Low)
     }
 
+    /// Iterate V^H (functional centroid) nodes.
     pub fn functional_centroids(&self) -> impl Iterator<Item = &Node> {
         self.nodes().filter(|n| n.node_level == NodeLevel::High)
     }
 
+    /// Alias for [`functional_centroids`](Self::functional_centroids).
     pub fn high_level_nodes(&self) -> impl Iterator<Item = &Node> {
         self.functional_centroids()
     }
 
+    /// Add a new functional centroid (V^H node) with a name and description.
     pub fn add_functional_centroid(
         &mut self,
         name: impl Into<String>,
@@ -252,6 +289,7 @@ impl RpgGraph {
         self.add_node(node)
     }
 
+    /// Get all V^L nodes linked to a centroid via `BelongsToFeature` edges. **O(degree)**.
     pub fn centroid_members(&self, centroid_id: NodeId) -> Vec<&Node> {
         self.graph
             .edges_directed(
@@ -266,6 +304,10 @@ impl RpgGraph {
             .collect()
     }
 
+    /// Derive a centroid's path and semantic_feature from its member nodes.
+    /// Sets the centroid's path to the LCA of member paths and joins member
+    /// semantic features. Returns the updated centroid, or `None` if the
+    /// centroid has no members.
     pub fn ground_centroid(&mut self, centroid_id: NodeId) -> Option<&Node> {
         let &centroid_idx = self.node_id_map.get(&centroid_id)?;
 
@@ -310,6 +352,7 @@ impl RpgGraph {
         None
     }
 
+    /// Get direct children of a node via `Contains` edges. **O(degree)**.
     pub fn children_of(&self, parent_id: NodeId) -> Vec<&Node> {
         let Some(&parent_idx) = self.node_id_map.get(&parent_id) else {
             return Vec::new();
@@ -329,6 +372,8 @@ impl RpgGraph {
             .collect()
     }
 
+    /// Remove a node by id. Also removes all incident edges (both directions).
+    /// Uses petgraph swap-remove; the moved node's id map entry is updated.
     pub fn remove_node(&mut self, id: NodeId) -> Option<Node> {
         let idx = self.node_id_map.remove(&id)?;
 
@@ -353,6 +398,7 @@ impl RpgGraph {
         Some(node)
     }
 
+    /// Remove all nodes whose path matches `file_path`. Returns removed node ids.
     pub fn remove_file_nodes(&mut self, file_path: &Path) -> Vec<NodeId> {
         let removed: Vec<NodeId> = self
             .nodes()
@@ -367,12 +413,15 @@ impl RpgGraph {
         removed
     }
 
+    /// Get all nodes whose path matches `file_path`. **O(N)**.
     pub fn nodes_for_file(&self, file_path: &Path) -> Vec<&Node> {
         self.nodes()
             .filter(|n| n.path.as_ref().map(|p| p == file_path).unwrap_or(false))
             .collect()
     }
 
+    /// Update a node's semantic fields (features, description, feature_path).
+    /// Also sets `semantic_feature` as a joined string for centroid matching.
     pub fn update_node_semantics(
         &mut self,
         id: NodeId,
@@ -399,6 +448,8 @@ impl RpgGraph {
         }
     }
 
+    /// Find a node at an exact file+line (matching `location.start_line`).
+    /// **O(N)**. For range-based lookup, use the MCP `find_node_at_location` tool.
     pub fn find_node_by_location(&self, file_path: &Path, line: usize) -> Option<&Node> {
         self.nodes().find(|n| {
             n.path.as_ref().map(|p| p == file_path).unwrap_or(false)
@@ -440,6 +491,7 @@ impl RpgGraph {
             .collect()
     }
 
+    /// Remove all edges touching any of the given node ids. Returns count removed.
     pub fn remove_edges_for_nodes(&mut self, node_ids: &[NodeId]) -> usize {
         let node_set: std::collections::HashSet<NodeId> = node_ids.iter().copied().collect();
         let original_count = self.graph.edge_count();
@@ -468,6 +520,7 @@ impl RpgGraph {
         original_count - self.graph.edge_count()
     }
 
+    /// Get all edges (both directions) involving a node. Returns `(source, target, edge_type)`.
     pub fn edges_involving(&self, node_id: NodeId) -> Vec<(NodeId, NodeId, EdgeType)> {
         let Some(&idx) = self.node_id_map.get(&node_id) else {
             return Vec::new();
@@ -496,6 +549,7 @@ impl RpgGraph {
         results
     }
 
+    /// Check if a node exists and has a non-empty name. **O(1)**.
     pub fn node_exists(&self, id: NodeId) -> bool {
         self.node_id_map
             .get(&id)
@@ -504,6 +558,7 @@ impl RpgGraph {
             .unwrap_or(false)
     }
 
+    /// Retain only edges where `f` returns `true`. Removes all others.
     pub fn retain_edges<F>(&mut self, mut f: F)
     where
         F: FnMut(NodeId, NodeId, &Edge) -> bool,
@@ -530,6 +585,7 @@ impl RpgGraph {
         }
     }
 
+    /// Get all neighbor nodes (both directions). **O(degree)**.
     pub fn neighbors(&self, id: NodeId) -> Vec<&Node> {
         let Some(&idx) = self.node_id_map.get(&id) else {
             return Vec::new();
@@ -541,6 +597,7 @@ impl RpgGraph {
             .collect()
     }
 
+    /// Get predecessor nodes (incoming edges only). **O(in-degree)**.
     pub fn predecessors(&self, id: NodeId) -> Vec<&Node> {
         let Some(&idx) = self.node_id_map.get(&id) else {
             return Vec::new();
@@ -552,6 +609,7 @@ impl RpgGraph {
             .collect()
     }
 
+    /// Get successor nodes (outgoing edges only). **O(out-degree)**.
     pub fn successors(&self, id: NodeId) -> Vec<&Node> {
         let Some(&idx) = self.node_id_map.get(&id) else {
             return Vec::new();
@@ -563,6 +621,7 @@ impl RpgGraph {
             .collect()
     }
 
+    /// Get the first edge between two nodes. Returns `None` if no edge exists.
     pub fn edge_between(&self, source: NodeId, target: NodeId) -> Option<&Edge> {
         let (&sidx, &tidx) = (
             self.node_id_map.get(&source)?,
@@ -575,6 +634,7 @@ impl RpgGraph {
             .map(|e| e.weight())
     }
 
+    /// Remove the first edge between two nodes. Returns `true` if an edge was removed.
     pub fn remove_edge_between(&mut self, source: NodeId, target: NodeId) -> bool {
         let (sidx, tidx) = match (
             self.node_id_map.get(&source).copied(),
@@ -594,6 +654,7 @@ impl RpgGraph {
         true
     }
 
+    /// Get outgoing edges from a node. Returns `(target_id, &Edge)` pairs. **O(out-degree)**.
     pub fn edges_from(&self, source: NodeId) -> Vec<(NodeId, &Edge)> {
         let Some(&idx) = self.node_id_map.get(&source) else {
             return Vec::new();
@@ -609,6 +670,7 @@ impl RpgGraph {
             .collect()
     }
 
+    /// Get incoming edges to a node. Returns `(source_id, &Edge)` pairs. **O(in-degree)**.
     pub fn edges_to(&self, target: NodeId) -> Vec<(NodeId, &Edge)> {
         let Some(&idx) = self.node_id_map.get(&target) else {
             return Vec::new();
@@ -630,6 +692,7 @@ impl RpgGraph {
     /// it avoids building a Vec of references. Critical for tools that iterate
     /// all nodes and count incoming edges (get_architecture_overview,
     /// find_dead_code, analyze_diff).
+    /// Count of incoming edges for `id`. Non-allocating (use instead of `edges_to().len()`).
     pub fn in_degree(&self, id: NodeId) -> usize {
         let Some(&idx) = self.node_id_map.get(&id) else {
             return 0;
@@ -643,6 +706,8 @@ impl RpgGraph {
     /// Short-circuits on the first match — non-allocating.
     ///
     /// Use this instead of `edges_to(id).iter().any(...)` for existence checks.
+    /// `true` if `id` has any incoming edge of the given types. Short-circuits
+    /// on first match — non-allocating. Use instead of `edges_to().iter().any(...)`.
     pub fn has_incoming_of_types(&self, id: NodeId, types: &[EdgeType]) -> bool {
         let Some(&idx) = self.node_id_map.get(&id) else {
             return false;
