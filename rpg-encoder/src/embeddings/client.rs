@@ -116,7 +116,10 @@ impl EmbeddingClient {
     /// Construct from a config. Allocates a `reqwest::Client` and a semaphore
     /// sized to `config.max_concurrent`.
     pub fn new(config: EmbeddingConfig) -> Result<Self, EmbeddingError> {
-        let client = Client::new();
+        let client = Client::builder()
+            .timeout(std::time::Duration::from_secs(30))
+            .build()
+            .unwrap_or_else(|_| Client::new());
         let max_conc = config.max_concurrent.max(1);
         let semaphore = Arc::new(Semaphore::new(max_conc));
         Ok(Self {
@@ -159,7 +162,14 @@ impl Embedder for EmbeddingClient {
         let status = resp.status();
         let body = resp.text().await?;
         if !status.is_success() {
-            return Err(EmbeddingError::Api(format!("{status}: {body}")));
+            let body_preview = if body.len() > 500 {
+                format!("{}...", &body[..500])
+            } else {
+                body.clone()
+            };
+            return Err(EmbeddingError::Api(format!(
+                "{status} from {url}: {body_preview}"
+            )));
         }
 
         let parsed: EmbeddingResponse = serde_json::from_str(&body)?;

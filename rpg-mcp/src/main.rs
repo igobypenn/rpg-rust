@@ -73,9 +73,13 @@ async fn main() -> anyhow::Result<()> {
             // RpgStore::init/open append ".rpg" to the path internally, so
             // pass the workspace root (not data_dir, which IS ".rpg" already).
             if let Ok(mut store) = RpgStore::init(workspace) {
-                store.save_base(&snapshot).ok();
+                if let Err(e) = store.save_base(&snapshot) {
+                    tracing::warn!("Failed to save graph to store: {}", e);
+                }
             } else if let Ok(mut store) = RpgStore::open(workspace) {
-                store.save_base(&snapshot).ok();
+                if let Err(e) = store.save_base(&snapshot) {
+                    tracing::warn!("Failed to save graph to store: {}", e);
+                }
             }
 
             if let Err(e) = save_dir_hash(
@@ -108,23 +112,47 @@ async fn main() -> anyhow::Result<()> {
 
 fn load_existing_store(workspace: &Path, config: &McpConfig) -> Option<RpgSnapshot> {
     let current_hash = compute_dir_hash(workspace, config.hash_mode).ok()?;
-    let stored_hash: String = load_dir_hash(&config.data_dir)?;
 
-    if stored_hash == current_hash {
-        // RpgStore::open appends ".rpg" to the path — pass workspace, not data_dir.
-        let store = RpgStore::open(workspace).ok()?;
-        let snapshot = store.load().ok()?;
-        // Fix repo_dir: RpgStore::load sets it to root.parent() which is wrong
-        // when the store is at workspace/.rpg (parent is workspace, correct)
-        // but the snapshot needs the actual workspace for source file reads.
-        // RpgStore::open(workspace) → self.root = workspace/.rpg → parent = workspace. Correct.
-        tracing::info!(
-            repo_dir = ?snapshot.repo_dir,
-            "Store loaded"
-        );
-        Some(snapshot)
-    } else {
-        tracing::info!("Directory hash mismatch, re-encoding");
-        None
+    // No stored hash → no prior encode, fresh start.
+    let stored_hash = match load_dir_hash(&config.data_dir) {
+        Some(h) => h,
+        None => {
+            tracing::info!("No dir_hash found, encoding fresh");
+            return None;
+        }
+    };
+
+    if stored_hash != current_hash {
+        tracing::info!("Directory hash mismatch (source changed), re-encoding");
+        return None;
+    }
+
+    // Hash matches — try to load the store.
+    match RpgStore::open(workspace) {
+        Ok(store) => match store.load() {
+            Ok(snapshot) => {
+                tracing::info!(
+                    nodes = snapshot.graph.node_count(),
+                    edges = snapshot.graph.edge_count(),
+                    "Store loaded"
+                );
+                Some(snapshot)
+            }
+            Err(e) => {
+                tracing::warn!(
+                    "Store exists but failed to load (corrupt?): {}. Re-encoding.",
+                    e
+                );
+                None
+            }
+        },
+        Err(e) => {
+            tracing::info!(
+                "No store found at {}: {}. Encoding fresh.",
+                workspace.display(),
+                e
+            );
+            None
+        }
     }
 }

@@ -23,7 +23,7 @@ pub enum LlmError {
     Json(#[from] serde_json::Error),
     #[error("API error: {0}")]
     Api(String),
-    #[error("No API key configured")]
+    #[error("No API key configured. Set OPENAI_API_KEY in .env or as an env var (see .env.example)")]
     NoApiKey,
     #[error("Empty response from LLM")]
     EmptyResponse,
@@ -198,7 +198,11 @@ impl std::fmt::Debug for OpenAIClient {
 
 impl OpenAIClient {
     pub fn new(config: LlmConfig) -> std::result::Result<Self, LlmError> {
-        let client = Client::new();
+        // Add a 30s timeout so a hung endpoint doesn't block indefinitely.
+        let client = Client::builder()
+            .timeout(std::time::Duration::from_secs(30))
+            .build()
+            .unwrap_or_else(|_| Client::new());
         // max_concurrent=0 would create a zero-permit semaphore that blocks
         // forever — clamp to 1.
         let max_conc = config.max_concurrent.max(1);
@@ -323,7 +327,15 @@ impl OpenAIClient {
         }
 
         if !status.is_success() {
-            return Err(LlmError::Api(format!("{}: {}", status, response_text)));
+            let body_preview = if response_text.len() > 500 {
+                format!("{}...", &response_text[..500])
+            } else {
+                response_text.clone()
+            };
+            return Err(LlmError::Api(format!(
+                "{} from {}: {}",
+                status, url, body_preview
+            )));
         }
 
         let chat_response: ChatResponse = serde_json::from_str(&response_text)?;
