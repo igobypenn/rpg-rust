@@ -2,8 +2,10 @@
 //!
 //! Mirrors the pattern of `crate::llm::client::OpenAIClient` but for the
 //! `/embeddings` endpoint: takes a batch of texts, returns one vector per text.
-//! Reads `RPGEN_EMBEDDING_*` env vars (already in `.env`) and reuses the
-//! `OPENAI_API_KEY`/`OPENAI_MAX_CONCURRENT` knobs for auth/concurrency.
+//! Reads `RPGEN_EMBEDDING_*` env vars and `OPENAI_API_KEY` for auth.
+//! Concurrency is controlled by `RPGEN_EMBEDDING_MAX_CONCURRENT` (independent
+//! from the LLM client's `OPENAI_MAX_CONCURRENT`) since the embedding endpoint
+//! is typically a different service with different capacity.
 
 use std::env;
 use std::sync::Arc;
@@ -63,7 +65,7 @@ impl EmbeddingConfig {
                 .and_then(|s| s.parse().ok())
                 .unwrap_or(4096),
             api_key: env::var("OPENAI_API_KEY").ok(),
-            max_concurrent: env::var("OPENAI_MAX_CONCURRENT")
+            max_concurrent: env::var("RPGEN_EMBEDDING_MAX_CONCURRENT")
                 .ok()
                 .and_then(|s| s.parse().ok())
                 .unwrap_or(4),

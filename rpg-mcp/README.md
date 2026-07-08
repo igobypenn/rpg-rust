@@ -224,6 +224,7 @@ subsequent launches reuse them with zero LLM cost.
 RPGEN_EMBEDDING_ENDPOINT=http://your-embedding-server:8994/v1
 RPGEN_EMBEDDING_MODEL=Qwen3-Embedding-8B
 RPGEN_EMBEDDING_DIMENSION=4096
+RPGEN_EMBEDDING_MAX_CONCURRENT=8   # independent from OPENAI_MAX_CONCURRENT
 ```
 
 After encoding, call the `encode_embeddings` MCP tool to compute vector
@@ -301,6 +302,7 @@ For personal memories, set `RPG_MEMORY_FILE=~/.rpg/my-memories.jsonl`.
 | `RPGEN_EMBEDDING_MODEL` | `Qwen3-Embedding-8B-f16.gguf` | Embedding model name. |
 | `RPGEN_EMBEDDING_DIMENSION` | `4096` | Vector dimension the model produces. |
 | `RPGEN_EMBEDDING_BATCH_SIZE` | `64` | Texts per embedding request. |
+| `RPGEN_EMBEDDING_MAX_CONCURRENT` | `4` | Max concurrent embedding HTTP requests (independent from LLM). |
 
 ---
 
