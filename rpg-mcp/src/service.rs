@@ -137,7 +137,8 @@ impl RpgService {
     /// graph and persist them to `<workspace>/.rpg/embeddings.bin`.
     ///
     /// Requires the graph to carry LLM semantic features (run a semantic encode
-    /// first). Re-embeds only nodes whose text changed since the last run.
+    /// first). The hash cache is persisted to embeddings_hashes.bin, so
+    /// re-running skips nodes whose embed text hasn't changed.
     #[tool(
         description = "Compute vector embeddings over graph nodes (metadata + source). Stores to .rpg/embeddings.bin. Run after a semantic encode. Required before vector_search works."
     )]

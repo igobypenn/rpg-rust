@@ -518,8 +518,8 @@ impl RpgEncoder {
 
         let sidecar = root.join(crate::storage::RPG_DIR).join("embeddings.bin");
         let mut store = if sidecar.exists() {
-            // Re-open an existing index (preserves the hash cache for incremental
-            // re-embed). The hash cache is rebuilt from the live graph below.
+            // Re-open an existing index. The hash cache is loaded from the
+            // sidecar (embeddings_hashes.bin) by EmbeddingStore::new.
             let index = crate::embeddings::FlatIndex::load(&sidecar)
                 .map_err(RpgError::Embedding)?;
             crate::embeddings::EmbeddingStore::new(Box::new(index), sidecar)

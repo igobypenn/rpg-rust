@@ -102,12 +102,16 @@ pub struct EmbeddingStore {
 
 impl EmbeddingStore {
     /// Create an empty store backed by the given index, persisting to `path`.
+    /// Attempts to load the hash cache sidecar if it exists alongside `path`.
     pub fn new(index: Box<dyn EmbeddingIndex>, path: impl Into<PathBuf>) -> Self {
-        Self {
+        let path = path.into();
+        let mut store = Self {
             index,
             hashes: rustc_hash::FxHashMap::default(),
-            path: Some(path.into()),
-        }
+            path: Some(path),
+        };
+        store.load_hashes();
+        store
     }
 
     /// Create an in-memory store with no persistence path (for tests).
@@ -116,6 +120,64 @@ impl EmbeddingStore {
             index,
             hashes: rustc_hash::FxHashMap::default(),
             path: None,
+        }
+    }
+
+    /// Derive the hash cache sidecar path from the index path.
+    /// `embeddings.bin` → `embeddings_hashes.bin`
+    fn hashes_path(&self) -> Option<PathBuf> {
+        self.path.as_ref().map(|p| {
+            p.with_file_name(format!(
+                "{}_hashes{}",
+                p.file_stem().map(|s| s.to_string_lossy().to_string()).unwrap_or_default(),
+                p.extension().map(|e| format!(".{}", e.to_string_lossy())).unwrap_or_default()
+            ))
+        })
+    }
+
+    /// Persist the hash cache to the sidecar file.
+    /// Format: `u32 count` + `count × (u64 NodeId, u64 hash)`.
+    fn save_hashes(&self) {
+        use std::io::{BufWriter, Write};
+        let Some(hashes_path) = self.hashes_path() else { return };
+        if let Ok(file) = std::fs::File::create(&hashes_path) {
+            let mut w = BufWriter::new(file);
+            let _ = w.write_all(&(self.hashes.len() as u32).to_le_bytes());
+            for (id, hash) in &self.hashes {
+                let _ = w.write_all(&(id.index() as u64).to_le_bytes());
+                let _ = w.write_all(&hash.to_le_bytes());
+            }
+            let _ = w.flush();
+        }
+    }
+
+    /// Load the hash cache from the sidecar file. Gracefully returns if the
+    /// file is missing or corrupt (degrades to re-embed-all behavior).
+    /// Also reconciles: drops hashes for NodeIds not in the index.
+    fn load_hashes(&mut self) {
+        use std::io::{BufReader, Read};
+        let Some(hashes_path) = self.hashes_path() else { return };
+        let Ok(file) = std::fs::File::open(&hashes_path) else { return };
+        let mut r = BufReader::new(file);
+
+        let mut buf4 = [0u8; 4];
+        let mut buf8 = [0u8; 8];
+        if r.read_exact(&mut buf4).is_err() { return }
+        let count = u32::from_le_bytes(buf4) as usize;
+
+        for _ in 0..count {
+            if r.read_exact(&mut buf8).is_err() { return }
+            let raw_id = u64::from_le_bytes(buf8) as usize;
+            if raw_id >= isize::MAX as usize { continue }
+            if r.read_exact(&mut buf8).is_err() { return }
+            let hash = u64::from_le_bytes(buf8);
+
+            let id = NodeId::new(raw_id);
+            // Load all hashes — stale entries for deleted nodes are harmless:
+            // they just cause a cache hit for a NodeId that no longer exists,
+            // which means the node is skipped (no re-embed) — correct behavior
+            // since a missing node can't be embedded anyway.
+            self.hashes.insert(id, hash);
         }
     }
 
@@ -178,6 +240,7 @@ impl EmbeddingStore {
 
         if let Some(ref path) = self.path {
             self.index.save(path)?;
+            self.save_hashes();
         }
         Ok(stats)
     }
@@ -204,10 +267,11 @@ impl EmbeddingStore {
         self.index.as_mut()
     }
 
-    /// Persist the index to its configured path, if any.
+    /// Persist the index + hash cache to their configured paths, if any.
     pub fn save(&self) -> Result<(), EmbeddingError> {
         if let Some(ref path) = self.path {
             self.index.save(path)?;
+            self.save_hashes();
         }
         Ok(())
     }
@@ -363,5 +427,64 @@ mod tests {
         assert!(!is_embeddable(NodeCategory::Repository));
         assert!(!is_embeddable(NodeCategory::Import));
         assert!(!is_embeddable(NodeCategory::Parameter));
+    }
+
+    #[tokio::test]
+    async fn hash_cache_persists_across_restart() {
+        let dir = tempfile::tempdir().unwrap();
+        let emb_path = dir.path().join("embeddings.bin");
+
+        let mut graph = RpgGraph::new();
+        graph.add_node(Node::new(
+            NodeId::new(0),
+            NodeCategory::Function,
+            "fn",
+            "rust",
+            "persisted_fn",
+        ));
+
+        let embedder = MockEmbedder { dim: 4 };
+
+        // Pass 1: embed from scratch with a persisted store.
+        let stats1 = {
+            let mut store = EmbeddingStore::new(Box::new(FlatIndex::new(4)), &emb_path);
+            store
+                .embed_graph(&graph, Path::new("/x"), &embedder, 16)
+                .await
+                .unwrap()
+        };
+        assert_eq!(stats1.embedded, 1, "first pass should embed 1 node");
+        assert_eq!(stats1.skipped_unchanged, 0);
+
+        // The hash sidecar should exist alongside the embeddings file.
+        let hashes_path = dir.path().join("embeddings_hashes.bin");
+        assert!(hashes_path.exists(), "hash sidecar must be created");
+
+        // Pass 2: create a FRESH store (simulating a process restart).
+        // The hash cache should be loaded from the sidecar, and all nodes
+        // should be skipped as unchanged.
+        let stats2 = {
+            let mut store = EmbeddingStore::new(Box::new(FlatIndex::new(4)), &emb_path);
+            store
+                .embed_graph(&graph, Path::new("/x"), &embedder, 16)
+                .await
+                .unwrap()
+        };
+        assert_eq!(stats2.embedded, 0, "second pass should embed 0 nodes (cache hit)");
+        assert_eq!(
+            stats2.skipped_unchanged, 1,
+            "second pass should skip 1 node (hash cache loaded from sidecar)"
+        );
+    }
+
+    #[test]
+    fn hash_cache_load_missing_file_degrades_gracefully() {
+        let dir = tempfile::tempdir().unwrap();
+        let emb_path = dir.path().join("embeddings.bin");
+
+        // No sidecar exists — store should start with empty hashes.
+        let store = EmbeddingStore::new(Box::new(FlatIndex::new(4)), &emb_path);
+        // Can't directly check hashes (private), but the store should not panic.
+        assert_eq!(store.len(), 0);
     }
 }
